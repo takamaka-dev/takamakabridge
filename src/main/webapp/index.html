@@ -46,11 +46,12 @@
                         'Content-Type': 'application/json'
                     },
                     type: 'POST',
-                    url: 'http://localhost:8080/walletweb/resources/javaee8/printForm',
-                    contentType: "application/json",
-                    data: {
+                    url: 'http://localhost:8080/walletwebversion/resources/javaee8/printForm',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify({
                         formData: json
-                    }
+                    })
                 });
             });
 

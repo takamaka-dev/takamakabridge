@@ -25,7 +25,7 @@ public class JavaEE8Resource {
     @POST
     @Path("printForm")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response printForm(Wallet wallet) {
+    public Response printForm(WalletBean wallet) {
         //process parameters
         System.out.println(wallet.getEmail());
         return Response.status(200).build();
