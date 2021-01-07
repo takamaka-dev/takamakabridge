@@ -38,7 +38,7 @@
                 formData.forEach(function (value, key) {
                     object[key] = value;
                 });
-                var json = JSON.stringify(object);
+                //var json = JSON.stringify(object);
                 
                 
                 $.ajax({
@@ -46,11 +46,12 @@
                         'Content-Type': 'application/json'
                     },
                     type: 'POST',
-                    url: 'http://localhost:8080/walletweb/resources/javaee8/printForm',
-                    contentType: "multipart/form-data",
-                    data: {
-                        formData: json
-                    }
+                    url: 'http://localhost:8080/walletwebversion/resources/javaee8/printForm',
+                    contentType: "application/json",
+                    dataType: "json",
+                    data: JSON.stringify({
+                        formData: object
+                    })
                 });
             });
 
