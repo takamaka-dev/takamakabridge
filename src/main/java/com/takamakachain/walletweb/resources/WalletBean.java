@@ -13,23 +13,33 @@ import java.io.Serializable;
  */
 public class WalletBean implements Serializable {
 
-    private String email;
-    private String password;
+    private String walletName;
+    private String walletPassword;
+    private String walletCypher;
 
-    public String getEmail() {
-        return email;
+    public String getWalletName() {
+        return walletName;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setWalletName(String walletName) {
+        this.walletName = walletName;
     }
 
-    public String getPassword() {
-        return password;
+    public String getWalletPassword() {
+        return walletPassword;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setWalletPassword(String walletPassword) {
+        this.walletPassword = walletPassword;
     }
 
+    public String getWalletCypher() {
+        return walletCypher;
+    }
+
+    public void setWalletCypher(String walletCypher) {
+        this.walletCypher = walletCypher;
+    }
+    
+    
 }

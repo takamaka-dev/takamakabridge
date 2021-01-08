@@ -1,0 +1,112 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Jan 8, 2021, 11:09:32 AM
+    Author     : isacco.borsani@h2tcoin.com
+*/
+
+.radio-button {
+    font-size: 10px !important;
+}
+
+.menu-wallet-bar {
+    z-index: 999;
+    width: 250px;
+    height: 100%;
+    background-color: #dfdfdf7a;
+    position: fixed;
+    left: -218px;
+    backdrop-filter: blur(5px) saturate(125%); /* Blur the background */
+    /* 10px Gaussian Blur and saturate for fluent design */
+    -webkit-backdrop-filter: blur(5px) saturate(125%); /* Increases browser compability (safari ios and mac) */
+    box-shadow: 4px 8px 7px #dedede;
+}
+
+
+.menu-wallet-bar ul {
+    top: 20%;
+    position: absolute;
+    left: 95px;
+    list-style: none
+}
+
+.menu-wallet-bar ul li {
+    text-align: center;
+    cursor: pointer;
+    transition: all .2s ease-in-out
+}
+
+.menu-wallet-bar ul li:hover {
+    transform: scale(1.1)
+}
+
+.menu-wallet-bar ul * {
+    margin: 0 auto;
+}
+
+.menu-wallet-bar ul li span {
+    display: block;
+    margin-bottom: 50px
+}
+
+.menu-wallet-bar ul li svg {
+    font-size: 40px !important;
+    margin: 0 auto !important
+}
+
+.open-menu-btn {
+    transform: rotate(-90deg);
+    position: absolute;
+    color: #dfdfdf;
+    top: 42%;
+    left: 236px;
+    font-size: 60px;
+    cursor: pointer
+}
+
+.slide.menu-wallet-bar:hover {
+    transition: 1s;
+}
+
+
+.slide:hover {
+    -webkit-animation: slide 0.5s forwards;
+    -webkit-animation-delay: 2s;
+    animation: slide 0.5s forwards;
+    animation-delay: 2s;
+}
+
+
+.slide-in {
+    animation: slide-in 0.5s forwards;
+    -webkit-animation: slide-in 0.5s forwards;
+}
+
+.slide-out {
+    animation: slide-out 0.5s forwards;
+    -webkit-animation: slide-out 0.5s forwards;
+}
+.mt20 {
+    margin-top: 20px
+}
+
+@keyframes slide-in {
+    100% { transform: translateX(50%); }
+}
+
+@-webkit-keyframes slide-in {
+    100% { -webkit-transform: translateX(50%); }
+}
+
+@keyframes slide-out {
+    0% { transform: translateX(50%); }
+    100% { transform: translateX(0%); }
+}
+
+@-webkit-keyframes slide-out {
+    0% { -webkit-transform: translateX(50%); }
+    100% { -webkit-transform: translateX(0%); }
+}
