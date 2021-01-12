@@ -5,6 +5,8 @@
  */
 package ejb;
 
+import com.h2tcoin.takamakachain.globalContext.KeyContexts;
+import io.takamaka.code.whitelisting.internal.database.java.math.BigInteger;
 import javax.ejb.Local;
 
 /**
@@ -13,6 +15,40 @@ import javax.ejb.Local;
  */
 @Local
 public interface MySessionLocal {
+    public String getWalletAddress();
 
+    public void setWalletAddress(String walletAddress);
+
+    public String getWalletName();
+
+    public void setWalletName(String walletName);
+
+    public String getWalletPassword();
+
+    public void setWalletPassword(String walletPassword);
+
+    public int getWalletIndex();
+
+    public void setWalletIndex(int walletIndex);
+
+    public KeyContexts.WalletCypher getWalletCypher();
+
+    public void setWalletCypher(KeyContexts.WalletCypher walletCypher);
+
+    public BigInteger getTkgBalance();
+
+    public void setTkgBalance(BigInteger tkgBalance);
+
+    public BigInteger getTkrBalance();
+
+    public void setTkrBalance(BigInteger tkrBalance);
+
+    public BigInteger getFrozenTkg();
+
+    public void setFrozenTkg(BigInteger frozenTkg);
+
+    public BigInteger getFrozenTkr();
+
+    public void setFrozenTkr(BigInteger frozenTkr);
     
 }
