@@ -7,10 +7,14 @@
 
 goToPage = pageid => {
     $.ajax({
-        url: 'http://localhost:8080/walletwebversion/resources/javaee8/getPage/' 
+        url: 'http://localhost:8080/walletwebversion/resources/javaee8/getPage/'
                 + pageid,
+        beforeSend: function () {
+            // setting a timeout
+            $('.page').html('<div class="loading-container"><img src="static/images/loading.gif" alt=""/></div')
+        },
         success: function (data) {
-            $('.page').html(data);
+            setTimeout(() => { $('.page').html(data) }, 500);
         }
     });
 }

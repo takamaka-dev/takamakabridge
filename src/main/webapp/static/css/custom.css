@@ -8,6 +8,15 @@ and open the template in the editor.
     Author     : isacco.borsani@h2tcoin.com
 */
 
+.loading-container {
+    text-align: center;
+    margin-top: 200px;
+}
+
+.loading-container img {
+    width: 120px
+}
+
 .radio-button {
     font-size: 10px !important;
 }
