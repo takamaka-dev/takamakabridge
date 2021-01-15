@@ -47,6 +47,7 @@ public class SignedRequestBean implements Serializable {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
+        sb.append("THE REQUEST");
         if (wallet != null) {
             if (rt != null) {
                 sb.append("ReqType: " + rt.name()).append("\n");
@@ -58,6 +59,7 @@ public class SignedRequestBean implements Serializable {
         }
         //
         //return super.toString(); //To change body of generated methods, choose Tools | Templates.
+        sb.append("THE REQUEST -- end");
         return sb.toString();
     }
 
