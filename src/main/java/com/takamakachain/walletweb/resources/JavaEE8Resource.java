@@ -71,7 +71,7 @@ public class JavaEE8Resource {
     @POST
     @Path("createWallet")
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
     public Response createWallet(WalletBean wallet) throws WalletException {
         System.out.println(wallet.getWalletName());
         System.out.println(wallet.getWalletCypher());
@@ -99,10 +99,6 @@ public class JavaEE8Resource {
         String password = wallet.getWalletPassword();
         try {
             switch (SWTracker.i().getNewWalletBean().getCypher()) {
-                /*                                               case BCQTESLA_PS_1:
-                                                    iwk = new InstanceWalletKeyStoreBCQTESLAPSSC1Round1(internalName, password);
-                                                    break;
-                 */
                 case BCQTESLA_PS_1_R2:
                     iwk = new InstanceWalletKeyStoreBCQTESLAPSSC1Round2(internalName, password);
 
@@ -110,7 +106,7 @@ public class JavaEE8Resource {
 
                 case Ed25519BC:
                     iwk = new InstanceWalletKeyStoreBCED25519(internalName, password);
-                    System.out.println("_______" + iwk.getPublicKeyAtIndexURL64(0));
+                    System.out.println(iwk.getPublicKeyAtIndexURL64(0));
 
                     break;
                 default:
@@ -122,7 +118,7 @@ public class JavaEE8Resource {
 
         }
 
-        return Response.status(200).build();
+        return Response.status(200).entity("ciao").type(MediaType.TEXT_PLAIN).build();
     }
 
 //    @POST

@@ -49,9 +49,9 @@ and open the template in the editor.
                 let jElem = $(val);
                 jElem.find('.form-control').each(function (innerElKey, innerElVal) {
                     let innerjElem = $(innerElVal);
-                    if (innerjElem.attr('type') === 'radio' && innerjElem.is(':checked') ) {
+                    if (innerjElem.attr('type') === 'radio' && innerjElem.is(':checked')) {
                         object[innerjElem.attr('name')] = innerjElem.val();
-                    } else if(innerjElem.attr('type') === 'text' || innerjElem.attr('type') === 'password') {
+                    } else if (innerjElem.attr('type') === 'text' || innerjElem.attr('type') === 'password') {
                         object[innerjElem.attr('name')] = innerjElem.val();
                     }
 
@@ -59,7 +59,7 @@ and open the template in the editor.
 
 
             });
-            
+
             console.log(object);
 
             $.ajax({
@@ -71,6 +71,12 @@ and open the template in the editor.
                 contentType: "application/json",
                 dataType: "json",
                 data: JSON.stringify(object)
+            }).done(function (jsonP) {
+                console.log(jsonP);
+                console.log('Wallet successfully created!');
+                goToPage('test_signed_request');
+            }).fail(function () {
+                console.log("Error Occurred");
             });
         });
     })
