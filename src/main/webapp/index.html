@@ -17,6 +17,10 @@
 
         <div class="menu-wallet-bar">
             <ul>
+                <li class="menu-btn nav-btn" data-page="home">
+                    <i class="fal fa-home"></i>
+                    <span>Home</span>
+                </li>
                 <li class="menu-btn">
                     <i class="fal fa-wallet"></i><br>
                     <span>Wallet</span>
@@ -53,48 +57,6 @@
             </div>
 
             <div class="page">
-                <hr/>
-                <div class="row">
-                    <div class="col-md-12 text-center">
-                        <h4>Select a wallet</h4>
-                    </div>
-                    <div class="col">
-                        <div class="list-group">
-                            <a href="#" class="list-group-item list-group-item-action active">
-                                Wallet 1
-                            </a>
-                            <a href="#" class="list-group-item list-group-item-action">Wallet 2</a>
-                            <a href="#" class="list-group-item list-group-item-action">Wallet 3</a>
-                            <a href="#" class="list-group-item list-group-item-action">Wallet 4</a>
-                            <a href="#" class="list-group-item list-group-item-action disabled">Wallet 5</a>
-                        </div>
-                    </div>
-                </div>
-
-                <br/>
-
-                <div class="input-group mb-3">
-                    <input type="text" class="form-control" placeholder="Insert wallet password" aria-label="Wallet password" aria-describedby="Wallet password">
-                    <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" id="unlock-wallet">Unlock your Wallet</button>
-                    </div>
-                </div>
-
-                <br/>
-
-                <div class="row">
-                    <div class="col text-center">
-                        <button class="btn btn-outline-secondary create-wallet">Create Wallet</button>
-                    </div>
-                    <div class="col text-center">
-                        <button class="btn btn-outline-secondary signed-request-page">Signed Request</button>
-                    </div>
-                    <div class="col text-center">
-                        <button class="btn btn-outline-secondary restore-wallet">Restore Wallet</button>
-                    </div>
-                </div>
-
-
             </div>
 
         </div>
@@ -102,7 +64,8 @@
 
     <script>
         $(document).ready(function () {
-            console.log(uuidv4());
+            goToPage('home');
+            
             $('.open-menu-btn').on('click', function () {
                 if ($('.menu-wallet-bar').hasClass("slide-in")) {
                     $('.menu-wallet-bar').removeClass("slide-in");
@@ -112,51 +75,10 @@
                     $('.menu-wallet-bar').addClass("slide-in");
                 }
             });
-
-
-            $('.create-wallet').on('click', function () {
-                $.ajax({
-                    url: 'http://localhost:8080/walletwebversion/resources/javaee8/getPage/test',
-                    success: function (data) {
-                        $('.page').html(data);
-                    }
-                });
+            
+            $('.nav-btn').on('click', function() {
+                goToPage($(this).attr('data-page'));
             });
-
-            $('.signed-request-page').on('click', function () {
-                $.ajax({
-                    url: 'http://localhost:8080/walletwebversion/resources/javaee8/getPage/test_signed_request',
-                    success: function (data) {
-                        $('.page').html(data);
-                    }
-                });
-            })
-
-
-//            $('#sampleForm').submit(function (e) {
-//                e.preventDefault();
-//                const formData = new FormData(e.target);
-//
-//                var object = {};
-//                formData.forEach(function (value, key) {
-//                    object[key] = value;
-//                });
-//                //var json = JSON.stringify(object);
-//
-//
-//                $.ajax({
-//                    headers: {
-//                        'Content-Type': 'application/json'
-//                    },
-//                    type: 'POST',
-//                    url: 'http://localhost:8080/walletweb/resources/javaee8/printForm',
-//                    contentType: "application/json",
-//                    dataType: "json",
-//                    data: JSON.stringify(object)
-//                });
-//            });
-
-
         });
 
     </script>

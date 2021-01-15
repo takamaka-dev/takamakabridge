@@ -49,9 +49,7 @@ public class JavaEE8Resource {
     @Path("getPage/{pageid}")
     @Produces(MediaType.TEXT_HTML)
     public String getPage(@PathParam("pageid") String pageid) throws FileNotFoundException, IOException {
-        String base = servletContext.getRealPath("/templates");
-        System.out.println("Page id: " + pageid);
-        BufferedReader br = new BufferedReader(new FileReader(base + "/" + pageid + ".html"));
+        BufferedReader br = new BufferedReader(new FileReader(servletContext.getRealPath("/templates") + "/" + pageid + ".html"));
         String line;
         String contentResponse = "";
         while ((line = br.readLine()) != null) {
