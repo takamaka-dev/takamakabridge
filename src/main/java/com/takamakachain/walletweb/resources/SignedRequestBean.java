@@ -19,6 +19,15 @@ public class SignedRequestBean implements Serializable {
     private WalletBean wallet;
     private InternalTransactionBean itb;
     private WebHelper.RequestType rt;
+    private String uuid;
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
 
     public WalletBean getWallet() {
         return wallet;
@@ -47,19 +56,20 @@ public class SignedRequestBean implements Serializable {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("THE REQUEST");
+
+        sb.append("U:" + uuid + " ").append("THE REQUEST").append("\n");
         if (wallet != null) {
             if (rt != null) {
-                sb.append("ReqType: " + rt.name()).append("\n");
+                sb.append("U:" + uuid + " ").append("ReqType: " + rt.name()).append("\n");
             }
             //if (!TkmTextUtils.isNullOrBlank(wallet.getWalletName())) {
-            sb.append("WalletName: " + wallet.getWalletName()).append("\n");
+            sb.append("U:" + uuid + " ").append("WalletName: " + wallet.getWalletName()).append("\n");
             //}
-            sb.append("WalletNumber: " + wallet.getAddressNumber()).append("\n");
+            sb.append("U:" + uuid + " ").append("WalletNumber: " + wallet.getAddressNumber()).append("\n");
         }
         //
         //return super.toString(); //To change body of generated methods, choose Tools | Templates.
-        sb.append("THE REQUEST -- end");
+        sb.append("U:" + uuid + " ").append("THE REQUEST -- end");
         return sb.toString();
     }
 
