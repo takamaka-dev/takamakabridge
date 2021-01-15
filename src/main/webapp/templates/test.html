@@ -69,7 +69,6 @@ and open the template in the editor.
                 type: 'POST',
                 url: 'http://localhost:8080/walletwebversion/resources/javaee8/createWallet',
                 contentType: "application/json",
-                dataType: "json",
                 data: JSON.stringify(object)
             }).done(function (jsonP) {
                 console.log(jsonP);

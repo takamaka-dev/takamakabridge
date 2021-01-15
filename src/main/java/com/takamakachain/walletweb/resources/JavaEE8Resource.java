@@ -4,9 +4,13 @@ import com.h2tcoin.takamakachain.exceptions.wallet.UnlockWalletException;
 import com.h2tcoin.takamakachain.exceptions.wallet.WalletException;
 import com.h2tcoin.takamakachain.globalContext.FixedParameters;
 import com.h2tcoin.takamakachain.globalContext.KeyContexts;
+import static com.h2tcoin.takamakachain.globalContext.KeyContexts.WalletCypher.BCQTESLA_PS_1;
+import static com.h2tcoin.takamakachain.globalContext.KeyContexts.WalletCypher.BCQTESLA_PS_1_R2;
 import com.h2tcoin.takamakachain.utils.F;
+import com.h2tcoin.takamakachain.utils.Log;
 import com.h2tcoin.takamakachain.utils.simpleWallet.SWTracker;
 import com.h2tcoin.takamakachain.wallet.InstanceWalletKeyStoreBCED25519;
+import com.h2tcoin.takamakachain.wallet.InstanceWalletKeyStoreBCQTESLAPSSC1Round1;
 import com.h2tcoin.takamakachain.wallet.InstanceWalletKeyStoreBCQTESLAPSSC1Round2;
 import com.h2tcoin.takamakachain.wallet.InstanceWalletKeystoreInterface;
 import java.io.BufferedReader;
@@ -17,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Date;
+import java.util.logging.Level;
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -63,9 +68,30 @@ public class JavaEE8Resource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response signedRequest(SignedRequestBean srb) throws WalletException {
-        System.out.println("Signed request");
-        System.out.println(srb.toString());
-        return Response.status(200).build();
+        SignedResponseBean signedResponse = new SignedResponseBean();
+        signedResponse.setRequest(srb);
+        signedResponse.setSignedResponse(srb.getRt().name());
+        
+        switch (srb.getWallet().getWalletCypher()) {
+            case "BCQTESLA_PS_1":
+                SWTracker.i().setIwk(new InstanceWalletKeyStoreBCQTESLAPSSC1Round1(srb.getWallet().getWalletName(), srb.getWallet().getWalletPassword()));
+
+            case "BCQTESLA_PS_1_R2":
+                SWTracker.i().setIwk(new InstanceWalletKeyStoreBCQTESLAPSSC1Round2(srb.getWallet().getWalletName(), srb.getWallet().getWalletPassword()));
+
+            case "Ed25519BC":
+                SWTracker.i().setIwk(new InstanceWalletKeyStoreBCED25519(srb.getWallet().getWalletName(), srb.getWallet().getWalletPassword()));
+
+        }
+        
+        
+        
+        System.out.println(srb.getWallet().getWalletName());
+        System.out.println(srb.getWallet().getWalletPassword());
+        
+        signedResponse.setWalletAddress(SWTracker.i().getIwk().getPublicKeyAtIndexURL64(srb.getWallet().getAddressNumber()));
+        
+        return Response.status(200).entity(signedResponse).build();
     }
 
     @POST
