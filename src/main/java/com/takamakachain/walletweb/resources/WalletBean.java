@@ -16,6 +16,15 @@ public class WalletBean implements Serializable {
     private String walletName;
     private String walletPassword;
     private String walletCypher;
+    private int addressNumber;
+
+    public int getAddressNumber() {
+        return addressNumber;
+    }
+
+    public void setAddressNumber(int addressNumber) {
+        this.addressNumber = addressNumber;
+    }
 
     public String getWalletName() {
         return walletName;
@@ -40,6 +49,5 @@ public class WalletBean implements Serializable {
     public void setWalletCypher(String walletCypher) {
         this.walletCypher = walletCypher;
     }
-    
-    
+
 }
