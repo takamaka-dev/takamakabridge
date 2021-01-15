@@ -85,6 +85,9 @@
                         <button class="btn btn-outline-secondary create-wallet">Create Wallet</button>
                     </div>
                     <div class="col text-center">
+                        <button class="btn btn-outline-secondary signed-request-page">Signed Request</button>
+                    </div>
+                    <div class="col text-center">
                         <button class="btn btn-outline-secondary restore-wallet">Restore Wallet</button>
                     </div>
                 </div>
@@ -111,7 +114,16 @@
 
             $('.create-wallet').on('click', function () {
                 $.ajax({
-                    url: 'http://localhost:8080/walletweb/resources/javaee8/getPage/test',
+                    url: 'http://localhost:8080/walletwebversion/resources/javaee8/getPage/test',
+                    success: function (data) {
+                        $('.page').html(data);
+                    }
+                });
+            });
+
+            $('.signed-request-page').on('click', function () {
+                $.ajax({
+                    url: 'http://localhost:8080/walletwebversion/resources/javaee8/getPage/test_signed_request',
                     success: function (data) {
                         $('.page').html(data);
                     }

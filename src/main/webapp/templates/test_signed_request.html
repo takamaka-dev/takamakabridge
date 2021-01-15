@@ -7,7 +7,7 @@ and open the template in the editor.
 
 <div class="row mt20">
     <div class="col-md-12 text-center">
-        <h4>Create a wallet</h4>
+        <h4>Log in</h4>
     </div>
     <div class="col">
         <form id="new-wallet-form">
@@ -20,8 +20,8 @@ and open the template in the editor.
                 <input type="password" class="form-control" id="walletPassword" name="walletPassword" placeholder="Enter wallet Password">
             </div>
             <div class="form-group">
-                <label for="retypePassword">Retype Password</label>
-                <input type="password" class="form-control" id="retypePassword" name="retypePassword" placeholder="Type again your password">
+                <label for="walletName">Wallet index</label>
+                <input type="text" class="form-control" id="walletName" name="walletIndex" aria-describedby="walletIndex" placeholder="Enter wallet index">
             </div>
             <div class="form-group">
                 <input class="form-control form-check-input radio-button" type="radio" name="walletCypher" id="walletCypher" value="Ed25519BC" checked>
@@ -34,7 +34,14 @@ and open the template in the editor.
                     QTESLA Round 2
                 </label>
             </div>
-
+            <div class="form-group">
+                <label for="walletPassword">Post Type Request</label>
+                <select>
+                    <option value="GET_ADDRESS">GET ADDRESS</option>
+                </select>  
+            </div>    
+            
+            
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
     </div>
@@ -67,7 +74,7 @@ and open the template in the editor.
                     'Content-Type': "application/json"
                 },
                 type: 'POST',
-                url: 'http://localhost:8080/walletwebversion/resources/javaee8/createWallet',
+                url: 'http://localhost:8080/walletwebversion/resources/javaee8/signedRequest',
                 contentType: "application/json",
                 dataType: "json",
                 data: JSON.stringify(object)

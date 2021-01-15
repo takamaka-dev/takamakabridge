@@ -50,6 +50,7 @@ public class JavaEE8Resource {
     @Produces(MediaType.TEXT_HTML)
     public String getPage(@PathParam("pageid") String pageid) throws FileNotFoundException, IOException {
         String base = servletContext.getRealPath("/templates");
+        System.out.println("Page id: " + pageid);
         BufferedReader br = new BufferedReader(new FileReader(base + "/" + pageid + ".html"));
         String line;
         String contentResponse = "";
@@ -58,10 +59,21 @@ public class JavaEE8Resource {
         }
         return contentResponse;
     }
+    
+    @POST
+    @Path("signedRequest")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response signedRequest(SignedRequestBean srb) throws WalletException {
+        System.out.println("Signed request");
+        System.out.println(srb.toString());
+        return Response.status(200).build();
+    }
 
     @POST
     @Path("createWallet")
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response createWallet(WalletBean wallet) throws WalletException {
         System.out.println(wallet.getWalletName());
         System.out.println(wallet.getWalletCypher());
