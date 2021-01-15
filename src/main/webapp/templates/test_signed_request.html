@@ -50,10 +50,12 @@ and open the template in the editor.
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
         
-        <p class="address-result">
-            
-        </p>
-        
+        <br/>
+        <hr/>
+        <div class="alert alert-primary address-result-container hidden" role="alert">
+            Your address is: <b><span class="address-result"></span></b>
+        </div>
+
     </div>
 </div>
 
@@ -108,8 +110,9 @@ and open the template in the editor.
                 contentType: "application/json",
                 dataType: "json",
                 data: JSON.stringify(signedRequestBean),
-                success: function(data) {
+                success: function (data) {
                     console.log(data);
+                    $('.address-result-container').removeClass('hidden');
                     $('.address-result').html(data['walletAddress']);
                 }
             });
