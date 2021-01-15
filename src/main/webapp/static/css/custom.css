@@ -8,6 +8,10 @@ and open the template in the editor.
     Author     : isacco.borsani@h2tcoin.com
 */
 
+.hidden {
+    display: none !important
+}
+
 .loading-container {
     text-align: center;
     margin-top: 200px;
