@@ -42,7 +42,7 @@ and open the template in the editor.
             </div>    
             <div class="form-group">
                 <label for="uuidv4">uuid</label><!--uuidv4()-->
-                <input type="text" class="form-control" id="uuidv4" name="uuidv4" aria-describedby="uuidv4" placeholder="Enter wallet index">
+                <input type="text" class="form-control" id="uuid" name="uuid" aria-describedby="uuid" placeholder="Enter wallet index">
             </div>
             
             <button type="submit" class="btn btn-primary">Submit</button>
@@ -52,7 +52,7 @@ and open the template in the editor.
 
 <script>
     $(document).ready(function () {
-        $('#uuidv4').val(uuidv4());
+        $('#uuid').val(uuidv4());
         $('#new-wallet-form').submit(function (e) {
             e.preventDefault();
             var object = {};
