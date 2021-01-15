@@ -64,7 +64,7 @@
 
     <script>
         $(document).ready(function () {
-            goToPage('home');
+            goToPage('home')
             
             $('.open-menu-btn').on('click', function () {
                 if ($('.menu-wallet-bar').hasClass("slide-in")) {
@@ -77,7 +77,7 @@
             });
             
             $('.nav-btn').on('click', function() {
-                goToPage($(this).attr('data-page'));
+                goToPage($(this).attr(window.currentpage));
             });
         });
 

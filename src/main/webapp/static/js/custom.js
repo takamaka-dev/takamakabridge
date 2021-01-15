@@ -5,7 +5,7 @@
  */
 
 
-goToPage = pageid => {
+goToPage = (pageid) => {
     $.ajax({
         url: 'http://localhost:8080/walletwebversion/resources/javaee8/getPage/'
                 + pageid,
@@ -14,7 +14,9 @@ goToPage = pageid => {
             $('.page').html('<div class="loading-container"><img src="static/images/loading.gif" alt=""/></div')
         },
         success: function (data) {
-            setTimeout(() => { $('.page').html(data) }, 500);
+            setTimeout(() => {
+                $('.page').html(data)
+            }, 500);
         }
     });
 }
