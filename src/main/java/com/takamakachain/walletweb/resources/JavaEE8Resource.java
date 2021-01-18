@@ -66,8 +66,9 @@ public class JavaEE8Resource {
 
     /**
      * status codes https://developer.mozilla.org/it/docs/Web/HTTP/Status
+     *
      * @param srb
-     * @return 
+     * @return
      */
     @POST
     @Path("signedRequest")
