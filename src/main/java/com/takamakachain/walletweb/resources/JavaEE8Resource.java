@@ -194,6 +194,8 @@ public class JavaEE8Resource {
         if (TkmTextUtils.isNullOrBlank(srb.getWalletAddress()) || (srb.getWalletAddress().length() != 44 && srb.getWalletAddress().length() != 19840)) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
+        
+        System.out.println(IdentiColorHelper.getAvatarBase64URL256(srb.getWalletAddress()));
 
         String walletIdenticonUrl64 = IdentiColorHelper.getAvatarBase64URL256(srb.getWalletAddress());
 
@@ -204,7 +206,11 @@ public class JavaEE8Resource {
         }
 
         WalletIdenticonResponseBean wi = new WalletIdenticonResponseBean();
-        wi.setAddress(srb.getWalletAddress());
+        if (srb.getWalletAddress().length() == 19840) {
+            wi.setAddress("");
+        } else {
+            wi.setAddress(srb.getWalletAddress());
+        }
         wi.setIdenticonUrlBase64(walletIdenticonUrl64);
 
         return Response.status(Response.Status.OK).entity(wi).build();
