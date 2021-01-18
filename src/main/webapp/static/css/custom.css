@@ -58,6 +58,17 @@ span.error {
     border-radius: 10px;
 }
 
+.menu-wallet-user .container {
+    margin-top: 50px
+}
+
+.menu-wallet-user label {
+    font-weight: 600
+}
+
+.menu-wallet-user label, .menu-wallet-user p {
+    color: white;
+}
 
 .menu-wallet-bar ul {
     top: 20%;

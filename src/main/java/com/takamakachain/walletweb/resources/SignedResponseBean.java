@@ -16,7 +16,16 @@ public class SignedResponseBean implements Serializable {
     private String signedResponse;
     private SignedRequestBean request;
     private String walletAddress;
+    private int walletKey;
 
+    public int getWalletKey() {
+        return walletKey;
+    }
+
+    public void setWalletKey(int walletKey) {
+        this.walletKey = walletKey;
+    }
+    
     public String getWalletAddress() {
         return walletAddress;
     }

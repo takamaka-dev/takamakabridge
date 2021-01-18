@@ -1,5 +1,8 @@
 package com.takamakachain.walletweb.resources;
 
+import com.h2tcoin.takamakachain.exceptions.threadSafeUtils.HashAlgorithmNotFoundException;
+import com.h2tcoin.takamakachain.exceptions.threadSafeUtils.HashEncodeException;
+import com.h2tcoin.takamakachain.exceptions.threadSafeUtils.HashProviderNotFoundException;
 import com.h2tcoin.takamakachain.exceptions.wallet.UnlockWalletException;
 import com.h2tcoin.takamakachain.exceptions.wallet.WalletException;
 import com.h2tcoin.takamakachain.globalContext.FixedParameters;
@@ -9,6 +12,9 @@ import static com.h2tcoin.takamakachain.globalContext.KeyContexts.WalletCypher.B
 import com.h2tcoin.takamakachain.utils.F;
 import com.h2tcoin.takamakachain.utils.Log;
 import com.h2tcoin.takamakachain.utils.simpleWallet.SWTracker;
+import com.h2tcoin.takamakachain.utils.simpleWallet.panels.support.identicon.IdentiColorHelper;
+import com.h2tcoin.takamakachain.utils.threadSafeUtils.TkmSignUtils;
+import com.h2tcoin.takamakachain.utils.threadSafeUtils.TkmTextUtils;
 import com.h2tcoin.takamakachain.wallet.InstanceWalletKeyStoreBCED25519;
 import com.h2tcoin.takamakachain.wallet.InstanceWalletKeyStoreBCQTESLAPSSC1Round1;
 import com.h2tcoin.takamakachain.wallet.InstanceWalletKeyStoreBCQTESLAPSSC1Round2;
@@ -63,6 +69,58 @@ public class JavaEE8Resource {
         }
         return contentResponse;
     }
+    
+    @POST
+    @Path("getWalletCrc")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public static final Response getWalletCrc(SignedResponseBean srb) {
+        
+        System.out.println(srb.getWalletAddress());
+        
+        if (TkmTextUtils.isNullOrBlank(srb.getWalletAddress()) || (srb.getWalletAddress().length() != 44 && srb.getWalletAddress().length() != 19840)) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+        
+        String crc = TkmSignUtils.getHexCRC(srb.getWalletAddress());
+        
+       
+        WalletCrcResponseBean wCrc = new WalletCrcResponseBean();
+        wCrc.setAddress(srb.getWalletAddress());
+        wCrc.setCrcAddress(crc);
+        
+        return Response.status(Response.Status.OK).entity(wCrc).build();
+        
+    }
+    
+    @POST
+    @Path("getWalletIdenticon")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public static final Response getWalletIdenticon(SignedResponseBean srb) {
+        
+        System.out.println(srb.getWalletAddress());
+        
+        if (TkmTextUtils.isNullOrBlank(srb.getWalletAddress()) || (srb.getWalletAddress().length() != 44 && srb.getWalletAddress().length() != 19840)) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+        
+        String walletIdenticonUrl64 = IdentiColorHelper.getAvatarBase64URL256(srb.getWalletAddress());
+        
+        walletIdenticonUrl64 = walletIdenticonUrl64.replace(".", "=").replace("-", "+").replace("_", "/");
+        
+        if (TkmTextUtils.isNullOrBlank(walletIdenticonUrl64)) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+        
+        WalletIdenticonResponseBean wi = new WalletIdenticonResponseBean();
+        wi.setAddress(srb.getWalletAddress());
+        wi.setIdenticonUrlBase64(walletIdenticonUrl64);
+        
+        return Response.status(Response.Status.OK).entity(wi).build();
+        
+    }
+    
 
     /**
      * status codes https://developer.mozilla.org/it/docs/Web/HTTP/Status
@@ -78,6 +136,7 @@ public class JavaEE8Resource {
         SignedResponseBean signedResponse = new SignedResponseBean();
         signedResponse.setRequest(srb);
         signedResponse.setSignedResponse(srb.getRt().name());
+        signedResponse.setWalletKey(srb.getWallet().getAddressNumber());
         try {
             System.out.println("req");
             InstanceWalletKeystoreInterface iwk;

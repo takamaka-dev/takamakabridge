@@ -128,8 +128,7 @@ and open the template in the editor.
                 dataType: "json",
                 data: JSON.stringify(signedRequestBean),
                 success: function (data) {
-                    $('.address-result-container').removeClass('hidden');
-                    $('.address-result').html(data['walletAddress']);
+                    populateUserMenu(data);
                 }
             });
 
