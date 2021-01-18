@@ -24,18 +24,15 @@ import java.util.Arrays;
 public class ProjectHelper {
 
     public static final void initProject(String rootFolder) throws IOException, SaturnException, ClassNotFoundException, URISyntaxException {
-        System.out.println("AN " + io.takamaka.code.constants.Constants.ACCOUNT_NAME);
-        System.out.println("MERDA: " + ProjectHelper.class.getProtectionDomain().getCodeSource().getLocation().toURI().toString());
-        
-        Package[] definedPackages = Thread.currentThread().getContextClassLoader().getDefinedPackages();
+//        Package[] definedPackages = Thread.currentThread().getContextClassLoader().getDefinedPackages();
         //DefaultInitParameters.TAKAMAKA_CODE_JAR_RESOURCE
-        URL resource = Thread.currentThread().getContextClassLoader().getResource(DefaultInitParameters.TAKAMAKA_CODE_JAR_RESOURCE);
-        InputStream resourceAsStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(DefaultInitParameters.TAKAMAKA_CODE_JAR_RESOURCE);
-        
-        System.out.println("PKGS: ");
-        Arrays.stream(definedPackages).forEachOrdered(p->{
-            System.out.println("PKG: " + p.getName());
-        });
+//        URL resource = Thread.currentThread().getContextClassLoader().getResource(DefaultInitParameters.TAKAMAKA_CODE_JAR_RESOURCE);
+//        InputStream resourceAsStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(DefaultInitParameters.TAKAMAKA_CODE_JAR_RESOURCE);
+//
+//        System.out.println("PKGS: ");
+//        Arrays.stream(definedPackages).forEachOrdered(p->{
+//            System.out.println("PKG: " + p.getName());
+//        });
         FileHelper.initProjectFiles();
         SatUtils.loadConfig(rootFolder);
         //System.out.println("N:" + incompleteClasspathError.toString());
