@@ -114,6 +114,9 @@ public class JavaEE8Resource {
                 }
                 br.close();
                 r = sb.toString();
+                break;
+            default:
+                return null;
         }
 
         http.disconnect();
@@ -125,9 +128,29 @@ public class JavaEE8Resource {
     @Path("getWalletBalances")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public static final Response getWalletBalances(SignedResponseBean srb) throws ProtocolException, IOException {
+    public static final Response getWalletBalances(SignedResponseBean srb) {
+        
+        if (TkmTextUtils.isNullOrBlank(srb.getWalletAddress()) || (srb.getWalletAddress().length() != 44 && srb.getWalletAddress().length() != 19840)) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+
+        
         String balanceOfEndpoint = "https://dev.takamaka.io/api/V2/nodeapi/balanceof/";
-        String jsonResponseBalanceBean = doGetBalancePost(balanceOfEndpoint, srb.getWalletAddress());
+        String jsonResponseBalanceBean = null;
+        try {
+            jsonResponseBalanceBean = doGetBalancePost(balanceOfEndpoint, srb.getWalletAddress());
+        } catch (MalformedURLException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (ProtocolException e) {
+            Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (IOException e) {
+            Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+        
+        
+        if (TkmTextUtils.isNullOrBlank(jsonResponseBalanceBean)) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
         System.out.println(jsonResponseBalanceBean);
         ApiBalanceBean apiBalanceBean = TkmTextUtils.getApiBalanceBeanFromJson(jsonResponseBalanceBean);
         if (apiBalanceBean == null) {
@@ -154,7 +177,7 @@ public class JavaEE8Resource {
 
         WalletCrcResponseBean wCrc = new WalletCrcResponseBean();
         wCrc.setAddress(srb.getWalletAddress());
-        wCrc.setCrcAddress(crc);
+        wCrc.setCrcAddress(crc.toUpperCase());
 
         return Response.status(Response.Status.OK).entity(wCrc).build();
 
