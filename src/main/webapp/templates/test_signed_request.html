@@ -23,8 +23,16 @@ and open the template in the editor.
                 <label for="addressNumber">Wallet Index Number <span class="error hidden"></span></label>
                 <input type="text" class="form-control check-form-field not-empty is-integer" id="walletName" name="addressNumber" aria-describedby="addressNumber" placeholder="Enter Wallet Index Number">
             </div>
+
             <div class="form-group">
-                <input class="form-control form-check-input radio-button" type="radio" name="walletCypher" id="walletCypher" value="Ed25519BC" checked>
+                <fieldset>
+                    <input class="form-control" type="radio" name="walletCypher" id="Ed25519BC" value="Ed25519BC" /><label for="track">Ed25519BC</label><br />
+                    <input class="form-control" type="radio" name="walletCypher" id="BCQTESLA_PS_1_R2" value="BCQTESLA_PS_1_R2"  /><label for="event">BCQTESLA_PS_1_R2</label><br />
+                </fieldset>
+            </div>
+
+            <!--<div class="form-group">
+                <input class="form-control form-check-input radio-button" type="radio" name="walletCypher" id="walletCypher" value="Ed25519BC">
                 <label class="form-check-label" for="gridRadios1">
                     ED25519
                 </label>
@@ -33,12 +41,12 @@ and open the template in the editor.
                 <label class="form-check-label" for="gridRadios2">
                     QTESLA Round 2
                 </label>
-            </div>
+            </div>-->
             <br/><br/>
             <hr/>
             <div class="form-group">
                 <label for="rt">Post Type Request</label>
-                <select id="rt" name="rt" class="form-control">
+                <select id="rt" name="rt" data-type="select" class="form-control">
                     <option value="GET_ADDRESS">GET ADDRESS</option>
                 </select>  
             </div>    
@@ -49,7 +57,7 @@ and open the template in the editor.
 
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
-        
+
         <br/>
         <hr/>
         <div class="alert alert-primary address-result-container hidden" role="alert">
@@ -61,20 +69,20 @@ and open the template in the editor.
 
 <script>
     $(document).ready(function () {
-        $('input').on('change', function() {
+        $('input').on('change', function () {
             resetFieldsError($(this));
         });
-        
+
         $('#uuid').val(uuidv4());
         $('#new-wallet-form').submit(function (e) {
             e.preventDefault();
-            
+
             let checkFormResult = checkFields();
-            
+
             if (!checkFormResult) {
                 return false;
             }
-            
+
             var object = {};
             $('.form-group').each(function (key, val) {
                 let jElem = $(val);
@@ -84,13 +92,11 @@ and open the template in the editor.
                         object[innerjElem.attr('name')] = innerjElem.val();
                     } else if (innerjElem.attr('type') === 'text' || innerjElem.attr('type') === 'password') {
                         object[innerjElem.attr('name')] = innerjElem.val();
-                    } else {
+                    } else if (innerjElem.attr('data-type') === 'select') {
                         object[innerjElem.attr('name')] = innerjElem.val();
                     }
 
                 });
-
-
             });
 
             let signedRequestBean = {};
@@ -122,7 +128,6 @@ and open the template in the editor.
                 dataType: "json",
                 data: JSON.stringify(signedRequestBean),
                 success: function (data) {
-                    console.log(data);
                     $('.address-result-container').removeClass('hidden');
                     $('.address-result').html(data['walletAddress']);
                 }
