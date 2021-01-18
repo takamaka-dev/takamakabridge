@@ -7,7 +7,7 @@
 resetFieldsError = el => {
     el.removeClass('is-invalid');
     el.parent().find('span.error').addClass('hidden');
-    
+
 }
 
 highlightError = (el, msg) => {
@@ -58,4 +58,56 @@ uuidv4 = () => {
         var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
     });
+}
+
+populateUserMenu = dataInputUserWallet => {
+    console.log(dataInputUserWallet);
+    $('#wallet-address').html(dataInputUserWallet['walletAddress']);
+    $('#wallet-key').html(dataInputUserWallet['walletKey'])
+    $.ajax({
+        headers: {
+            'Content-Type': "application/json"
+        },
+        type: 'POST',
+        url: 'http://localhost:8080/walletwebversion/resources/javaee8/getWalletIdenticon',
+        contentType: "application/json",
+        dataType: "json",
+        data: JSON.stringify(dataInputUserWallet),
+        success: function (dataRes) {
+            $('#wallet-identicon').attr('src', 'data:image/png;base64, ' + dataRes['identiconUrlBase64']);
+        }
+    });
+
+    $.ajax({
+        headers: {
+            'Content-Type': "application/json"
+        },
+        type: 'POST',
+        url: 'http://localhost:8080/walletwebversion/resources/javaee8/getWalletCrc',
+        contentType: "application/json",
+        dataType: "json",
+        data: JSON.stringify(dataInputUserWallet),
+        success: function (dataRes) {
+            $('#wallet-crc').html(dataRes['crcAddress']);
+        }
+    });
+
+    $.ajax({
+        headers: {
+            'Content-Type': "application/json"
+        },
+        type: 'POST',
+        url: 'http://localhost:8080/walletwebversion/resources/javaee8/getWalletBalances',
+        contentType: "application/json",
+        dataType: "json",
+        data: JSON.stringify(dataInputUserWallet),
+        success: function (dataRes) {
+            $('#wallet-tkg').html(dataRes['greenBalance']);
+            $('#wallet-tkr').html(dataRes['redBalance']);
+            $('#wallet-ftkg').html(dataRes['greenPenalty']);
+            $('#wallet-ftkr').html(dataRes['redPenalty']);
+        }
+    })
+
+
 }

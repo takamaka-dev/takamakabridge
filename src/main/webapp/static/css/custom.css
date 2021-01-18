@@ -11,7 +11,7 @@ and open the template in the editor.
 .hidden {
     display: none !important
 }
-    
+
 span.error {
     font-size: 10px;
     font-weight: 600;
@@ -44,6 +44,31 @@ span.error {
     box-shadow: 4px 8px 7px #dedede;
 }
 
+.menu-wallet-user {
+    z-index: 999;
+    width: 600px;
+    height: 70%;
+    background-color: #295b8dba;
+    position: fixed;
+    right: -590px;
+    backdrop-filter: blur(5px) saturate(125%);
+    -webkit-backdrop-filter: blur(5px) saturate(125%);
+    box-shadow: 4px 8px 7px #dedede;
+    top: 50px;
+    border-radius: 10px;
+}
+
+.menu-wallet-user .container {
+    margin-top: 50px
+}
+
+.menu-wallet-user label {
+    font-weight: 600
+}
+
+.menu-wallet-user label, .menu-wallet-user p {
+    color: white;
+}
 
 .menu-wallet-bar ul {
     top: 20%;
@@ -86,7 +111,7 @@ span.error {
     cursor: pointer
 }
 
-.slide.menu-wallet-bar:hover {
+.slide.menu-wallet-bar:hover, .slide.menu-wallet-user:hover {
     transition: 1s;
 }
 
@@ -98,6 +123,15 @@ span.error {
     animation-delay: 2s;
 }
 
+.slide-in-user-menu {
+    animation: slide-in-user-menu-animation 0.5s forwards;
+    -webkit-animation: slide-in-user-menu-animation 0.5s forwards;
+}
+
+.slide-out-user-menu {
+    animation: slide-out-user-menu-animation 0.5s forwards;
+    -webkit-animation: slide-out-user-menu-animation 0.5s forwards;
+}
 
 .slide-in {
     animation: slide-in 0.5s forwards;
@@ -112,12 +146,30 @@ span.error {
     margin-top: 20px
 }
 
+@keyframes slide-in-user-menu-animation {
+   100% { transform: translateX(-90%) }
+}
+
+@-webkit-keyframes slide-in-user-menu-animation {
+    100% { -webkit-transform: translateX(-90%); }
+}
+
 @keyframes slide-in {
     100% { transform: translateX(50%); }
 }
 
 @-webkit-keyframes slide-in {
     100% { -webkit-transform: translateX(50%); }
+}
+
+@keyframes slide-out-user-menu-animation {
+    0% { transform: translateX(-50%); }
+    100% { transform: translateX(0%); }
+}
+
+@-webkit-keyframes slide-out-user-menu-animation {
+    0% { -webkit-transform: translateX(-50%); }
+    100% { -webkit-transform: translateX(0%); }
 }
 
 @keyframes slide-out {
