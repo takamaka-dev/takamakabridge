@@ -64,6 +64,11 @@ public class JavaEE8Resource {
         return contentResponse;
     }
 
+    /**
+     * status codes https://developer.mozilla.org/it/docs/Web/HTTP/Status
+     * @param srb
+     * @return 
+     */
     @POST
     @Path("signedRequest")
     @Consumes(MediaType.APPLICATION_JSON)
