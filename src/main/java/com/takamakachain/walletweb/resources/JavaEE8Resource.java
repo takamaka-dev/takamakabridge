@@ -9,6 +9,7 @@ import com.h2tcoin.takamakachain.globalContext.FixedParameters;
 import com.h2tcoin.takamakachain.globalContext.KeyContexts;
 import static com.h2tcoin.takamakachain.globalContext.KeyContexts.WalletCypher.BCQTESLA_PS_1;
 import static com.h2tcoin.takamakachain.globalContext.KeyContexts.WalletCypher.BCQTESLA_PS_1_R2;
+import com.h2tcoin.takamakachain.saturn.exceptions.SaturnException;
 import com.h2tcoin.takamakachain.utils.F;
 import com.h2tcoin.takamakachain.utils.Log;
 import com.h2tcoin.takamakachain.utils.simpleWallet.SWTracker;
@@ -20,6 +21,7 @@ import com.h2tcoin.takamakachain.wallet.InstanceWalletKeyStoreBCED25519;
 import com.h2tcoin.takamakachain.wallet.InstanceWalletKeyStoreBCQTESLAPSSC1Round1;
 import com.h2tcoin.takamakachain.wallet.InstanceWalletKeyStoreBCQTESLAPSSC1Round2;
 import com.h2tcoin.takamakachain.wallet.InstanceWalletKeystoreInterface;
+import com.takamakachain.walletweb.resources.support.ProjectHelper;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -35,9 +37,11 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -62,6 +66,23 @@ import org.apache.http.impl.client.HttpClientBuilder;
  */
 @Path("javaee8")
 public class JavaEE8Resource {
+
+    @PostConstruct
+    public static final void init() {
+        try {
+            //TODO modificare per chiamata da riga di comando
+            ProjectHelper.initProject(System.getProperty("user.home"));
+            
+        } catch (IOException ex) {
+            Logger.getLogger(JavaEE8Resource.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SaturnException ex) {
+            Logger.getLogger(JavaEE8Resource.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(JavaEE8Resource.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(JavaEE8Resource.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
     @Context
     ServletContext servletContext;
