@@ -11,6 +11,12 @@ and open the template in the editor.
 .hidden {
     display: none !important
 }
+    
+span.error {
+    font-size: 10px;
+    font-weight: 600;
+    color: red;
+}
 
 .loading-container {
     text-align: center;
@@ -73,7 +79,7 @@ and open the template in the editor.
 .open-menu-btn {
     transform: rotate(-90deg);
     position: absolute;
-    color: #dfdfdf;
+    color: #f0f0f0;
     top: 42%;
     left: 236px;
     font-size: 60px;

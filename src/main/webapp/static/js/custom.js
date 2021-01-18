@@ -4,6 +4,38 @@
  * and open the template in the editor.
  */
 
+resetFieldsError = el => {
+    el.removeClass('is-invalid');
+    el.parent().find('span.error').addClass('hidden');
+    
+}
+
+highlightError = (el, msg) => {
+    el.addClass('is-invalid');
+    el.parent().find('span.error').removeClass('hidden');
+    el.parent().find('span.error').html(msg);
+}
+
+checkFields = () => {
+    let checkFormResult = true;
+    $('.check-form-field').each(function () {
+        let el = $(this);
+        if (el.hasClass("not-empty") && el.val().length === 0) {
+            highlightError(el, '( The field cannot be empty! )');
+            checkFormResult = false;
+        }
+        if (el.hasClass("min-length") && el.val().length < el.attr('data-min-length')) {
+            highlightError(el, '( Minimum length required: ' + el.attr('data-min-length') + ' )');
+            checkFormResult = false;
+        }
+        if (el.hasClass('is-integer') && isNaN(parseInt(el.val()))) {
+            highlightError(el, '( Invalid input )');
+            checkFormResult = false;
+        }
+    })
+
+    return checkFormResult;
+}
 
 goToPage = (pageid) => {
     $.ajax({
