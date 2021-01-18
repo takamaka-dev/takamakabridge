@@ -47,6 +47,10 @@
             <i class="fas fa-caret-down open-menu-btn"></i>
         </div>
 
+        <div class="menu-wallet-user">
+            
+        </div>
+
         <br/>
         <div class="container">
             <div class="row">
@@ -64,7 +68,17 @@
     <script>
         $(document).ready(function () {
             goToPage('home')
-            
+
+            $('.menu-wallet-user').on('click', function () {
+                if ($('.menu-wallet-user').hasClass("slide-in-user-menu")) {
+                    $('.menu-wallet-user').removeClass("slide-in-user-menu");
+                    $('.menu-wallet-user').addClass("slide-out-user-menu");
+                } else {
+                    $('.menu-wallet-user').removeClass("slide-out-user-menu");
+                    $('.menu-wallet-user').addClass("slide-in-user-menu");
+                }
+            });
+
             $('.open-menu-btn').on('click', function () {
                 if ($('.menu-wallet-bar').hasClass("slide-in")) {
                     $('.menu-wallet-bar').removeClass("slide-in");
@@ -74,8 +88,8 @@
                     $('.menu-wallet-bar').addClass("slide-in");
                 }
             });
-            
-            $('.nav-btn').on('click', function() {
+
+            $('.nav-btn').on('click', function () {
                 goToPage($(this).attr('data-page'));
             });
         });
