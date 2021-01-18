@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Date;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -62,36 +63,51 @@ public class JavaEE8Resource {
         }
         return contentResponse;
     }
-    
+
     @POST
     @Path("signedRequest")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response signedRequest(SignedRequestBean srb) throws WalletException {
+    public static final Response signedRequest(SignedRequestBean srb) {
         SignedResponseBean signedResponse = new SignedResponseBean();
         signedResponse.setRequest(srb);
         signedResponse.setSignedResponse(srb.getRt().name());
-        
-        switch (srb.getWallet().getWalletCypher()) {
-            case "BCQTESLA_PS_1":
-                SWTracker.i().setIwk(new InstanceWalletKeyStoreBCQTESLAPSSC1Round1(srb.getWallet().getWalletName(), srb.getWallet().getWalletPassword()));
+        try {
+            System.out.println("req");
+            InstanceWalletKeystoreInterface iwk;
+            System.out.println("srb.getWallet().getWalletCypher(): " + srb.getWallet().getWalletCypher());
+            switch (srb.getWallet().getWalletCypher()) {
+                case "BCQTESLA_PS_1":
+                    //SWTracker.i().setIwk(new InstanceWalletKeyStoreBCQTESLAPSSC1Round1(srb.getWallet().getWalletName(), srb.getWallet().getWalletPassword()));
+                    iwk = new InstanceWalletKeyStoreBCQTESLAPSSC1Round1(srb.getWallet().getWalletName(), srb.getWallet().getWalletPassword());
+                    break;
+                case "BCQTESLA_PS_1_R2":
+                    //SWTracker.i().setIwk(new InstanceWalletKeyStoreBCQTESLAPSSC1Round2(srb.getWallet().getWalletName(), srb.getWallet().getWalletPassword()));
+                    iwk = new InstanceWalletKeyStoreBCQTESLAPSSC1Round2(srb.getWallet().getWalletName(), srb.getWallet().getWalletPassword());
+                    break;
+                case "Ed25519BC":
+                    //SWTracker.i().setIwk(new InstanceWalletKeyStoreBCED25519(srb.getWallet().getWalletName(), srb.getWallet().getWalletPassword()));
+                    iwk = new InstanceWalletKeyStoreBCED25519(srb.getWallet().getWalletName(), srb.getWallet().getWalletPassword());
+                    break;
+                default:
+                    System.out.println("Unsupported Cypher " + srb.getWallet().getWalletCypher());
+                    iwk = null;
+            }
 
-            case "BCQTESLA_PS_1_R2":
-                SWTracker.i().setIwk(new InstanceWalletKeyStoreBCQTESLAPSSC1Round2(srb.getWallet().getWalletName(), srb.getWallet().getWalletPassword()));
+            if (iwk == null) {
+                return Response.status(401).entity(signedResponse).build();
+            }
 
-            case "Ed25519BC":
-                SWTracker.i().setIwk(new InstanceWalletKeyStoreBCED25519(srb.getWallet().getWalletName(), srb.getWallet().getWalletPassword()));
+            System.out.println(srb.getWallet().getWalletName());
+            System.out.println(srb.getWallet().getWalletPassword());
+            signedResponse.setWalletAddress(iwk.getPublicKeyAtIndexURL64(srb.getWallet().getAddressNumber()));
 
+            return Response.status(200).entity(signedResponse).build();
+        } catch (UnlockWalletException ex) {
+            return Response.status(401).entity(signedResponse).build();
+        } catch (WalletException ex) {
+            return Response.status(500).entity(signedResponse).build();
         }
-        
-        
-        
-        System.out.println(srb.getWallet().getWalletName());
-        System.out.println(srb.getWallet().getWalletPassword());
-        
-        signedResponse.setWalletAddress(SWTracker.i().getIwk().getPublicKeyAtIndexURL64(srb.getWallet().getAddressNumber()));
-        
-        return Response.status(200).entity(signedResponse).build();
     }
 
     @POST
@@ -101,7 +117,7 @@ public class JavaEE8Resource {
     public Response createWallet(WalletBean wallet) throws WalletException {
         System.out.println(wallet.getWalletName());
         System.out.println(wallet.getWalletCypher());
-        
+
         switch (wallet.getWalletCypher()) {
             case "Ed25519BC":
                 F.b("ED25519BC");
