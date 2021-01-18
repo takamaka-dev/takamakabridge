@@ -12,6 +12,7 @@ import static com.h2tcoin.takamakachain.globalContext.KeyContexts.WalletCypher.B
 import com.h2tcoin.takamakachain.utils.F;
 import com.h2tcoin.takamakachain.utils.Log;
 import com.h2tcoin.takamakachain.utils.simpleWallet.SWTracker;
+import com.h2tcoin.takamakachain.utils.simpleWallet.panels.support.ApiBalanceBean;
 import com.h2tcoin.takamakachain.utils.simpleWallet.panels.support.identicon.IdentiColorHelper;
 import com.h2tcoin.takamakachain.utils.threadSafeUtils.TkmSignUtils;
 import com.h2tcoin.takamakachain.utils.threadSafeUtils.TkmTextUtils;
@@ -20,12 +21,20 @@ import com.h2tcoin.takamakachain.wallet.InstanceWalletKeyStoreBCQTESLAPSSC1Round
 import com.h2tcoin.takamakachain.wallet.InstanceWalletKeyStoreBCQTESLAPSSC1Round2;
 import com.h2tcoin.takamakachain.wallet.InstanceWalletKeystoreInterface;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.math.BigInteger;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,6 +48,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 
 /**
  *
@@ -69,58 +85,108 @@ public class JavaEE8Resource {
         }
         return contentResponse;
     }
-    
+
+    private static final String doGetBalancePost(String passedUrl, String address) throws MalformedURLException, ProtocolException, IOException {
+        String r = null;
+        URL url = new URL(passedUrl);
+        HttpURLConnection http = (HttpURLConnection) url.openConnection();
+        http.setRequestMethod("POST");
+        http.setDoOutput(true);
+        http.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+
+        String data = "address=" + address;
+
+        byte[] out = data.getBytes(StandardCharsets.UTF_8);
+
+        OutputStream stream = http.getOutputStream();
+        stream.write(out);
+
+        int status = http.getResponseCode();
+
+        switch (status) {
+            case 200:
+            case 201:
+                BufferedReader br = new BufferedReader(new InputStreamReader(http.getInputStream()));
+                StringBuilder sb = new StringBuilder();
+                String line;
+                while ((line = br.readLine()) != null) {
+                    sb.append(line + "\n");
+                }
+                br.close();
+                r = sb.toString();
+        }
+
+        http.disconnect();
+
+        return r;
+    }
+
+    @POST
+    @Path("getWalletBalances")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public static final Response getWalletBalances(SignedResponseBean srb) throws ProtocolException, IOException {
+        String balanceOfEndpoint = "https://dev.takamaka.io/api/V2/nodeapi/balanceof/";
+        String jsonResponseBalanceBean = doGetBalancePost(balanceOfEndpoint, srb.getWalletAddress());
+        System.out.println(jsonResponseBalanceBean);
+        ApiBalanceBean apiBalanceBean = TkmTextUtils.getApiBalanceBeanFromJson(jsonResponseBalanceBean);
+        if (apiBalanceBean == null) {
+            System.out.println("null decode");
+            Log.log(Level.SEVERE, "null decode");
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+        return Response.status(Response.Status.OK).entity(apiBalanceBean).build();
+    }
+
     @POST
     @Path("getWalletCrc")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public static final Response getWalletCrc(SignedResponseBean srb) {
-        
+
         System.out.println(srb.getWalletAddress());
-        
+
         if (TkmTextUtils.isNullOrBlank(srb.getWalletAddress()) || (srb.getWalletAddress().length() != 44 && srb.getWalletAddress().length() != 19840)) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
-        
+
         String crc = TkmSignUtils.getHexCRC(srb.getWalletAddress());
-        
-       
+
         WalletCrcResponseBean wCrc = new WalletCrcResponseBean();
         wCrc.setAddress(srb.getWalletAddress());
         wCrc.setCrcAddress(crc);
-        
+
         return Response.status(Response.Status.OK).entity(wCrc).build();
-        
+
     }
-    
+
     @POST
     @Path("getWalletIdenticon")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public static final Response getWalletIdenticon(SignedResponseBean srb) {
-        
+
         System.out.println(srb.getWalletAddress());
-        
+
         if (TkmTextUtils.isNullOrBlank(srb.getWalletAddress()) || (srb.getWalletAddress().length() != 44 && srb.getWalletAddress().length() != 19840)) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
-        
+
         String walletIdenticonUrl64 = IdentiColorHelper.getAvatarBase64URL256(srb.getWalletAddress());
-        
+
         walletIdenticonUrl64 = walletIdenticonUrl64.replace(".", "=").replace("-", "+").replace("_", "/");
-        
+
         if (TkmTextUtils.isNullOrBlank(walletIdenticonUrl64)) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
-        
+
         WalletIdenticonResponseBean wi = new WalletIdenticonResponseBean();
         wi.setAddress(srb.getWalletAddress());
         wi.setIdenticonUrlBase64(walletIdenticonUrl64);
-        
+
         return Response.status(Response.Status.OK).entity(wi).build();
-        
+
     }
-    
 
     /**
      * status codes https://developer.mozilla.org/it/docs/Web/HTTP/Status

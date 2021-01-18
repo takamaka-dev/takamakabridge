@@ -91,6 +91,23 @@ populateUserMenu = dataInputUserWallet => {
             $('#wallet-crc').html(dataRes['crcAddress']);
         }
     });
-    
-    
+
+    $.ajax({
+        headers: {
+            'Content-Type': "application/json"
+        },
+        type: 'POST',
+        url: 'http://localhost:8080/walletwebversion/resources/javaee8/getWalletBalances',
+        contentType: "application/json",
+        dataType: "json",
+        data: JSON.stringify(dataInputUserWallet),
+        success: function (dataRes) {
+            $('#wallet-tkg').html(dataRes['greenBalance']);
+            $('#wallet-tkr').html(dataRes['redBalance']);
+            $('#wallet-ftkg').html(dataRes['greenPenalty']);
+            $('#wallet-ftkr').html(dataRes['redPenalty']);
+        }
+    })
+
+
 }
