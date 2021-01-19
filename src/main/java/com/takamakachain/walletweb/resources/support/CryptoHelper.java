@@ -101,7 +101,7 @@ public class CryptoHelper {
         return ks;
     }
 
-    public static final SecretKey getWebSessionPassword(KeyStore ks) throws IOException, HashEncodeException, HashAlgorithmNotFoundException, HashProviderNotFoundException, KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
+    public static final SecretKey getWebSessionSecret(KeyStore ks) throws IOException, HashEncodeException, HashAlgorithmNotFoundException, HashProviderNotFoundException, KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
         Key key = ks.getKey(WEB_SESSIONS_PASSWORD_KEYSTORE_ID, ProjectHelper.getPassword(WEB_SESSIONS_PASSWORD_KEYSTORE_ID).toCharArray());
         if (key instanceof SecretKey) {
             return (SecretKey) key;
@@ -129,7 +129,7 @@ public class CryptoHelper {
         KeyStore keyStore = getKeyStoreOrNew(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "test.pkcs12"));
         System.out.println("kssize " + keyStore.size());//keyStore.size()
         System.out.println("kstype " + keyStore.getType());//keyStore.size()
-        SecretKey webSessionPassword = getWebSessionPassword(keyStore);
+        SecretKey webSessionPassword = getWebSessionSecret(keyStore);
         System.out.println("password: " + Arrays.toString(webSessionPassword.getEncoded()));
         IvParameterSpec ivParameterSpec = ProjectHelper.getIVParameterSpec("trollo");
         String encryptPasswordHEX = encryptPasswordHEX("trollo", ivParameterSpec, webSessionPassword);

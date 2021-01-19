@@ -21,6 +21,9 @@ import com.h2tcoin.takamakachain.wallet.InstanceWalletKeyStoreBCED25519;
 import com.h2tcoin.takamakachain.wallet.InstanceWalletKeyStoreBCQTESLAPSSC1Round1;
 import com.h2tcoin.takamakachain.wallet.InstanceWalletKeyStoreBCQTESLAPSSC1Round2;
 import com.h2tcoin.takamakachain.wallet.InstanceWalletKeystoreInterface;
+import com.takamakachain.walletweb.resources.support.CryptoHelper;
+import static com.takamakachain.walletweb.resources.support.CryptoHelper.decryptPasswordHEX;
+import static com.takamakachain.walletweb.resources.support.CryptoHelper.encryptPasswordHEX;
 import com.takamakachain.walletweb.resources.support.ProjectHelper;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -34,10 +37,15 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.net.URISyntaxException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
+import javax.crypto.SecretKey;
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -48,6 +56,15 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import static com.takamakachain.walletweb.resources.support.CryptoHelper.getWebSessionSecret;
+import static com.takamakachain.walletweb.resources.support.ProjectHelper.ENC_LABEL;
+import static com.takamakachain.walletweb.resources.support.ProjectHelper.ENC_SEP;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.IvParameterSpec;
 
 /**
  *
@@ -56,27 +73,25 @@ import javax.ws.rs.core.Response;
 @Path("javaee8")
 public class JavaEE8Resource {
 
-    public static String salt;
+    private static String salt;
+    private static KeyStore internalKeystore;
+    private static SecretKey webSessionSecret;
 
     @PostConstruct
     public static final void init() {
         try {
             //TODO modificare per chiamata da riga di comando
             ProjectHelper.initProject(System.getProperty("user.home"));
-            
-        } catch (IOException ex) {
+            internalKeystore = ProjectHelper.getInternalKeystore();
+            webSessionSecret = getWebSessionSecret(internalKeystore);
+
+        } catch (IOException | SaturnException | ClassNotFoundException | URISyntaxException | HashEncodeException | HashAlgorithmNotFoundException | HashProviderNotFoundException ex) {
             Logger.getLogger(JavaEE8Resource.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SaturnException ex) {
+        } catch (KeyStoreException ex) {
             Logger.getLogger(JavaEE8Resource.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
+        } catch (NoSuchAlgorithmException ex) {
             Logger.getLogger(JavaEE8Resource.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (URISyntaxException ex) {
-            Logger.getLogger(JavaEE8Resource.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (HashEncodeException ex) {
-            Logger.getLogger(JavaEE8Resource.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (HashAlgorithmNotFoundException ex) {
-            Logger.getLogger(JavaEE8Resource.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (HashProviderNotFoundException ex) {
+        } catch (UnrecoverableKeyException ex) {
             Logger.getLogger(JavaEE8Resource.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -244,10 +259,59 @@ public class JavaEE8Resource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public static final Response signedRequest(SignedRequestBean srb) {
+        String plainPass;
+        boolean passwordEncoded = false;
         SignedResponseBean signedResponse = new SignedResponseBean();
+
+        if (srb == null) {
+            System.out.println("Empty request");
+            return Response.status(400).entity(signedResponse).build();
+        }
         signedResponse.setRequest(srb);
         signedResponse.setSignedResponse(srb.getRt().name());
         signedResponse.setWalletKey(srb.getWallet().getAddressNumber());
+
+        WalletBean wb = srb.getWallet();
+        if (TkmTextUtils.isNullOrBlank(wb.getWalletPassword())) {
+            System.out.println("Empty password");
+            return Response.status(400).entity(signedResponse).build();
+        }
+        if (TkmTextUtils.isNullOrBlank(wb.getWalletName())) {
+            System.out.println("Empty wallet name");
+            return Response.status(400).entity(signedResponse).build();
+        }
+
+        plainPass = wb.getWalletPassword();
+
+        if (wb.getWalletPassword().contains(ENC_SEP)) {
+            System.out.println("Possible password encrypted");
+            String[] spResult = wb.getWalletPassword().split(ENC_SEP, 2);
+            if (spResult.length == 2) {
+                if (TkmTextUtils.isNullOrBlank(spResult[0]) && TkmTextUtils.isNullOrBlank(spResult[1])) {
+                    //check flag
+                    if (spResult[0].equals(ENC_LABEL)) {
+                        try {
+                            //try to decode
+                            IvParameterSpec ivParameterSpec = ProjectHelper.getIVParameterSpec(wb.getWalletName());
+                            plainPass = decryptPasswordHEX(spResult[1], ivParameterSpec, webSessionSecret);
+                            passwordEncoded = true;
+                        } catch (IOException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException ex) {
+                            System.out.println("Malformed Encrypted Secret");
+                            return Response.status(400).entity(signedResponse).build();
+                        }
+                    } else {
+                        System.out.println("password with " + ENC_SEP + " ... continue");
+                    }
+                } else {
+                    System.out.println("password with " + ENC_SEP + " ... continue");
+                    //return Response.status(500).entity(signedResponse).build();
+                }
+            } else {
+                System.out.println("Decode Error");
+                return Response.status(500).entity(signedResponse).build();
+            }
+        }
+
         try {
             System.out.println("req");
             InstanceWalletKeystoreInterface iwk;
@@ -255,15 +319,15 @@ public class JavaEE8Resource {
             switch (srb.getWallet().getWalletCypher()) {
                 case "BCQTESLA_PS_1":
                     //SWTracker.i().setIwk(new InstanceWalletKeyStoreBCQTESLAPSSC1Round1(srb.getWallet().getWalletName(), srb.getWallet().getWalletPassword()));
-                    iwk = new InstanceWalletKeyStoreBCQTESLAPSSC1Round1(srb.getWallet().getWalletName(), srb.getWallet().getWalletPassword());
+                    iwk = new InstanceWalletKeyStoreBCQTESLAPSSC1Round1(srb.getWallet().getWalletName(), plainPass);
                     break;
                 case "BCQTESLA_PS_1_R2":
-                    //SWTracker.i().setIwk(new InstanceWalletKeyStoreBCQTESLAPSSC1Round2(srb.getWallet().getWalletName(), srb.getWallet().getWalletPassword()));
-                    iwk = new InstanceWalletKeyStoreBCQTESLAPSSC1Round2(srb.getWallet().getWalletName(), srb.getWallet().getWalletPassword());
+                    //SWTracker.i().setIwk(new InstanceWalletKeyStoreBCQTESLAPSSC1Round2(srb.getWallet().getWalletName(), plainPass));
+                    iwk = new InstanceWalletKeyStoreBCQTESLAPSSC1Round2(srb.getWallet().getWalletName(), plainPass);
                     break;
                 case "Ed25519BC":
-                    //SWTracker.i().setIwk(new InstanceWalletKeyStoreBCED25519(srb.getWallet().getWalletName(), srb.getWallet().getWalletPassword()));
-                    iwk = new InstanceWalletKeyStoreBCED25519(srb.getWallet().getWalletName(), srb.getWallet().getWalletPassword());
+                    //SWTracker.i().setIwk(new InstanceWalletKeyStoreBCED25519(srb.getWallet().getWalletName(), plainPass));
+                    iwk = new InstanceWalletKeyStoreBCED25519(srb.getWallet().getWalletName(), plainPass);
                     break;
                 default:
                     System.out.println("Unsupported Cypher " + srb.getWallet().getWalletCypher());
@@ -272,6 +336,19 @@ public class JavaEE8Resource {
 
             if (iwk == null) {
                 return Response.status(401).entity(signedResponse).build();
+            }
+
+            if (!passwordEncoded) {
+                try {
+                    IvParameterSpec ivParameterSpec;
+                    ivParameterSpec = ProjectHelper.getIVParameterSpec(wb.getWalletName());
+                    String encryptPasswordHEX = encryptPasswordHEX(plainPass, ivParameterSpec, webSessionSecret);
+                    signedResponse.getRequest().getWallet().setWalletPassword(ENC_LABEL + ENC_SEP + encryptPasswordHEX);
+                } catch (IOException | InvalidAlgorithmParameterException | InvalidKeyException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException ex) {
+                    ex.printStackTrace();
+                    System.out.println("ENC ERROR");
+                    return Response.status(500).entity(signedResponse).build();
+                }
             }
 
             System.out.println(srb.getWallet().getWalletName());
@@ -283,7 +360,7 @@ public class JavaEE8Resource {
             return Response.status(401).entity(signedResponse).build();
         } catch (WalletException ex) {
             return Response.status(500).entity(signedResponse).build();
-        }
+        } 
     }
 
     @POST

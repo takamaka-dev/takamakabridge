@@ -13,7 +13,6 @@ import com.h2tcoin.takamakachain.saturn.SatUtils;
 import com.h2tcoin.takamakachain.saturn.exceptions.SaturnException;
 import com.h2tcoin.takamakachain.utils.FileHelper;
 import com.h2tcoin.takamakachain.utils.threadSafeUtils.TkmSignUtils;
-import static com.takamakachain.walletweb.resources.support.CryptoHelper.getWebSessionPassword;
 import static com.takamakachain.walletweb.resources.support.InternalParameters.getInternalWebWalletSecretKeyFilePath;
 import io.hotmoka.nodes.Node;
 import io.takamaka.code.verification.IncompleteClasspathError;
@@ -35,12 +34,17 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
+import static com.takamakachain.walletweb.resources.support.CryptoHelper.getWebSessionSecret;
 
 /**
  *
  * @author giovanni.antino@h2tcoin.com
  */
 public class ProjectHelper {
+
+    public static final String ENC_LABEL = "isEncriptedPasswordWithAES256";
+    public static final String ENC_SEP = "§";
+    
 
     public static final void initProject(String rootFolder) throws IOException, SaturnException, ClassNotFoundException, URISyntaxException, HashEncodeException, HashAlgorithmNotFoundException, HashProviderNotFoundException {
 //        Package[] definedPackages = Thread.currentThread().getContextClassLoader().getDefinedPackages();
@@ -57,10 +61,10 @@ public class ProjectHelper {
         //System.out.println("N:" + incompleteClasspathError.toString());
         System.out.println("Current Application Folder Dir: " + FileHelper.getDefaultApplicationDirectoryPath().toString());
         //load salt
-        System.out.println("test salt " + getSalt("wallet_name"));
-        System.out.println("test password " + getPassword("wallet_name"));
-        IvParameterSpec ivps = getIVParameterSpec("wallet_name");
-        SecretKey sk = getSecretKey("wallet_name");
+//        System.out.println("test salt " + getSalt("wallet_name"));
+//        System.out.println("test password " + getPassword("wallet_name"));
+//        IvParameterSpec ivps = getIVParameterSpec("wallet_name");
+//        SecretKey sk = getSecretKey("wallet_name");
     }
 
     public static final boolean saltFileExists() {
@@ -160,8 +164,8 @@ public class ProjectHelper {
 
     public static final SecretKey getWebSessionSecret(KeyStore ks) throws IOException {
         try {
-            return getWebSessionPassword(ks);
-        } catch (IOException | HashEncodeException | HashAlgorithmNotFoundException | HashProviderNotFoundException | KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException ex) {
+            return getWebSessionSecret(ks);
+        } catch (IOException ex) {
             throw new IOException(ex);
         }
     }
