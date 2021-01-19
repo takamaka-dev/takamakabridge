@@ -8,6 +8,12 @@ and open the template in the editor.
     Author     : isacco.borsani@h2tcoin.com
 */
 
+#frame_exp {
+    width: 120%;
+    height: 700px;
+}
+
+
 .main-logged-menu i {
     display: block;
     font-size: 90px
@@ -18,7 +24,7 @@ and open the template in the editor.
 }
 
 .main-logged-menu .btn.btn-xlg.btn-outline-dark:hover {
-    transform: scale(1.05)
+    transform: scale(1.1)
 }
 
 .section-title {
