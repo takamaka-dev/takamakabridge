@@ -134,7 +134,7 @@ public class ProjectHelper {
         //method creates a new file if it doesn't exist and returns the keystore object if it did exist
         KeyStore ks = CryptoHelper.getKeyStoreOrNew(InternalParameters.getInternalWebWalletSecretKeyFilePath());
         
-        sk = CryptoHelper.getWebSessionPassword(ks);
+        sk = CryptoHelper.getWebSessionSecret(ks);
         
         return sk;
     }
