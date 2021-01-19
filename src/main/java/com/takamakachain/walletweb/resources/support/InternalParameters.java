@@ -9,7 +9,7 @@ import com.h2tcoin.takamakachain.main.defaults.DefaultInitParameters;
 import com.h2tcoin.takamakachain.utils.FileHelper;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import sun.tools.tree.ThisExpression;
+
 
 /**
  *
@@ -19,6 +19,17 @@ public class InternalParameters {
 
     private static final String internalWebWalletSettingsFolderName = "walletWeb";
     private static final String internalWebWalletSaltFileName = "sessions.salt";
+    private static final String internalWebWalletPasswordFileName = "sessions.pass";
+    private static final String internalWebWalletIVFileName = "sessions.iv";
+    private static final String internalWebWalletSecretKeyFileName = "sessions.secretKey";
+
+    public static String getInternalWebWalletPasswordFileName() {
+        return internalWebWalletPasswordFileName;
+    }
+
+    public static final Path getInternalWebWalletPasswordFilePath() {
+        return Paths.get(getInternalWebWalletSettingsFolderPath().toString(), internalWebWalletPasswordFileName);
+    }
 
     public static final Path getInternalWebWalletSettingsFolderPath() {
         return Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), internalWebWalletSettingsFolderName);
