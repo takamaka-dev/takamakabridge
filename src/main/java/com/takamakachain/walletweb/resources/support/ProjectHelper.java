@@ -20,6 +20,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.SecureRandom;
 import java.util.Arrays;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
@@ -61,6 +64,14 @@ public class ProjectHelper {
         //boolean file = InternalParameters.getInternalWebWalletSaltFilePath().toFile().isFile();
         //System.out.println("Salt file exists " + file);
         return InternalParameters.getInternalWebWalletPasswordFilePath().toFile().isFile();
+    }
+    
+    public static final boolean fileExists(Path filePath) {
+        return filePath.toFile().isFile();
+    }
+    
+    public static final boolean fileExists(String filePath) {
+        return Paths.get(filePath).toFile().isFile();
     }
 
     public static final String getSalt(String walletName) throws FileNotFoundException, IOException {
@@ -105,8 +116,27 @@ public class ProjectHelper {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    private static IvParameterSpec getIVParameterSpec(String wallet_name) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private static IvParameterSpec getIVParameterSpec(String wallet_name) throws IOException {
+        IvParameterSpec ivParamSpec;
+        //create internal settings folder
+        if (!FileHelper.directoryExists(InternalParameters.getInternalWebWalletSettingsFolderPath())) {
+            FileHelper.createDir(InternalParameters.getInternalWebWalletSettingsFolderPath());
+        }
+        //create password file
+        if (!fileExists(InternalParameters.getInternalWebWalletIvParameterSpecFilePath())) {
+            //generate iv parameter spec, transform it to its hex equivalent and save it in the file at the specified path
+            ivParamSpec = CryptoHelper.generateNewIv();
+            String ivHex = CryptoHelper.ivToHex(ivParamSpec);
+            
+            FileHelper.writeStringToFile(
+                    InternalParameters.getInternalWebWalletSettingsFolderPath(),
+                    InternalParameters.getInternalWebWalletIVFileName(),
+                    ivHex,
+                    false);
+        }
+        ivParamSpec = CryptoHelper.hexToIv(FileHelper.readStringFromFile(InternalParameters.getInternalWebWalletIvParameterSpecFilePath()));
+
+        return ivParamSpec;
     }
 
 }
