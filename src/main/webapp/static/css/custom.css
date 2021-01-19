@@ -13,6 +13,10 @@ and open the template in the editor.
     font-size: 90px
 }
 
+.main.logged-menu button:hover {
+    transform: scale(1.4)
+}
+
 .section-title {
     font-size: 30px;
     font-weight: 100;
