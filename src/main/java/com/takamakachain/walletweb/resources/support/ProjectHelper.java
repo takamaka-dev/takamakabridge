@@ -43,8 +43,8 @@ public class ProjectHelper {
     }
 
     public static final boolean saltFileExists() {
-        boolean file = InternalParameters.getInternalWebWalletSaltFilePath().toFile().isFile();
-        System.out.println("Salt file exists " + file);
+        //boolean file = InternalParameters.getInternalWebWalletSaltFilePath().toFile().isFile();
+        //System.out.println("Salt file exists " + file);
         return InternalParameters.getInternalWebWalletSaltFilePath().toFile().isFile();
     }
 

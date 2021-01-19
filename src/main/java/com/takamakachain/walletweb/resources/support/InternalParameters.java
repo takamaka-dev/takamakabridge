@@ -25,7 +25,7 @@ public class InternalParameters {
     }
 
     public static final Path getInternalWebWalletSaltFilePath() {
-        return Paths.get(getInternalWebWalletSettingsFolderName().toString(), internalWebWalletSaltFileName);
+        return Paths.get(getInternalWebWalletSettingsFolderPath().toString(), internalWebWalletSaltFileName);
     }
 
     public static String getInternalWebWalletSaltFileName() {
