@@ -13,8 +13,12 @@ and open the template in the editor.
     font-size: 90px
 }
 
-.main.logged-menu button:hover {
-    transform: scale(1.4)
+.main-logged-menu .btn.btn-xlg.btn-outline-dark { 
+    transition: all .2s ease-in-out;
+}
+
+.main-logged-menu .btn.btn-xlg.btn-outline-dark:hover {
+    transform: scale(1.05)
 }
 
 .section-title {
