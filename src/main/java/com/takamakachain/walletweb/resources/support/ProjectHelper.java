@@ -11,6 +11,7 @@ import com.h2tcoin.takamakachain.saturn.exceptions.SaturnException;
 import com.h2tcoin.takamakachain.utils.FileHelper;
 import io.hotmoka.nodes.Node;
 import io.takamaka.code.verification.IncompleteClasspathError;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
@@ -37,6 +38,36 @@ public class ProjectHelper {
         SatUtils.loadConfig(rootFolder);
         //System.out.println("N:" + incompleteClasspathError.toString());
         System.out.println("Current Application Folder Dir: " + FileHelper.getDefaultApplicationDirectoryPath().toString());
+        //load salt
+        System.out.println("test salt " + getSalt("wallet_name"));
+    }
+
+    public static final boolean saltFileExists() {
+        boolean file = InternalParameters.getInternalWebWalletSaltFilePath().toFile().isFile();
+        System.out.println("Salt file exists " + file);
+        return InternalParameters.getInternalWebWalletSaltFilePath().toFile().isFile();
+    }
+
+    public static final String getSalt(String walletName) throws FileNotFoundException, IOException {
+        /*String salt;
+        //create salt folder
+        
+        if (!FileHelper.directoryExists(InternalParameters.getInternalWebWalletSettingsFolderPath())) {
+            FileHelper.createDir(InternalParameters.getInternalWebWalletSettingsFolderPath());
+        }
+        //create salt file
+        if (!saltFileExists()) {
+
+            FileHelper.writeStringToFile(
+                    InternalParameters.getInternalWebWalletSettingsFolderPath(),
+                    InternalParameters.getInternalWebWalletSaltFileName(),
+                    CryptoHelper.getSaltString(),
+                    false);
+        }
+        salt = FileHelper.readStringFromFile(InternalParameters.getInternalWebWalletSaltFilePath());
+        
+        return walletName + salt;*/
+        return "lol";
     }
 
 }
