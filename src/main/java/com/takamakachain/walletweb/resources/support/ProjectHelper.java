@@ -42,7 +42,7 @@ import javax.crypto.spec.IvParameterSpec;
  */
 public class ProjectHelper {
 
-    public static final void initProject(String rootFolder) throws IOException, SaturnException, ClassNotFoundException, URISyntaxException, HashEncodeException, HashAlgorithmNotFoundException, HashProviderNotFoundException, NoSuchAlgorithmException {
+    public static final void initProject(String rootFolder) throws IOException, SaturnException, ClassNotFoundException, URISyntaxException, HashEncodeException, HashAlgorithmNotFoundException, HashProviderNotFoundException, NoSuchAlgorithmException, KeyStoreException, CertificateException, UnrecoverableKeyException {
 //        Package[] definedPackages = Thread.currentThread().getContextClassLoader().getDefinedPackages();
         //DefaultInitParameters.TAKAMAKA_CODE_JAR_RESOURCE
 //        URL resource = Thread.currentThread().getContextClassLoader().getResource(DefaultInitParameters.TAKAMAKA_CODE_JAR_RESOURCE);
@@ -121,8 +121,16 @@ public class ProjectHelper {
         return mixPass;
     }
 
-    public static final SecretKey getSecretKey(String wallet_name) throws NoSuchAlgorithmException {
-        SecretKey sk = CryptoHelper.getNewAesSecretKey();
+    public static final SecretKey getSecretKey(String wallet_name) throws NoSuchAlgorithmException, IOException, KeyStoreException, HashEncodeException, HashAlgorithmNotFoundException, CertificateException, HashProviderNotFoundException, UnrecoverableKeyException {
+        SecretKey sk;
+
+        if (!FileHelper.directoryExists(InternalParameters.getInternalWebWalletSettingsFolderPath())) {
+            FileHelper.createDir(InternalParameters.getInternalWebWalletSettingsFolderPath());
+        }
+        //method creates a new file if it doesn't exist and returns the keystore object if it did exist
+        KeyStore ks = CryptoHelper.getKeyStoreOrNew(InternalParameters.getInternalWebWalletSecretKeyFilePath());
+        
+        sk = CryptoHelper.getWebSessionPassword(ks);
         
         return sk;
     }

@@ -34,6 +34,10 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.net.URISyntaxException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -77,6 +81,14 @@ public class JavaEE8Resource {
         } catch (HashAlgorithmNotFoundException ex) {
             Logger.getLogger(JavaEE8Resource.class.getName()).log(Level.SEVERE, null, ex);
         } catch (HashProviderNotFoundException ex) {
+            Logger.getLogger(JavaEE8Resource.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(JavaEE8Resource.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (KeyStoreException ex) {
+            Logger.getLogger(JavaEE8Resource.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (CertificateException ex) {
+            Logger.getLogger(JavaEE8Resource.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (UnrecoverableKeyException ex) {
             Logger.getLogger(JavaEE8Resource.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
