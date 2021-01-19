@@ -20,14 +20,12 @@
     </div>
 
 </div>
-    <div class="col-md-12">
-        <br>              
-    </div>
+<div class="col-md-12">
+    <br>              
+</div>
 <div class ="row mt20 main-logged-menu" >
     <div class="col-md-6 text-center">
-        <button class="btn btn-xlg btn-outline-dark"> <i class="fal fa-wallet"></i> New login </button>
-
-
+        <button class="btn btn-xlg btn-outline-dark nav-btn" data-page="test_signed_request"> <i class="fal fa-wallet"></i> New login </button>
     </div>
 
 
@@ -42,3 +40,12 @@
     </div>
 
 </div>
+
+
+<script>
+    $(document).ready(function () {
+        $('.nav-btn').on('click', function () {
+            goToPage($(this).attr('data-page'));
+        });
+    });
+</script>
