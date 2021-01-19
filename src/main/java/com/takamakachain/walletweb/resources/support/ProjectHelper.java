@@ -21,6 +21,8 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
 
 /**
  *
@@ -45,6 +47,8 @@ public class ProjectHelper {
         //load salt
         System.out.println("test salt " + getSalt("wallet_name"));
         System.out.println("test password " + getPassword("wallet_name"));
+        IvParameterSpec ivps = getIVParameterSpec("wallet_name");
+        SecretKey sk = getSecretKey("wallet_name");
     }
 
     public static final boolean saltFileExists() {
@@ -95,6 +99,14 @@ public class ProjectHelper {
         String mixPass = TkmSignUtils.Hash512ToHex(walletName + password);
 
         return mixPass;
+    }
+
+    private static SecretKey getSecretKey(String wallet_name) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private static IvParameterSpec getIVParameterSpec(String wallet_name) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

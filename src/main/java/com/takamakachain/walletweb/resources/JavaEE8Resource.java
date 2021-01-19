@@ -1,5 +1,8 @@
 package com.takamakachain.walletweb.resources;
 
+import com.h2tcoin.takamakachain.exceptions.threadSafeUtils.HashAlgorithmNotFoundException;
+import com.h2tcoin.takamakachain.exceptions.threadSafeUtils.HashEncodeException;
+import com.h2tcoin.takamakachain.exceptions.threadSafeUtils.HashProviderNotFoundException;
 import com.h2tcoin.takamakachain.exceptions.wallet.UnlockWalletException;
 import com.h2tcoin.takamakachain.exceptions.wallet.WalletException;
 import com.h2tcoin.takamakachain.globalContext.FixedParameters;
@@ -68,6 +71,12 @@ public class JavaEE8Resource {
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(JavaEE8Resource.class.getName()).log(Level.SEVERE, null, ex);
         } catch (URISyntaxException ex) {
+            Logger.getLogger(JavaEE8Resource.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (HashEncodeException ex) {
+            Logger.getLogger(JavaEE8Resource.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (HashAlgorithmNotFoundException ex) {
+            Logger.getLogger(JavaEE8Resource.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (HashProviderNotFoundException ex) {
             Logger.getLogger(JavaEE8Resource.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

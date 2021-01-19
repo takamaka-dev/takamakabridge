@@ -38,6 +38,14 @@ public class InternalParameters {
     public static final Path getInternalWebWalletSaltFilePath() {
         return Paths.get(getInternalWebWalletSettingsFolderPath().toString(), internalWebWalletSaltFileName);
     }
+    
+    public static final Path getInternalWebWalletIvParameterSpecFilePath() {
+        return Paths.get(getInternalWebWalletSettingsFolderPath().toString(), internalWebWalletIVFileName);
+    }
+    
+    public static final Path getInternalWebWalletSecretKeyFilePath() {
+        return Paths.get(getInternalWebWalletSettingsFolderPath().toString(), internalWebWalletSecretKeyFileName);
+    }
 
     public static String getInternalWebWalletSaltFileName() {
         return internalWebWalletSaltFileName;
@@ -46,5 +54,15 @@ public class InternalParameters {
     public static String getInternalWebWalletSettingsFolderName() {
         return internalWebWalletSettingsFolderName;
     }
+
+    public static String getInternalWebWalletIVFileName() {
+        return internalWebWalletIVFileName;
+    }
+
+    public static String getInternalWebWalletSecretKeyFileName() {
+        return internalWebWalletSecretKeyFileName;
+    }
+    
+    
 
 }
