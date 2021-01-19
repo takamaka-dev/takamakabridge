@@ -18,6 +18,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.KeyStore.ProtectionParameter;
@@ -28,7 +30,11 @@ import java.security.SecureRandom;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.util.Arrays;
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -103,13 +109,33 @@ public class CryptoHelper {
         throw new UnrecoverableKeyException("The type of key saved in the alias does not match a secret key aes");
     }
 
-    public static void main(String[] args) throws NoSuchAlgorithmException, KeyStoreException, IOException, HashEncodeException, HashAlgorithmNotFoundException, HashProviderNotFoundException, CertificateException, UnrecoverableKeyException {
+    public static final String encryptPasswordHEX(String plainText, IvParameterSpec iv, SecretKey sk) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        cipher.init(Cipher.ENCRYPT_MODE, sk, iv);
+        byte[] encBytes = cipher.doFinal(plainText.getBytes());
+        return TkmSignUtils.fromByteArrayToHexString(encBytes);
+    }
+
+    public static final String decryptPasswordHEX(String hexCipher, IvParameterSpec iv, SecretKey sk) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
+        byte[] byteCipher = TkmSignUtils.fromHexToByteArray(hexCipher);
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        cipher.init(Cipher.DECRYPT_MODE, sk, iv);
+        byte[] plainTextBytes = cipher.doFinal(byteCipher);
+        return new String(plainTextBytes);
+    }
+
+    public static void main(String[] args) throws NoSuchAlgorithmException, KeyStoreException, IOException, HashEncodeException, HashAlgorithmNotFoundException, HashProviderNotFoundException, CertificateException, UnrecoverableKeyException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
         //KeyStore keyStore = getKeyStoreOrNew(getNewAesSecretKey(), Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "test.jks"));
         KeyStore keyStore = getKeyStoreOrNew(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "test.pkcs12"));
         System.out.println("kssize " + keyStore.size());//keyStore.size()
         System.out.println("kstype " + keyStore.getType());//keyStore.size()
         SecretKey webSessionPassword = getWebSessionPassword(keyStore);
         System.out.println("password: " + Arrays.toString(webSessionPassword.getEncoded()));
+        IvParameterSpec ivParameterSpec = ProjectHelper.getIVParameterSpec("trollo");
+        String encryptPasswordHEX = encryptPasswordHEX("trollo", ivParameterSpec, webSessionPassword);
+        System.out.println("ENC PASS: " + encryptPasswordHEX);
+        String decryptPasswordHEX = decryptPasswordHEX(encryptPasswordHEX, ivParameterSpec, webSessionPassword);
+        System.out.println("DEC PASS: " + decryptPasswordHEX);
     }
 
 }
