@@ -8,6 +8,30 @@ and open the template in the editor.
     Author     : isacco.borsani@h2tcoin.com
 */
 
+.main-logged-menu i {
+    display: block;
+    font-size: 90px
+}
+
+.section-title {
+    font-size: 30px;
+    font-weight: 100;
+    color: #5d5d5d;
+}
+
+.btn-outline-dark:hover, .btn-outline-dark:not(:disabled):not(.disabled).active, .btn-outline-dark:not(:disabled):not(.disabled):active, .show>.btn-outline-dark.dropdown-toggle {
+    background-color: #173c5a;
+    border-color: #173c5a;
+}
+
+.btn-xlg {
+    font-size: 28px;
+    width: 300px;
+    text-align: center;
+    padding-top: 20px;
+    padding-bottom: 20px
+}
+
 .hidden {
     display: none !important
 }
@@ -152,7 +176,7 @@ span.error {
 }
 
 @keyframes slide-in-user-menu-animation {
-   100% { transform: translateX(-90%) }
+    100% { transform: translateX(-90%) }
 }
 
 @-webkit-keyframes slide-in-user-menu-animation {
