@@ -49,7 +49,7 @@ public class ProjectHelper {
     }
 
     public static final String getSalt(String walletName) throws FileNotFoundException, IOException {
-        /*String salt;
+        String salt;
         //create salt folder
         
         if (!FileHelper.directoryExists(InternalParameters.getInternalWebWalletSettingsFolderPath())) {
@@ -66,8 +66,8 @@ public class ProjectHelper {
         }
         salt = FileHelper.readStringFromFile(InternalParameters.getInternalWebWalletSaltFilePath());
         
-        return walletName + salt;*/
-        return "lol";
+        return walletName + salt;
+        //return "lol";
     }
 
 }
