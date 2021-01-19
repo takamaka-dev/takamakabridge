@@ -57,19 +57,19 @@ public class JavaEE8Resource {
 
     @PostConstruct
     public static final void init() {
-        try {
-            //TODO modificare per chiamata da riga di comando
-            ProjectHelper.initProject(System.getProperty("user.home"));
-            
-        } catch (IOException ex) {
-            Logger.getLogger(JavaEE8Resource.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SaturnException ex) {
-            Logger.getLogger(JavaEE8Resource.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(JavaEE8Resource.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (URISyntaxException ex) {
-            Logger.getLogger(JavaEE8Resource.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//        try {
+//            //TODO modificare per chiamata da riga di comando
+//            ProjectHelper.initProject(System.getProperty("user.home"));
+//            
+//        } catch (IOException ex) {
+//            Logger.getLogger(JavaEE8Resource.class.getName()).log(Level.SEVERE, null, ex);
+//        } catch (SaturnException ex) {
+//            Logger.getLogger(JavaEE8Resource.class.getName()).log(Level.SEVERE, null, ex);
+//        } catch (ClassNotFoundException ex) {
+//            Logger.getLogger(JavaEE8Resource.class.getName()).log(Level.SEVERE, null, ex);
+//        } catch (URISyntaxException ex) {
+//            Logger.getLogger(JavaEE8Resource.class.getName()).log(Level.SEVERE, null, ex);
+//        }
     }
 
     @Context
