@@ -30,18 +30,6 @@ and open the template in the editor.
                     <input class="form-control" type="radio" name="walletCypher" id="BCQTESLA_PS_1_R2" value="BCQTESLA_PS_1_R2"  /><label for="event">BCQTESLA_PS_1_R2</label><br />
                 </fieldset>
             </div>
-
-            <!--<div class="form-group">
-                <input class="form-control form-check-input radio-button" type="radio" name="walletCypher" id="walletCypher" value="Ed25519BC">
-                <label class="form-check-label" for="gridRadios1">
-                    ED25519
-                </label>
-                <br/><br/>
-                <input class="form-control form-check-input radio-button" type="radio" name="walletCypher" id="walletCypher" value="BCQTESLA_PS_1_R2">
-                <label class="form-check-label" for="gridRadios2">
-                    QTESLA Round 2
-                </label>
-            </div>-->
             <br/><br/>
             <hr/>
             <div class="form-group">
@@ -72,14 +60,13 @@ and open the template in the editor.
         $('input').on('change', function () {
             resetFieldsError($(this));
         });
+        
 
         $('#uuid').val(uuidv4());
         $('#new-wallet-form').submit(function (e) {
             e.preventDefault();
 
-            let checkFormResult = checkFields();
-
-            if (!checkFormResult) {
+            if (!checkFields()) {
                 return false;
             }
 
@@ -129,9 +116,13 @@ and open the template in the editor.
                 data: JSON.stringify(signedRequestBean),
                 success: function (data) {
                     populateUserMenu(data);
+                    
+                    goToPage("logged_home_page");
                 }
-            });
-
+            }); 
+            
+             
+                    
         });
     })
 
