@@ -125,8 +125,10 @@ public class ProjectHelper {
         return mixPass;
     }
 
-    public static final SecretKey getSecretKey(String wallet_name) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public static final SecretKey getSecretKey(String wallet_name) throws NoSuchAlgorithmException {
+        SecretKey sk = CryptoHelper.getNewAesSecretKey();
+        
+        return sk;
     }
 
     public static final IvParameterSpec getIVParameterSpec(String wallet_name) throws IOException {
