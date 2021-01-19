@@ -116,8 +116,12 @@ and open the template in the editor.
                 data: JSON.stringify(signedRequestBean),
                 success: function (data) {
                     populateUserMenu(data);
+                    
+                    goToPage("logged_home_page");
                 }
-            });                    
+            }); 
+            
+             
                     
         });
     })
