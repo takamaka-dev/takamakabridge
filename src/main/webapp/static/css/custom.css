@@ -123,6 +123,11 @@ span.error {
     animation-delay: 2s;
 }
 
+.slide-op-notify-changes {
+    animation: slide-op-notify-changes-animation 0.5s forwards;
+    -webkit-animation: slide-op-notify-changes-animation 0.5s forwards;
+}
+
 .slide-in-user-menu {
     animation: slide-in-user-menu-animation 0.5s forwards;
     -webkit-animation: slide-in-user-menu-animation 0.5s forwards;

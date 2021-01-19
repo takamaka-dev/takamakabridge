@@ -60,14 +60,13 @@ and open the template in the editor.
         $('input').on('change', function () {
             resetFieldsError($(this));
         });
+        
 
         $('#uuid').val(uuidv4());
         $('#new-wallet-form').submit(function (e) {
             e.preventDefault();
 
-            let checkFormResult = checkFields();
-
-            if (!checkFormResult) {
+            if (!checkFields()) {
                 return false;
             }
 
@@ -118,8 +117,8 @@ and open the template in the editor.
                 success: function (data) {
                     populateUserMenu(data);
                 }
-            });
-
+            });                    
+                    
         });
     })
 
