@@ -1,16 +1,13 @@
 package com.takamakachain.walletweb.resources;
 
-import com.h2tcoin.takamakachain.exceptions.threadSafeUtils.HashAlgorithmNotFoundException;
-import com.h2tcoin.takamakachain.exceptions.threadSafeUtils.HashEncodeException;
-import com.h2tcoin.takamakachain.exceptions.threadSafeUtils.HashProviderNotFoundException;
 import com.h2tcoin.takamakachain.exceptions.wallet.UnlockWalletException;
 import com.h2tcoin.takamakachain.exceptions.wallet.WalletException;
 import com.h2tcoin.takamakachain.globalContext.FixedParameters;
 import com.h2tcoin.takamakachain.globalContext.KeyContexts;
-import static com.h2tcoin.takamakachain.globalContext.KeyContexts.WalletCypher.BCQTESLA_PS_1;
 import static com.h2tcoin.takamakachain.globalContext.KeyContexts.WalletCypher.BCQTESLA_PS_1_R2;
 import com.h2tcoin.takamakachain.saturn.exceptions.SaturnException;
 import com.h2tcoin.takamakachain.utils.F;
+import com.h2tcoin.takamakachain.utils.FileHelper;
 import com.h2tcoin.takamakachain.utils.Log;
 import com.h2tcoin.takamakachain.utils.simpleWallet.SWTracker;
 import com.h2tcoin.takamakachain.utils.simpleWallet.panels.support.ApiBalanceBean;
@@ -23,15 +20,11 @@ import com.h2tcoin.takamakachain.wallet.InstanceWalletKeyStoreBCQTESLAPSSC1Round
 import com.h2tcoin.takamakachain.wallet.InstanceWalletKeystoreInterface;
 import com.takamakachain.walletweb.resources.support.ProjectHelper;
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -52,13 +45,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 
 /**
  *
@@ -66,6 +52,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
  */
 @Path("javaee8")
 public class JavaEE8Resource {
+
+    public static String salt;
 
     @PostConstruct
     public static final void init() {
@@ -150,12 +138,11 @@ public class JavaEE8Resource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public static final Response getWalletBalances(SignedResponseBean srb) {
-        
+
         if (TkmTextUtils.isNullOrBlank(srb.getWalletAddress()) || (srb.getWalletAddress().length() != 44 && srb.getWalletAddress().length() != 19840)) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
-        
         String balanceOfEndpoint = "https://dev.takamaka.io/api/V2/nodeapi/balanceof/";
         String jsonResponseBalanceBean = null;
         try {
@@ -167,8 +154,7 @@ public class JavaEE8Resource {
         } catch (IOException e) {
             Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
-        
-        
+
         if (TkmTextUtils.isNullOrBlank(jsonResponseBalanceBean)) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
@@ -215,7 +201,7 @@ public class JavaEE8Resource {
         if (TkmTextUtils.isNullOrBlank(srb.getWalletAddress()) || (srb.getWalletAddress().length() != 44 && srb.getWalletAddress().length() != 19840)) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
-        
+
         System.out.println(IdentiColorHelper.getAvatarBase64URL256(srb.getWalletAddress()));
 
         String walletIdenticonUrl64 = IdentiColorHelper.getAvatarBase64URL256(srb.getWalletAddress());
