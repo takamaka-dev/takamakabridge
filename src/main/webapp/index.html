@@ -51,43 +51,43 @@
             <div class="container">
                 <div class="row">
                     <div class="col">
-                        <img width="256" id="wallet-identicon" src="data:image/png;base64, {IDENTICON}"/>
+                        <img width="256" id="wallet-identicon" src=""/>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col">
                         <label>Address: </label>
-                        <p id="wallet-address">{ADDRESS}</p>
+                        <p id="wallet-address"></p>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col">
                         <label>Key: </label>
-                        <p id="wallet-key">{KEY_ADDRESS}</p>
+                        <p id="wallet-key"></p>
                     </div>
                     <div class="col">
                         <label>CRC: </label>
-                        <p id="wallet-crc">{CRC}</p>
+                        <p id="wallet-crc"></p>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col">
                         <label>TKG </label>
-                        <p id="wallet-tkg">{TKG}</p>
+                        <p id="wallet-tkg"></p>
                     </div>
                     <div class="col">
                         <label>TKR </label>
-                        <p id="wallet-tkr">{TKR}</p>
+                        <p id="wallet-tkr"></p>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col">
                         <label>FTKG </label>
-                        <p id="wallet-ftkg">{FTKG}</p>
+                        <p id="wallet-ftkg"></p>
                     </div>
                     <div class="col">
                         <label>FTKR </label>
-                        <p id="wallet-ftkr">{FTKR}</p>
+                        <p id="wallet-ftkr"></p>
                     </div>
                 </div>
             </div>
@@ -112,6 +112,9 @@
             goToPage('home')
 
             $('.menu-wallet-user').on('click', function () {
+                if ($('#wallet-address').html() === '') {
+                    return false;
+                }
                 if ($('.menu-wallet-user').hasClass("slide-in-user-menu")) {
                     $('.menu-wallet-user').removeClass("slide-in-user-menu");
                     $('.menu-wallet-user').addClass("slide-out-user-menu");
