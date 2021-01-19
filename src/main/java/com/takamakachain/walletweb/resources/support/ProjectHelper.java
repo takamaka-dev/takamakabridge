@@ -13,6 +13,8 @@ import com.h2tcoin.takamakachain.saturn.SatUtils;
 import com.h2tcoin.takamakachain.saturn.exceptions.SaturnException;
 import com.h2tcoin.takamakachain.utils.FileHelper;
 import com.h2tcoin.takamakachain.utils.threadSafeUtils.TkmSignUtils;
+import static com.takamakachain.walletweb.resources.support.CryptoHelper.getWebSessionPassword;
+import static com.takamakachain.walletweb.resources.support.InternalParameters.getInternalWebWalletSecretKeyFilePath;
 import io.hotmoka.nodes.Node;
 import io.takamaka.code.verification.IncompleteClasspathError;
 import java.io.FileNotFoundException;
@@ -22,8 +24,15 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 
@@ -65,11 +74,11 @@ public class ProjectHelper {
         //System.out.println("Salt file exists " + file);
         return InternalParameters.getInternalWebWalletPasswordFilePath().toFile().isFile();
     }
-    
+
     public static final boolean fileExists(Path filePath) {
         return filePath.toFile().isFile();
     }
-    
+
     public static final boolean fileExists(String filePath) {
         return Paths.get(filePath).toFile().isFile();
     }
@@ -83,7 +92,7 @@ public class ProjectHelper {
         //create salt file
         if (!saltFileExists()) {
 
-            FileHelper.writeStringToFile(InternalParameters.getInternalWebWalletSettingsFolderPath(), InternalParameters.getInternalWebWalletSaltFileName(), CryptoHelper.getSaltString(),false);
+            FileHelper.writeStringToFile(InternalParameters.getInternalWebWalletSettingsFolderPath(), InternalParameters.getInternalWebWalletSaltFileName(), CryptoHelper.getSaltString(), false);
         }
         salt = FileHelper.readStringFromFile(InternalParameters.getInternalWebWalletSaltFilePath());
 
@@ -112,11 +121,11 @@ public class ProjectHelper {
         return mixPass;
     }
 
-    private static SecretKey getSecretKey(String wallet_name) {
+    public static final SecretKey getSecretKey(String wallet_name) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    private static IvParameterSpec getIVParameterSpec(String wallet_name) throws IOException {
+    public static final IvParameterSpec getIVParameterSpec(String wallet_name) throws IOException {
         IvParameterSpec ivParamSpec;
         //create internal settings folder
         if (!FileHelper.directoryExists(InternalParameters.getInternalWebWalletSettingsFolderPath())) {
@@ -127,7 +136,7 @@ public class ProjectHelper {
             //generate iv parameter spec, transform it to its hex equivalent and save it in the file at the specified path
             ivParamSpec = CryptoHelper.generateNewIv();
             String ivHex = CryptoHelper.ivToHex(ivParamSpec);
-            
+
             FileHelper.writeStringToFile(
                     InternalParameters.getInternalWebWalletSettingsFolderPath(),
                     InternalParameters.getInternalWebWalletIVFileName(),
@@ -137,6 +146,24 @@ public class ProjectHelper {
         ivParamSpec = CryptoHelper.hexToIv(FileHelper.readStringFromFile(InternalParameters.getInternalWebWalletIvParameterSpecFilePath()));
 
         return ivParamSpec;
+    }
+
+    public static final KeyStore getInternalKeystore() throws IOException {
+        KeyStore keyStore;
+        try {
+            keyStore = CryptoHelper.getKeyStoreOrNew(InternalParameters.getInternalWebWalletSecretKeyFilePath());
+        } catch (KeyStoreException | IOException | HashEncodeException | HashAlgorithmNotFoundException | HashProviderNotFoundException | NoSuchAlgorithmException | CertificateException ex) {
+            throw new IOException(ex);
+        }
+        return keyStore;
+    }
+
+    public static final SecretKey getWebSessionSecret(KeyStore ks) throws IOException {
+        try {
+            return getWebSessionPassword(ks);
+        } catch (IOException | HashEncodeException | HashAlgorithmNotFoundException | HashProviderNotFoundException | KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException ex) {
+            throw new IOException(ex);
+        }
     }
 
 }

@@ -21,7 +21,7 @@ public class InternalParameters {
     private static final String internalWebWalletSaltFileName = "sessions.salt";
     private static final String internalWebWalletPasswordFileName = "sessions.pass";
     private static final String internalWebWalletIVFileName = "sessions.iv";
-    private static final String internalWebWalletSecretKeyFileName = "sessions.secretKey";
+    private static final String internalWebWalletSecretKeyFileName = "sessions.pkcs12";
 
     public static String getInternalWebWalletPasswordFileName() {
         return internalWebWalletPasswordFileName;
