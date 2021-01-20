@@ -334,6 +334,7 @@ public class JavaEE8Resource {
             switch(srb.getRt()){
             case GET_ADDRESS:
                 signedResponse.setWalletAddress(iwk.getPublicKeyAtIndexURL64(srb.getWallet().getAddressNumber()));
+                //applyGetAddr(srb)
                 break;
                 default:
                     //401
