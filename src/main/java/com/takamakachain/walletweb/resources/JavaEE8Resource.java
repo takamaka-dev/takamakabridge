@@ -254,7 +254,7 @@ public class JavaEE8Resource {
         String plainPass;
         boolean passwordEncoded = false;
         SignedResponseBean signedResponse = new SignedResponseBean();
-
+        //isEncriptedPasswordWithAES256§fc1c35134a497afb7a28da9297b7810e
         if (srb == null) {
             System.out.println("Empty request");
             return Response.status(400).entity(signedResponse).build();
@@ -279,7 +279,7 @@ public class JavaEE8Resource {
             System.out.println("Possible password encrypted");
             String[] spResult = wb.getWalletPassword().split(ENC_SEP, 2);
             if (spResult.length == 2) {
-                if (TkmTextUtils.isNullOrBlank(spResult[0]) && TkmTextUtils.isNullOrBlank(spResult[1])) {
+                if (!TkmTextUtils.isNullOrBlank(spResult[0]) && !TkmTextUtils.isNullOrBlank(spResult[1])) {
                     //check flag
                     if (spResult[0].equals(ENC_LABEL)) {
                         try {
