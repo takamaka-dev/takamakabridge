@@ -4,13 +4,16 @@ To change this license header, choose License Headers in Project Properties.
 To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
-
 <div class="row mt20">
     <div class="col-md-12 text-center">
-        <h4>Log in</h4>
+        <span class="section-title">Pay section</span>
+    </div>
+    <div class="col-md-12">
+        <hr/>
+        <br/>
     </div>
     <div class="col">
-        <form id="new-wallet-form">
+        <form id="new-pay-form">
             <div class="form-group">
                 <label for="walletName">Wallet Name <span class="error hidden"></span>    </label>
                 <input type="text" class="form-control check-form-field not-empty" id="walletName" name="walletName" aria-describedby="walletName" placeholder="Enter Wallet Name">
@@ -53,76 +56,6 @@ and open the template in the editor.
         </div>
 
     </div>
+
+
 </div>
-
-<script>
-    $(document).ready(function () {
-        $('input').on('change', function () {
-            resetFieldsError($(this));
-        });
-
-
-        $('#uuid').val(uuidv4());
-        $('#new-wallet-form').submit(function (e) {
-            e.preventDefault();
-
-            if (!checkFields()) {
-                return false;
-            }
-
-            var object = {};
-            $('.form-group').each(function (key, val) {
-                let jElem = $(val);
-                jElem.find('.form-control').each(function (innerElKey, innerElVal) {
-                    let innerjElem = $(innerElVal);
-                    if (innerjElem.attr('type') === 'radio' && innerjElem.is(':checked')) {
-                        object[innerjElem.attr('name')] = innerjElem.val();
-                    } else if (innerjElem.attr('type') === 'text' || innerjElem.attr('type') === 'password') {
-                        object[innerjElem.attr('name')] = innerjElem.val();
-                    } else if (innerjElem.attr('data-type') === 'select') {
-                        object[innerjElem.attr('name')] = innerjElem.val();
-                    }
-
-                });
-            });
-
-            let signedRequestBean = {};
-            signedRequestBean['wallet'] = {};
-
-            for (var key in object) {
-                if (object.hasOwnProperty(key)) {
-                    if (key === 'walletCypher' || key === 'addressNumber' || key === 'walletName' || key === 'walletPassword') {
-                        signedRequestBean['wallet'][key] = object[key];
-                    } else if (key === 'uuid') {
-                        signedRequestBean['uuid'] = object[key];
-                    } else if (key === 'rt') {
-                        signedRequestBean['rt'] = object[key];
-                    }
-                }
-            }
-
-            signedRequestBean['itb'] = null;
-
-            console.log(signedRequestBean);
-
-            $.ajax({
-                headers: {
-                    'Content-Type': "application/json"
-                },
-                type: 'POST',
-                url: 'http://localhost:8080/walletwebversion/resources/javaee8/signedRequest',
-                contentType: "application/json",
-                dataType: "json",
-                data: JSON.stringify(signedRequestBean),
-                success: function (data) {
-                    populateUserMenu(data);
-                    goToPage("logged_home_page");
-                }
-            });
-
-
-
-        });
-    })
-
-</script>
