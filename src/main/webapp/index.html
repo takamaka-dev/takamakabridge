@@ -14,59 +14,60 @@
         <script src="static/js/custom.js"></script>
     </head>
     <body>
-        <div class="menu-wallet-bar">
-            <ul>
-                <li class="menu-btn nav-btn" data-page="home">
-                    <i class="fal fa-home"></i>
-                    <span>Home</span>
-                </li>
-                <li class="menu-btn">
-                    <i class="fal fa-wallet"></i><br>
-                    <span>Wallet</span>
-                </li>
-                <li class="menu-btn">
-                    <i class="fal fa-cogs"></i>
-                    <span>Settings</span>
-                </li>
-                <li class="menu-btn">
-                    <i class="fal fa-question-square"></i>
-                    <span>Help</span>
-                </li>
-                <li class="menu-btn">
-                    <i class="fal fa-info-circle"></i>
-                    <span>About</span>
-                </li>
-                <li class="menu-btn">
-                    <i class="fal fa-sign-out"></i>
-                    <span>Log out</span>
-                </li>
-
-
-            </ul>
-
-            <i class="fas fa-caret-down open-menu-btn"></i>
-        </div>
+        <!--        <div class="menu-wallet-bar">
+                    <ul>
+                        <li class="menu-btn nav-btn" data-page="home">
+                            <i class="fal fa-home"></i>
+                            <span>Home</span>
+                        </li>
+                        <li class="menu-btn">
+                            <i class="fal fa-wallet"></i><br>
+                            <span>Wallet</span>
+                        </li>
+                        <li class="menu-btn">
+                            <i class="fal fa-cogs"></i>
+                            <span>Settings</span>
+                        </li>
+                        <li class="menu-btn">
+                            <i class="fal fa-question-square"></i>
+                            <span>Help</span>
+                        </li>
+                        <li class="menu-btn">
+                            <i class="fal fa-info-circle"></i>
+                            <span>About</span>
+                        </li>
+                        <li class="menu-btn">
+                            <i class="fal fa-sign-out"></i>
+                            <span>Log out</span>
+                        </li>
+        
+        
+                    </ul>
+        
+                    <i class="fas fa-caret-down open-menu-btn"></i>
+                </div>-->
 
         <div class="menu-wallet-user">
             <div class="container">
+                <button class="btn btn-outline-dark btn-open-user-menu"><i class="fal fa-chevron-circle-right"></i></button>
                 <div class="row">
-                    <div class="col">
-                        <img width="256" id="wallet-identicon" src=""/>
+                    <div class="col text-center identicon-container">
+                        <img width="128" id="wallet-identicon" src=""/>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col">
-                        <label>Address: </label>
+                        <label>Address </label>
                         <p id="wallet-address"></p>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row" style="margin-bottom: 20px">
                     <div class="col">
-                        <label>Key: </label>
-                        <p id="wallet-key"></p>
+                        <label>Key </label>
+                        <input class="form-control" id="wallet-key" type="number" value="">
                     </div>
                     <div class="col">
-                        <label>CRC: </label>
+                        <label>CRC </label>
                         <p id="wallet-crc"></p>
                     </div>
                 </div>
@@ -90,6 +91,15 @@
                         <p id="wallet-ftkr"></p>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col">
+                        <select class="form-control">
+                            <option>MAIN NETWORK</option>
+                            <option>TEST</option>
+                            <option>LOCALHOST</option>
+                        </select>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -105,22 +115,42 @@
             </div>
 
         </div>
+
+        <div class ="row main-logged-menu-misc" >
+            <div class="btn-group btn-group-sm upper-menu" role="group">
+                <button type="button" class="btn  btn-tkm first nav-btn" data-page="logged_home_page"><i class="fal fa-home"></i> <span>Home</span></button>
+                <button type="button" class="btn btn-tkm first nav-btn" data-page="test_signed_request"><i class="fal fa-wallet"></i> <span>New login</span></button>
+                <button type="button" class="btn btn-tkm first nav-btn" data-page="test_signed_request"><i class="fal fa-question"></i> <span>Help</span></button>
+                <button type="button" class="btn btn-tkm first nav-btn" data-page="test_signed_request"><i class="fal fa-info"></i> <span>About</span></button>
+            </div>
+
+        </div>
+
+
     </body>
 
     <script>
         $(document).ready(function () {
-            goToPage('home')
+            goToPage('logged_home_page')
 
-            $('.menu-wallet-user').on('click', function () {
-                if ($('#wallet-address').html() === '') {
+            $('.btn-open-user-menu').on('click', function () {
+                if ($('#wallet-address').html() === '' && false) {
                     return false;
                 }
+                
+                console.log($(this).find('i'));
+                
                 if ($('.menu-wallet-user').hasClass("slide-in-user-menu")) {
                     $('.menu-wallet-user').removeClass("slide-in-user-menu");
                     $('.menu-wallet-user').addClass("slide-out-user-menu");
+                    $(this).css({WebkitTransform: 'rotate(' + 360*-1 + 'deg)'});
+                    $(this).css({'-moz-transform': 'rotate(' + 360*-1 + 'deg)'});
+                    
                 } else {
                     $('.menu-wallet-user').removeClass("slide-out-user-menu");
                     $('.menu-wallet-user').addClass("slide-in-user-menu");
+                    $(this).css({WebkitTransform: 'rotate(' + 180 + 'deg)'});
+                    $(this).css({'-moz-transform': 'rotate(' + 180 + 'deg)'});
                 }
             });
 

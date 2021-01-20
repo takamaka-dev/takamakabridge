@@ -63,7 +63,7 @@ uuidv4 = () => {
 populateUserMenu = dataInputUserWallet => {
     console.log(dataInputUserWallet);
     $('#wallet-address').html(dataInputUserWallet['walletAddress']);
-    $('#wallet-key').html(dataInputUserWallet['walletKey'])
+    $('#wallet-key').val(dataInputUserWallet['walletKey']);
     $.ajax({
         headers: {
             'Content-Type': "application/json"
