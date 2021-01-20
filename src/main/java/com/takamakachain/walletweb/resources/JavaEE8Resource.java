@@ -330,6 +330,16 @@ public class JavaEE8Resource {
                 return Response.status(401).entity(signedResponse).build();
             }
 
+            //gestisci le richieste
+            switch(srb.getRt()){
+            case GET_ADDRESS:
+                signedResponse.setWalletAddress(iwk.getPublicKeyAtIndexURL64(srb.getWallet().getAddressNumber()));
+                break;
+                default:
+                    //401
+            }
+            
+            
             if (!passwordEncoded) {
                 try {
                     IvParameterSpec ivParameterSpec;
@@ -345,7 +355,7 @@ public class JavaEE8Resource {
 
             System.out.println(srb.getWallet().getWalletName());
             System.out.println(srb.getWallet().getWalletPassword());
-            signedResponse.setWalletAddress(iwk.getPublicKeyAtIndexURL64(srb.getWallet().getAddressNumber()));
+            
 
             return Response.status(200).entity(signedResponse).build();
         } catch (UnlockWalletException ex) {
