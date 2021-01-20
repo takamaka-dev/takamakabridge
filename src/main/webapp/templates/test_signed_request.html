@@ -60,7 +60,7 @@ and open the template in the editor.
         $('input').on('change', function () {
             resetFieldsError($(this));
         });
-        
+
 
         $('#uuid').val(uuidv4());
         $('#new-wallet-form').submit(function (e) {
@@ -116,13 +116,12 @@ and open the template in the editor.
                 data: JSON.stringify(signedRequestBean),
                 success: function (data) {
                     populateUserMenu(data);
-                    
                     goToPage("logged_home_page");
                 }
-            }); 
-            
-             
-                    
+            });
+
+
+
         });
     })
 
