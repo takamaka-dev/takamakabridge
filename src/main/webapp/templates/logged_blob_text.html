@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<div class="row mt20">
+    <div class="col-md-12 text-center">
+        <span class="section-title">Blob - Text</span>
+    </div>
+
+    <div class="col-md-12">
+        <hr/>
+        <br/>
+    </div>
+
+    <div class="col">
+        <form id="new-text-form">
+
+            <div class="form-group">
+                <label id="labelFromAddr" for="fromAddr"> 
+
+                    <b>From</b> <span class="error hidden"></span>
+
+                </label>
+                <div class="row">
+                    <div class="col-md-2">
+                        <img id="fromAddrIdenticon" width="128" src=""/>
+                    </div>
+                    <div class="col-md-10">
+                        <textarea readonly name="fromAddr" id="fromAddr" data-label-ref="labelFromAddr" class="form-control"  class="check-form-field not-empty" style="resize: none; height:128px"></textarea>
+                    </div>                                    
+                </div>
+            </div>
+            <label class="text-center" id="labelTextNote">
+                <b> Text Note </b>
+            </label>
+
+            <div class="row">
+                <div class="col">
+                    <textarea name="textEntered" id="textEntered" data-label-ref="labelTextNote" class="form-control" class="check-form-field not-empty" style="resize: none; height: 120px"> </textarea>
+                </div>
+            </div>
+            
+            <label class="text-center" id="labelTextTags">
+                <b> Insert your tags that helps searching here </b>
+            </label>
+
+            
+            <div class="row">
+                
+            </div>   
+            
+            
+
+        </form>
+    </div>
+
+</div>
+
