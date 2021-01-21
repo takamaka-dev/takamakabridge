@@ -20,6 +20,15 @@ public class SignedRequestBean implements Serializable {
     private InternalTransactionBean itb;
     private WebHelper.RequestType rt;
     private String uuid;
+    private String trxJson;
+
+    public String getTrxJson() {
+        return trxJson;
+    }
+
+    public void setTrxJson(String trxJson) {
+        this.trxJson = trxJson;
+    }
 
     public String getUuid() {
         return uuid;

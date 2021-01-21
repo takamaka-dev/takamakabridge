@@ -3,6 +3,7 @@ package com.takamakachain.walletweb.resources;
 import com.h2tcoin.takamakachain.exceptions.threadSafeUtils.HashAlgorithmNotFoundException;
 import com.h2tcoin.takamakachain.exceptions.threadSafeUtils.HashEncodeException;
 import com.h2tcoin.takamakachain.exceptions.threadSafeUtils.HashProviderNotFoundException;
+import com.h2tcoin.takamakachain.exceptions.wallet.TransactionCanNotBeCreatedException;
 import com.h2tcoin.takamakachain.exceptions.wallet.UnlockWalletException;
 import com.h2tcoin.takamakachain.exceptions.wallet.WalletException;
 import com.h2tcoin.takamakachain.globalContext.FixedParameters;
@@ -121,49 +122,11 @@ public class JavaEE8Resource {
         return contentResponse;
     }
 
-    private static final String doGetBalancePost(String passedUrl, String address) throws MalformedURLException, ProtocolException, IOException {
-        String r = null;
-        URL url = new URL(passedUrl);
-        HttpURLConnection http = (HttpURLConnection) url.openConnection();
-        http.setRequestMethod("POST");
-        http.setDoOutput(true);
-        http.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-
-        String data = "address=" + address;
-
-        byte[] out = data.getBytes(StandardCharsets.UTF_8);
-
-        OutputStream stream = http.getOutputStream();
-        stream.write(out);
-
-        int status = http.getResponseCode();
-
-        switch (status) {
-            case 200:
-            case 201:
-                BufferedReader br = new BufferedReader(new InputStreamReader(http.getInputStream()));
-                StringBuilder sb = new StringBuilder();
-                String line;
-                while ((line = br.readLine()) != null) {
-                    sb.append(line + "\n");
-                }
-                br.close();
-                r = sb.toString();
-                break;
-            default:
-                return null;
-        }
-
-        http.disconnect();
-
-        return r;
-    }
-
     @POST
     @Path("getWalletBalances")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public static final Response getWalletBalances(SignedResponseBean srb) {
+    public static final Response getWalletBalances(SignedResponseBean srb) throws ProtocolException, IOException, IOException {
 
         if (TkmTextUtils.isNullOrBlank(srb.getWalletAddress()) || (srb.getWalletAddress().length() != 44 && srb.getWalletAddress().length() != 19840)) {
             return Response.status(Response.Status.BAD_REQUEST).build();
@@ -171,15 +134,7 @@ public class JavaEE8Resource {
 
         String balanceOfEndpoint = "https://dev.takamaka.io/api/V2/nodeapi/balanceof/";
         String jsonResponseBalanceBean = null;
-        try {
-            jsonResponseBalanceBean = doGetBalancePost(balanceOfEndpoint, srb.getWalletAddress());
-        } catch (MalformedURLException e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-        } catch (ProtocolException e) {
-            Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-        } catch (IOException e) {
-            Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-        }
+        jsonResponseBalanceBean = ProjectHelper.doPost(balanceOfEndpoint, "address", srb.getWalletAddress());
 
         if (TkmTextUtils.isNullOrBlank(jsonResponseBalanceBean)) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -257,7 +212,7 @@ public class JavaEE8Resource {
     @Path("signedRequest")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public static final Response signedRequest(SignedRequestBean srb) {
+    public static final Response signedRequest(SignedRequestBean srb) throws TransactionCanNotBeCreatedException, IOException {
         String plainPass;
         boolean passwordEncoded = false;
         SignedResponseBean signedResponse = new SignedResponseBean();
@@ -336,21 +291,16 @@ public class JavaEE8Resource {
             if (iwk == null) {
                 return Response.status(401).entity(signedResponse).build();
             }
-
-            //gestisci le richieste
-            switch (srb.getRt()) {
-                case GET_ADDRESS:
-                    signedResponse.setWalletAddress(iwk.getPublicKeyAtIndexURL64(srb.getWallet().getAddressNumber()));
-                    //applyGetAddr(srb)
-                    break;
-                case PAY:
-                    InternalTransactionBean itb = srb.getItb();
-                    itb.setNotBefore(new Date((new Date()).getTime() + 60000L * 5));
-                    if (!TransactionsHelper.makeJsonTrx(signedResponse, itb, iwk, srb.getWallet().getAddressNumber())) {
-                        Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(signedResponse).build();
-                    }
-                    break;
-                default:
+            
+            try {
+                //gestisci le richieste
+                boolean b = TransactionsHelper.manageRequests(srb, signedResponse, iwk);
+                System.out.println("boolean transaction: " + b);
+                if (!b) {
+                    return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(signedResponse).build();
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(JavaEE8Resource.class.getName()).log(Level.SEVERE, null, ex);
             }
 
             if (!passwordEncoded) {

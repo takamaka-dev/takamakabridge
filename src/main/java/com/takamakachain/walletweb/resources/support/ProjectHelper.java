@@ -35,6 +35,13 @@ import java.util.logging.Logger;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import static com.takamakachain.walletweb.resources.support.CryptoHelper.getWebSessionSecret;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.nio.charset.StandardCharsets;
 
 /**
  *
@@ -178,6 +185,44 @@ public class ProjectHelper {
         } catch (IOException ex) {
             throw new IOException(ex);
         }
+    }
+    
+    public static final String doPost(String passedUrl, String key, String param) throws MalformedURLException, ProtocolException, IOException {
+        String r = null;
+        URL url = new URL(passedUrl);
+        HttpURLConnection http = (HttpURLConnection) url.openConnection();
+        http.setRequestMethod("POST");
+        http.setDoOutput(true);
+        http.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+
+        String data = key + "=" + param;
+
+        byte[] out = data.getBytes(StandardCharsets.UTF_8);
+
+        OutputStream stream = http.getOutputStream();
+        stream.write(out);
+
+        int status = http.getResponseCode();
+
+        switch (status) {
+            case 200:
+            case 201:
+                BufferedReader br = new BufferedReader(new InputStreamReader(http.getInputStream()));
+                StringBuilder sb = new StringBuilder();
+                String line;
+                while ((line = br.readLine()) != null) {
+                    sb.append(line + "\n");
+                }
+                br.close();
+                r = sb.toString();
+                break;
+            default:
+                return null;
+        }
+
+        http.disconnect();
+
+        return r;
     }
 
 }

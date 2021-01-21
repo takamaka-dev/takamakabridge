@@ -66,7 +66,7 @@ and open the template in the editor.
 
             <div class="form-group text-center">
                 <label for="message">
-                    <b>Textual note (optional)</b> <span class="error hidden"></span>    
+                    <b>Textual note (optional)</b>    
                 </label>
                 <div class="row">
                     <div class="col">
@@ -75,16 +75,47 @@ and open the template in the editor.
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-md-12 text-center">
-                    <label for="trxCost" class="font-weight-bold">
-                        Transaction cost
-                    </label>
-                </div>
-                <div class="col-md-12">
-                    <div id="trxCost" class="alert alert-success text-center" role="alert">
-                        <span class="font-weight-bold">N/A</span>
+            <div id="accordion">
+                <div class="card">
+                    <div class="card-header text-center collapse-section font-weight-bold" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" id="headingOne">
+                        <i class="fal fa-arrows-v"></i>
                     </div>
+
+                    <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+                        <div class="card-body">
+                            <div class="form-group text-center">
+                                <label for="message">
+                                    <b>Transaction json</b>    
+                                </label>
+                                <div class="row">
+                                    <div class="col">
+                                        <textarea name="trxJson" id="trxJson" class="form-control" style="resize: none; height:128px"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12 text-center">
+                                    <label for="trxCost" class="font-weight-bold">
+                                        Transaction cost
+                                    </label>
+                                </div>
+                                <div class="col-md-12">
+                                    <div id="trxCost" class="alert alert-success text-center" role="alert">
+                                        <span class="font-weight-bold">N/A</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row">
+                <div class="col">
+                    <br/>
+                    <br/>
                 </div>
             </div>
 
@@ -95,7 +126,7 @@ and open the template in the editor.
                 <div class="col-md-4 text-right">
                     <div class="btn-group" role="group" aria-label="Basic example">
                         <button class="btn btn-secondary mr-2 font-weight-bold verify-btn">Verify</button>
-                        <button type="submit" class="btn btn-primary font-weight-bold">Submit</button>
+                        <button type="submit" disabled="disabled" class="btn btn-primary submit-button font-weight-bold">Submit</button>
                     </div>
                 </div>
             </div>
@@ -131,33 +162,19 @@ and open the template in the editor.
                 return false;
             }
 
-            /*
-             * 
-             * private String from;
-             private String to;
-             private String message;
-             private long notBefore;
-             private BigInteger redValue;
-             private BigInteger greenValue;
-             private TransactionType transactionType;
-             private String transactionHash;
-             private Integer epoch;
-             private Integer slot;
-             */
-
             window.signedResponseBean['request']['itb'] = {};
             fillPayItb(
                     $('#fromAddr').val(),
                     $('#toAddr').val(),
                     $('#message').val(),
                     new Date(),
-                    $('#tkrVal').val(),
-                    $('#tkgVal').val(),
+                    $('#tkrVal').val() * Math.pow(10, 9),
+                    $('#tkgVal').val() * Math.pow(10, 9),
                     'PAY',
                     null,
                     null,
                     null);
-                    
+
             window.signedResponseBean['request']['rt'] = 'PAY';
             $.ajax({
                 headers: {
@@ -169,6 +186,34 @@ and open the template in the editor.
                 data: JSON.stringify(window.signedResponseBean['request']),
                 success: function (dataRes) {
                     console.log(dataRes);
+                    $('.collapse-section').trigger('click');
+                    $('#trxCost').html('<b>CPU: ' + dataRes['feeBean']['cpu'] / Math.pow(10, 9) + ' MEM: ' + dataRes['feeBean']['memory'] / Math.pow(10, 9) + ' DISK: ' + dataRes['feeBean']['disk'] / Math.pow(10, 9) + '</b>');
+                    $('#trxJson').val(dataRes['trxJson']);
+                    window.signedResponseBean['request']['trxJson'] = dataRes['trxJson'];
+                    $('.submit-button').prop('disabled', false);
+                }
+            });
+        });
+
+        $('#new-pay-form').submit(function(e) {
+            e.preventDefault();
+            window.signedResponseBean['request']['rt'] = 'SEND_TRX';
+            $.ajax({
+                headers: {
+                    'Content-Type': "application/json"
+                },
+                type: 'POST',
+                url: 'http://localhost:8080/walletwebversion/resources/javaee8/signedRequest',
+                contentType: "application/json",
+                data: JSON.stringify(window.signedResponseBean['request']),
+                beforeSend: function() {
+                    $('.page').html('<div class="loading-container"><img src="static/images/loading.gif" alt=""/></div');
+                },
+                success: function () {
+                    goToPage('success_transaction');
+                },
+                error: function() {
+                    goToPage('failed_transaction');
                 }
             });
         });
@@ -194,8 +239,6 @@ and open the template in the editor.
                     $('#toAddrIdenticon').attr('src', 'data:image/png;base64, ' + dataRes['identiconUrlBase64']);
                 }
             });
-
-
         });
     });
 </script>
