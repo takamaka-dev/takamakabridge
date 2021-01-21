@@ -288,6 +288,18 @@ span.error {
     margin-top: 20px
 }
 
+.mt100 {
+    margin-top: 100px
+}
+
+.alert_trx {
+    font-size: 20px
+}
+
+.alert_trx i {
+    font-weight: bold
+}
+
 .btn-open-user-menu {
     position: absolute;
     top: 0;

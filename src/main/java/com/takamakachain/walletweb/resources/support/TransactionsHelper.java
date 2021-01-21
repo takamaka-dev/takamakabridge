@@ -21,7 +21,6 @@ import com.takamakachain.walletweb.resources.SignedResponseBean;
 import java.io.IOException;
 import java.net.ProtocolException;
 import java.util.Date;
-import javax.ws.rs.core.Response;
 
 /**
  *
@@ -74,7 +73,9 @@ public class TransactionsHelper {
                 String hexBody = TkmSignUtils.fromStringToHexString(srb.getTrxJson());
                 String transactionEndpoint = "https://dev.takamaka.io/api/V2/testapi/transaction/";
                 String r = ProjectHelper.doPost(transactionEndpoint, "tx", hexBody);
-                if (!r.equals("{\"TxIsVerified\":\"true\"}")) {
+                System.out.println(r);
+                if (!r.contains("true")) {
+                    System.out.println("ciaoneeee");
                     return false;
                 }
                 break;

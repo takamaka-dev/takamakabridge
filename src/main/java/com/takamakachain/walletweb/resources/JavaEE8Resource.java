@@ -294,7 +294,9 @@ public class JavaEE8Resource {
             
             try {
                 //gestisci le richieste
-                if (!TransactionsHelper.manageRequests(srb, signedResponse, iwk)) {
+                boolean b = TransactionsHelper.manageRequests(srb, signedResponse, iwk);
+                System.out.println("boolean transaction: " + b);
+                if (!b) {
                     return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(signedResponse).build();
                 }
             } catch (IOException ex) {
