@@ -28,7 +28,7 @@ import java.util.Date;
  */
 public class TransactionsHelper {
 
-    public static boolean makeJsonTrx(
+    public static final boolean makeJsonTrx(
             SignedResponseBean signedResponse,
             InternalTransactionBean itb,
             InstanceWalletKeystoreInterface iwk,
@@ -54,7 +54,7 @@ public class TransactionsHelper {
         return false;
     }
 
-    public static boolean manageRequests(
+    public static final boolean manageRequests(
             SignedRequestBean srb,
             SignedResponseBean signedResponse,
             InstanceWalletKeystoreInterface iwk) throws TransactionCanNotBeCreatedException, WalletException, ProtocolException, IOException {
