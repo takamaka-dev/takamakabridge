@@ -17,8 +17,8 @@ highlightError = (el, msg, isComplexStructure) => {
         el.parent().find('span.error').removeClass('hidden');
         el.parent().find('span.error').html(msg);
     } else {
-        $('#'+el.attr('data-label-ref')).find('span.error').removeClass('hidden');
-        $('#'+el.attr('data-label-ref')).find('span.error').html(msg);
+        $('#' + el.attr('data-label-ref')).find('span.error').removeClass('hidden');
+        $('#' + el.attr('data-label-ref')).find('span.error').html(msg);
     }
 
 }
@@ -118,4 +118,27 @@ populateUserMenu = dataInputUserWallet => {
     })
 
 
+}
+
+fillPayItb = (
+        from,
+        to,
+        message,
+        notBefore,
+        redValue,
+        greenValue,
+        transactionType,
+        transactionHash,
+        epoch,
+        slot) => {
+    window.signedResponseBean['request']['itb']['from'] = from;
+    window.signedResponseBean['request']['itb']['to'] = to;
+    window.signedResponseBean['request']['itb']['message'] = message;
+    window.signedResponseBean['request']['itb']['notBefore'] = notBefore;
+    window.signedResponseBean['request']['itb']['redValue'] = redValue;
+    window.signedResponseBean['request']['itb']['greenValue'] = greenValue;
+    window.signedResponseBean['request']['itb']['transactionType'] = transactionType;
+    window.signedResponseBean['request']['itb']['transactionHash'] = transactionHash;
+    window.signedResponseBean['request']['itb']['epoch'] = epoch;
+    window.signedResponseBean['request']['itb']['slot'] = slot;
 }

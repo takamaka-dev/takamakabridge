@@ -5,6 +5,7 @@
  */
 package com.takamakachain.walletweb.resources;
 
+import com.h2tcoin.takamakachain.transactions.fee.FeeBean;
 import java.io.Serializable;
 
 /**
@@ -18,6 +19,24 @@ public class SignedResponseBean implements Serializable {
     private String walletAddress;
     private int walletKey;
     private String passedData;
+    private FeeBean feeBean;
+    private String trxJson;
+
+    public FeeBean getFeeBean() {
+        return feeBean;
+    }
+
+    public void setFeeBean(FeeBean feeBean) {
+        this.feeBean = feeBean;
+    }
+
+    public String getTrxJson() {
+        return trxJson;
+    }
+
+    public void setTrxJson(String trxJson) {
+        this.trxJson = trxJson;
+    }
 
     public String getPassedData() {
         return passedData;

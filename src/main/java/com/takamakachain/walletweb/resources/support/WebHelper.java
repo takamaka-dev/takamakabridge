@@ -17,6 +17,6 @@ public class WebHelper {
          *
          */
         GET_ADDRESS,
-
+        PAY
     }
 }

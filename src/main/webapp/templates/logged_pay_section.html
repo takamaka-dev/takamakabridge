@@ -115,15 +115,64 @@ and open the template in the editor.
 </div>
 
 <script>
+
+
+
     $(document).ready(function () {
-        
-        $('.verify-btn').on('click', function(e) {
+
+        $('.form-control').on('change', function () {
+            resetFieldsError($(this));
+        });
+
+
+        $('.verify-btn').on('click', function (e) {
             e.preventDefault();
             if (!checkFields(true)) {
                 return false;
             }
+
+            /*
+             * 
+             * private String from;
+             private String to;
+             private String message;
+             private long notBefore;
+             private BigInteger redValue;
+             private BigInteger greenValue;
+             private TransactionType transactionType;
+             private String transactionHash;
+             private Integer epoch;
+             private Integer slot;
+             */
+
+            window.signedResponseBean['request']['itb'] = {};
+            fillPayItb(
+                    $('#fromAddr').val(),
+                    $('#toAddr').val(),
+                    $('#message').val(),
+                    new Date(),
+                    $('#tkrVal').val(),
+                    $('#tkgVal').val(),
+                    'PAY',
+                    null,
+                    null,
+                    null);
+                    
+            window.signedResponseBean['request']['rt'] = 'PAY';
+            $.ajax({
+                headers: {
+                    'Content-Type': "application/json"
+                },
+                type: 'POST',
+                url: 'http://localhost:8080/walletwebversion/resources/javaee8/signedRequest',
+                contentType: "application/json",
+                data: JSON.stringify(window.signedResponseBean['request']),
+                success: function (dataRes) {
+                    console.log(dataRes);
+                }
+            });
         });
-        
+
         $('.nav-btn').on('click', function () {
             goToPage($(this).attr('data-page'));
         });
