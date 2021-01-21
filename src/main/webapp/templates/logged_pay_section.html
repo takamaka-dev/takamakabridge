@@ -131,20 +131,6 @@ and open the template in the editor.
                 return false;
             }
 
-            /*
-             * 
-             * private String from;
-             private String to;
-             private String message;
-             private long notBefore;
-             private BigInteger redValue;
-             private BigInteger greenValue;
-             private TransactionType transactionType;
-             private String transactionHash;
-             private Integer epoch;
-             private Integer slot;
-             */
-
             window.signedResponseBean['request']['itb'] = {};
             fillPayItb(
                     $('#fromAddr').val(),
@@ -194,8 +180,6 @@ and open the template in the editor.
                     $('#toAddrIdenticon').attr('src', 'data:image/png;base64, ' + dataRes['identiconUrlBase64']);
                 }
             });
-
-
         });
     });
 </script>

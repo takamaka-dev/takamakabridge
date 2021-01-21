@@ -338,19 +338,8 @@ public class JavaEE8Resource {
             }
 
             //gestisci le richieste
-            switch (srb.getRt()) {
-                case GET_ADDRESS:
-                    signedResponse.setWalletAddress(iwk.getPublicKeyAtIndexURL64(srb.getWallet().getAddressNumber()));
-                    //applyGetAddr(srb)
-                    break;
-                case PAY:
-                    InternalTransactionBean itb = srb.getItb();
-                    itb.setNotBefore(new Date((new Date()).getTime() + 60000L * 5));
-                    if (!TransactionsHelper.makeJsonTrx(signedResponse, itb, iwk, srb.getWallet().getAddressNumber())) {
-                        Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(signedResponse).build();
-                    }
-                    break;
-                default:
+            if (!TransactionsHelper.manageRequests(srb, signedResponse, iwk)) {
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(signedResponse).build();
             }
 
             if (!passwordEncoded) {

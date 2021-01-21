@@ -6,6 +6,7 @@
 package com.takamakachain.walletweb.resources.support;
 
 import com.h2tcoin.takamakachain.exceptions.wallet.TransactionCanNotBeCreatedException;
+import com.h2tcoin.takamakachain.exceptions.wallet.WalletException;
 import com.h2tcoin.takamakachain.transactions.InternalTransactionBean;
 import com.h2tcoin.takamakachain.transactions.TransactionBean;
 import com.h2tcoin.takamakachain.transactions.fee.FeeBean;
@@ -14,7 +15,10 @@ import com.h2tcoin.takamakachain.utils.threadSafeUtils.TkmTextUtils;
 import com.h2tcoin.takamakachain.wallet.InstanceWalletKeystoreInterface;
 import com.h2tcoin.takamakachain.wallet.TkmWallet;
 import com.h2tcoin.takamakachain.wallet.TransactionBox;
+import com.takamakachain.walletweb.resources.SignedRequestBean;
 import com.takamakachain.walletweb.resources.SignedResponseBean;
+import java.util.Date;
+import javax.ws.rs.core.Response;
 
 /**
  *
@@ -47,4 +51,25 @@ public class TransactionsHelper {
         }
         return false;
     }
+
+    public static boolean manageRequests(
+            SignedRequestBean srb,
+            SignedResponseBean signedResponse,
+            InstanceWalletKeystoreInterface iwk) throws TransactionCanNotBeCreatedException, WalletException {
+        switch (srb.getRt()) {
+            case GET_ADDRESS:
+                signedResponse.setWalletAddress(iwk.getPublicKeyAtIndexURL64(srb.getWallet().getAddressNumber()));
+                break;
+            case PAY:
+                InternalTransactionBean itb = srb.getItb();
+                itb.setNotBefore(new Date((new Date()).getTime() + 60000L * 5));
+                if (!TransactionsHelper.makeJsonTrx(signedResponse, itb, iwk, srb.getWallet().getAddressNumber())) {
+                    return false;
+                }
+                break;
+            default:
+        }
+        return true;
+    }
+
 }
