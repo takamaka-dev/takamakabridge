@@ -10,26 +10,33 @@ resetFieldsError = el => {
 
 }
 
-highlightError = (el, msg) => {
+highlightError = (el, msg, isComplexStructure) => {
     el.addClass('is-invalid');
-    el.parent().find('span.error').removeClass('hidden');
-    el.parent().find('span.error').html(msg);
+    console.log(el.parent().find('span.error'));
+    if (!isComplexStructure) {
+        el.parent().find('span.error').removeClass('hidden');
+        el.parent().find('span.error').html(msg);
+    } else {
+        $('#'+el.attr('data-label-ref')).find('span.error').removeClass('hidden');
+        $('#'+el.attr('data-label-ref')).find('span.error').html(msg);
+    }
+
 }
 
-checkFields = () => {
+checkFields = (isComplexStructure) => {
     let checkFormResult = true;
     $('.check-form-field').each(function () {
         let el = $(this);
         if (el.hasClass("not-empty") && el.val().length === 0) {
-            highlightError(el, '( The field cannot be empty! )');
+            highlightError(el, '( The field cannot be empty! )', isComplexStructure);
             checkFormResult = false;
         }
         if (el.hasClass("min-length") && el.val().length < el.attr('data-min-length')) {
-            highlightError(el, '( Minimum length required: ' + el.attr('data-min-length') + ' )');
+            highlightError(el, '( Minimum length required: ' + el.attr('data-min-length') + ' )', isComplexStructure);
             checkFormResult = false;
         }
         if (el.hasClass('is-integer') && isNaN(parseInt(el.val()))) {
-            highlightError(el, '( Invalid input )');
+            highlightError(el, '( Invalid input )', isComplexStructure);
             checkFormResult = false;
         }
     })
@@ -61,6 +68,7 @@ uuidv4 = () => {
 }
 
 populateUserMenu = dataInputUserWallet => {
+    window.signedResponseBean = dataInputUserWallet;
     console.log(dataInputUserWallet);
     $('#wallet-address').html(dataInputUserWallet['walletAddress']);
     $('#wallet-key').val(dataInputUserWallet['walletKey']);

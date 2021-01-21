@@ -211,16 +211,13 @@ public class JavaEE8Resource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public static final Response getWalletIdenticon(SignedResponseBean srb) {
-
-        System.out.println(srb.getWalletAddress());
-
-        if (TkmTextUtils.isNullOrBlank(srb.getWalletAddress()) || (srb.getWalletAddress().length() != 44 && srb.getWalletAddress().length() != 19840)) {
+        String walletAddress = !TkmTextUtils.isNullOrBlank(srb.getPassedData()) ? srb.getPassedData() : srb.getWalletAddress();
+        System.out.println(srb.getPassedData());
+        if (TkmTextUtils.isNullOrBlank(walletAddress) || (walletAddress.length() != 44 && walletAddress.length() != 19840)) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
-        System.out.println(IdentiColorHelper.getAvatarBase64URL256(srb.getWalletAddress()));
-
-        String walletIdenticonUrl64 = IdentiColorHelper.getAvatarBase64URL256(srb.getWalletAddress());
+        String walletIdenticonUrl64 = IdentiColorHelper.getAvatarBase64URL256(walletAddress);
 
         walletIdenticonUrl64 = walletIdenticonUrl64.replace(".", "=").replace("-", "+").replace("_", "/");
 
@@ -229,10 +226,10 @@ public class JavaEE8Resource {
         }
 
         WalletIdenticonResponseBean wi = new WalletIdenticonResponseBean();
-        if (srb.getWalletAddress().length() == 19840) {
+        if (walletAddress.length() == 19840) {
             wi.setAddress("");
         } else {
-            wi.setAddress(srb.getWalletAddress());
+            wi.setAddress(walletAddress);
         }
         wi.setIdenticonUrlBase64(walletIdenticonUrl64);
 
@@ -331,16 +328,15 @@ public class JavaEE8Resource {
             }
 
             //gestisci le richieste
-            switch(srb.getRt()){
-            case GET_ADDRESS:
-                signedResponse.setWalletAddress(iwk.getPublicKeyAtIndexURL64(srb.getWallet().getAddressNumber()));
-                //applyGetAddr(srb)
-                break;
+            switch (srb.getRt()) {
+                case GET_ADDRESS:
+                    signedResponse.setWalletAddress(iwk.getPublicKeyAtIndexURL64(srb.getWallet().getAddressNumber()));
+                    //applyGetAddr(srb)
+                    break;
                 default:
-                    //401
+                //401
             }
-            
-            
+
             if (!passwordEncoded) {
                 try {
                     IvParameterSpec ivParameterSpec;
@@ -356,7 +352,6 @@ public class JavaEE8Resource {
 
             System.out.println(srb.getWallet().getWalletName());
             System.out.println(srb.getWallet().getWalletPassword());
-            
 
             return Response.status(200).entity(signedResponse).build();
         } catch (UnlockWalletException ex) {
