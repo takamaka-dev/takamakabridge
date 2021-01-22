@@ -68,8 +68,10 @@ public class ProjectHelper {
         //System.out.println("N:" + incompleteClasspathError.toString());
         System.out.println("Current Application Folder Dir: " + FileHelper.getDefaultApplicationDirectoryPath().toString());
         //load salt
-//        System.out.println("test salt " + getSalt("wallet_name"));
-//        System.out.println("test password " + getPassword("wallet_name"));
+        System.out.println("init salt file ");
+        getSalt("wallet_name");
+        System.out.println("init password file ");
+        getPassword("wallet_name");
 //        IvParameterSpec ivps = getIVParameterSpec("wallet_name");
 //        SecretKey sk = getSecretKey("wallet_name");
     }
@@ -178,7 +180,7 @@ public class ProjectHelper {
         }
         return keyStore;
     }
-
+/*
     public static final SecretKey getWebSessionSecret(KeyStore ks) throws IOException {
         try {
             return getWebSessionSecret(ks);
@@ -186,7 +188,7 @@ public class ProjectHelper {
             throw new IOException(ex);
         }
     }
-    
+    */
     public static final String doPost(String passedUrl, String key, String param) throws MalformedURLException, ProtocolException, IOException {
         String r = null;
         URL url = new URL(passedUrl);
