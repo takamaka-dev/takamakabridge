@@ -21,6 +21,8 @@ import com.takamakachain.walletweb.resources.SignedResponseBean;
 import java.io.IOException;
 import java.net.ProtocolException;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -34,6 +36,16 @@ public class TransactionsHelper {
             InstanceWalletKeystoreInterface iwk,
             int addressNumber) throws TransactionCanNotBeCreatedException {
         if (null != itb) {
+
+            if (TkmTextUtils.isNullOrBlank(itb.getFrom())) {
+                System.out.println("Overwrite from!");
+                try {
+                    itb.setFrom(iwk.getPublicKeyAtIndexURL64(addressNumber));
+                } catch (WalletException ex) {
+                    return false;
+                }
+            }
+
             TransactionBean genericTRA;
 
             genericTRA = TkmWallet.createGenericTransaction(
