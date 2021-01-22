@@ -202,7 +202,9 @@ span.error {
 }
 
 .menu-wallet-user #wallet-address {
-    overflow-wrap: break-word
+    overflow-wrap: break-word;
+    max-height: 100px;
+    overflow-y: scroll
 }
 
 .menu-wallet-user .container {

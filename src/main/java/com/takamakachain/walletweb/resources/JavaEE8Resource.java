@@ -9,13 +9,7 @@ import com.h2tcoin.takamakachain.exceptions.wallet.WalletException;
 import com.h2tcoin.takamakachain.globalContext.FixedParameters;
 import com.h2tcoin.takamakachain.globalContext.KeyContexts;
 import static com.h2tcoin.takamakachain.globalContext.KeyContexts.WalletCypher.BCQTESLA_PS_1_R2;
-import com.h2tcoin.takamakachain.main.defaults.DefaultInitParameters;
 import com.h2tcoin.takamakachain.saturn.exceptions.SaturnException;
-import static com.h2tcoin.takamakachain.test.TransactionGenerator.getTransactionBean;
-import com.h2tcoin.takamakachain.transactions.InternalTransactionBean;
-import com.h2tcoin.takamakachain.transactions.TransactionBean;
-import com.h2tcoin.takamakachain.transactions.fee.FeeBean;
-import com.h2tcoin.takamakachain.transactions.fee.TransactionFeeCalculator;
 import com.h2tcoin.takamakachain.utils.F;
 import com.h2tcoin.takamakachain.utils.Log;
 import com.h2tcoin.takamakachain.utils.simpleWallet.SWTracker;
@@ -27,8 +21,6 @@ import com.h2tcoin.takamakachain.wallet.InstanceWalletKeyStoreBCED25519;
 import com.h2tcoin.takamakachain.wallet.InstanceWalletKeyStoreBCQTESLAPSSC1Round1;
 import com.h2tcoin.takamakachain.wallet.InstanceWalletKeyStoreBCQTESLAPSSC1Round2;
 import com.h2tcoin.takamakachain.wallet.InstanceWalletKeystoreInterface;
-import com.h2tcoin.takamakachain.wallet.TkmWallet;
-import com.h2tcoin.takamakachain.wallet.TransactionBox;
 import static com.takamakachain.walletweb.resources.support.CryptoHelper.decryptPasswordHEX;
 import static com.takamakachain.walletweb.resources.support.CryptoHelper.encryptPasswordHEX;
 import com.takamakachain.walletweb.resources.support.ProjectHelper;
@@ -36,13 +28,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.ProtocolException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.net.URISyntaxException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -67,6 +53,8 @@ import static com.takamakachain.walletweb.resources.support.CryptoHelper.getWebS
 import static com.takamakachain.walletweb.resources.support.ProjectHelper.ENC_LABEL;
 import static com.takamakachain.walletweb.resources.support.ProjectHelper.ENC_SEP;
 import com.takamakachain.walletweb.resources.support.TransactionsHelper;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import javax.crypto.BadPaddingException;
@@ -290,7 +278,7 @@ public class JavaEE8Resource {
             if (iwk == null) {
                 return Response.status(401).entity(signedResponse).build();
             }
-            
+
             try {
                 //gestisci le richieste
                 boolean b = TransactionsHelper.manageRequests(srb, signedResponse, iwk);
