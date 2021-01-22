@@ -8,6 +8,16 @@ and open the template in the editor.
     Author     : isacco.borsani@h2tcoin.com
 */
 
+.upload-btn {
+    width: 100%;
+    height: 60px
+}
+
+#new-upload-file-form .mimetype-area {
+    height: 60px;
+    resize: none
+}
+
 .collapse-section i {
     position: absolute;
     top: 0

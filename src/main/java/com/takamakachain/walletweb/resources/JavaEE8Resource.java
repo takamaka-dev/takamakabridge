@@ -67,7 +67,6 @@ import static com.takamakachain.walletweb.resources.support.CryptoHelper.getWebS
 import static com.takamakachain.walletweb.resources.support.ProjectHelper.ENC_LABEL;
 import static com.takamakachain.walletweb.resources.support.ProjectHelper.ENC_SEP;
 import com.takamakachain.walletweb.resources.support.TransactionsHelper;
-import java.math.BigDecimal;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import javax.crypto.BadPaddingException;
