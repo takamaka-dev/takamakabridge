@@ -8,6 +8,10 @@ and open the template in the editor.
     Author     : isacco.borsani@h2tcoin.com
 */
 
+.nopadding {
+    padding: 0 !important
+}
+
 .tags-container {
     border: 2px solid #ccc;
     border-radius: 6px;
@@ -20,8 +24,19 @@ and open the template in the editor.
     font-weight: 600
 }
 
+span.no-results {
+    color: #00000059;
+    font-weight: 600;
+    text-transform: uppercase
+}
+
 .single-tag:before {
     content: '#'
+}
+
+.single-tag:hover {
+    background-color: #ff0000a1;
+    cursor: pointer
 }
 
 .single-tag {

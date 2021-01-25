@@ -19,43 +19,36 @@ and open the template in the editor.
                     <b>From</b> <span class="error hidden"></span>    
                 </label>
                 <div class="row">
-                    <div class="col-md-2">
+                    <div class="col-md-2 nopadding">
                         <img id="fromAddrIdenticon" width="128" src=""/>
                     </div>
-                    <div class="col-md-10">
+                    <div class="col-md-10 nopadding">
                         <textarea readonly name="fromAddr" id="fromAddr" data-label-ref="labelFromAddr" class="form-control check-form-field not-empty" style="resize: none; height:128px"></textarea>
                     </div>
                 </div>
             </div>
-            
+
             <div class="form-group">
                 <div class="row">
-                    <div class="col text-right">
+                    <div class="col text-right nopadding">
                         <button class="btn btn-primary upload-btn"><i class="fal fa-cloud-upload"></i> Upload</button>
                     </div>
-                    <div class="col">
+                    <div class="col nopadding">
                         <input type="file" id="fileupload" style="display:none"/> 
                         <textarea readonly class="form-control mimetype-area"></textarea>
                     </div>
                 </div>
             </div>
-            
+
             <div class="form-group tags-area">
                 <div class="row">
-                    <div class="col-md-12">
+                    <div class="col-md-12 nopadding">
                         <input type="text" class="form-control tag-input" placeholder="Enter here tags!"/>
                     </div>
-                    <div class="col-md-12 mt20">
+                    <div class="col-md-12 mt20 nopadding">
                         <label>Tag section</label>
                     </div>
-                    <div class="col-md-11 tags-container">
-                        <div class="single-tag">ciao</div>
-                        <div class="single-tag">asd</div>
-                        <div class="single-tag">sdf</div>
-                        <div class="single-tag">fgh</div>
-                        <div class="single-tag">qwe</div>
-                        <div class="single-tag">sdf</div>
-                    </div>
+                    <div class="col-md-12 nopadding tags-container text-center" data-tags=""></div>
                 </div>
             </div>
 
@@ -134,83 +127,60 @@ and open the template in the editor.
 
 
     $(document).ready(function () {
+        deleteTag = el => {
+            console.log(el);
+            el.remove();
+            delete window.tags[el.attr('data-value-key')];
+            if (Object.keys(window.tags).length === 0) {
+                $('.no-results').removeClass('hidden');
+            }
+        };
+
+        window.tags = {};
+        let numberOfInsertedTags = 0;
+        if (numberOfInsertedTags === 0) {
+            $('.tags-container').html('<span class="no-results">No result :(</span>');
+        }
+
+        $('.tag-input').on('change', function () {
+            if ($(this).val() !== '') {
+                if (Object.keys(window.tags).length === 0) {
+                    $('.no-results').addClass('hidden');
+                }
+                let sep = numberOfInsertedTags === 0 ? '' : ',';
+                if (numberOfInsertedTags === 0) {
+                    $('.no-results').addClass('hidden');
+                }
+                window.tags[numberOfInsertedTags] = $(this).val();
+                let index_tag = numberOfInsertedTags++;
+                $('.tags-container').html(
+                        $('.tags-container').html() +
+                        '<div class="single-tag" data-value-key="' + index_tag + '" id="single-tag-' +
+                        index_tag + '" onclick=deleteTag($(this))>'
+                        + $(this).val() + '</div>'
+                        );
+                $(this).val('');
+                console.log(window.tags);
+            }
+
+        });
 
         $('.form-control').on('change', function () {
             resetFieldsError($(this));
         });
-        
-        $('.upload-btn').click(function(e) {
+
+        $('.upload-btn').click(function (e) {
             e.preventDefault();
             console.log('a');
-            $('#fileupload').trigger('click'); 
+            $('#fileupload').trigger('click');
         });
-        
-        $('#fileupload').on('change', function() {
+
+        $('#fileupload').on('change', function () {
             var fd = new FormData();
-            var files = $(this)[0].files;
-        });
-
-
-        $('.verify-btn').on('click', function (e) {
-            e.preventDefault();
-            if (!checkFields(true)) {
-                return false;
-            }
-
-            window.signedResponseBean['request']['itb'] = {};
-            fillPayItb(
-                    $('#fromAddr').val(),
-                    $('#toAddr').val(),
-                    $('#message').val(),
-                    new Date(),
-                    $('#tkrVal').val() * Math.pow(10, 9),
-                    $('#tkgVal').val() * Math.pow(10, 9),
-                    'PAY',
-                    null,
-                    null,
-                    null);
-
-            window.signedResponseBean['request']['rt'] = 'PAY';
-            $.ajax({
-                headers: {
-                    'Content-Type': "application/json"
-                },
-                type: 'POST',
-                url: 'http://localhost:8080/'+window.webappname+'/resources/javaee8/signedRequest',
-                contentType: "application/json",
-                data: JSON.stringify(window.signedResponseBean['request']),
-                success: function (dataRes) {
-                    console.log(dataRes);
-                    $('.collapse-section').trigger('click');
-                    $('#trxCost').html('<b>CPU: ' + dataRes['feeBean']['cpu'] / Math.pow(10, 9) + ' MEM: ' + dataRes['feeBean']['memory'] / Math.pow(10, 9) + ' DISK: ' + dataRes['feeBean']['disk'] / Math.pow(10, 9) + '</b>');
-                    $('#trxJson').val(dataRes['trxJson']);
-                    window.signedResponseBean['request']['trxJson'] = dataRes['trxJson'];
-                    $('.submit-button').prop('disabled', false);
-                }
-            });
-        });
-
-        $('#new-pay-form').submit(function(e) {
-            e.preventDefault();
-            window.signedResponseBean['request']['rt'] = 'SEND_TRX';
-            $.ajax({
-                headers: {
-                    'Content-Type': "application/json"
-                },
-                type: 'POST',
-                url: 'http://localhost:8080/'+window.webappname+'/resources/javaee8/signedRequest',
-                contentType: "application/json",
-                data: JSON.stringify(window.signedResponseBean['request']),
-                beforeSend: function() {
-                    $('.page').html('<div class="loading-container"><img src="static/images/loading.gif" alt=""/></div');
-                },
-                success: function () {
-                    goToPage('success_transaction');
-                },
-                error: function() {
-                    goToPage('failed_transaction');
-                }
-            });
+            var file = $(this)[0].files[0];
+            fd.append('file', file);
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', 'http://localhost:8080/'+window.webappname+'/resources/javaee8/signedRequest');
         });
 
         $('.nav-btn').on('click', function () {
@@ -219,21 +189,7 @@ and open the template in the editor.
 
         $('#fromAddrIdenticon').attr('src', $('#wallet-identicon').attr('src'));
         $('#fromAddr').val($('#wallet-address').html());
-        $('#toAddr').on('change', function () {
-            console.log($(this).val());
-            window.signedResponseBean['passedData'] = $(this).val();
-            $.ajax({
-                headers: {
-                    'Content-Type': "application/json"
-                },
-                type: 'POST',
-                url: 'http://localhost:8080/'+window.webappname+'/resources/javaee8/getWalletIdenticon',
-                contentType: "application/json",
-                data: JSON.stringify(window.signedResponseBean),
-                success: function (dataRes) {
-                    $('#toAddrIdenticon').attr('src', 'data:image/png;base64, ' + dataRes['identiconUrlBase64']);
-                }
-            });
-        });
+
+
     });
 </script>

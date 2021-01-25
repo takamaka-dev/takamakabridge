@@ -53,6 +53,7 @@ import static com.takamakachain.walletweb.resources.support.CryptoHelper.getWebS
 import static com.takamakachain.walletweb.resources.support.ProjectHelper.ENC_LABEL;
 import static com.takamakachain.walletweb.resources.support.ProjectHelper.ENC_SEP;
 import com.takamakachain.walletweb.resources.support.TransactionsHelper;
+import java.io.InputStream;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.security.InvalidAlgorithmParameterException;
@@ -61,6 +62,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
+import javax.ws.rs.FormParam;
 
 /**
  *
@@ -157,6 +159,15 @@ public class JavaEE8Resource {
         return Response.status(Response.Status.OK).entity(wCrc).build();
 
     }
+    
+//    @POST
+//    @Path("getFileMeta")
+//    @Consumes(MediaType.MULTIPART_FORM_DATA)
+//    @Produces(MediaType.APPLICATION_JSON)
+//    public static final Response getFileMeta(@FormParam("field") InputStream fileInputStream) {
+//        System.out.println("asd");
+//        return Response.status(Response.Status.OK).build();
+//    }
 
     @POST
     @Path("getWalletIdenticon")
