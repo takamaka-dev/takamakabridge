@@ -4,6 +4,10 @@
  * and open the template in the editor.
  */
 
+//walletwebversion
+//walletweb-1.0-SNAPSHOT
+window.webappname = "walletwebversion";
+
 resetFieldsError = el => {
     el.removeClass('is-invalid');
     el.parent().find('span.error').addClass('hidden');
@@ -46,7 +50,7 @@ checkFields = (isComplexStructure) => {
 
 goToPage = (pageid) => {
     $.ajax({
-        url: 'http://localhost:8080/walletweb-1.0-SNAPSHOT/resources/javaee8/getPage/'
+        url: 'http://localhost:8080/'+window.webappname+'/resources/javaee8/getPage/'
                 + pageid,
         beforeSend: function () {
             // setting a timeout
@@ -77,7 +81,7 @@ populateUserMenu = dataInputUserWallet => {
             'Content-Type': "application/json"
         },
         type: 'POST',
-        url: 'http://localhost:8080/walletweb-1.0-SNAPSHOT/resources/javaee8/getWalletIdenticon',
+        url: 'http://localhost:8080/'+window.webappname+'/resources/javaee8/getWalletIdenticon',
         contentType: "application/json",
         dataType: "json",
         data: JSON.stringify(dataInputUserWallet),
@@ -91,7 +95,7 @@ populateUserMenu = dataInputUserWallet => {
             'Content-Type': "application/json"
         },
         type: 'POST',
-        url: 'http://localhost:8080/walletweb-1.0-SNAPSHOT/resources/javaee8/getWalletCrc',
+        url: 'http://localhost:8080/'+window.webappname+'/resources/javaee8/getWalletCrc',
         contentType: "application/json",
         dataType: "json",
         data: JSON.stringify(dataInputUserWallet),
@@ -105,7 +109,7 @@ populateUserMenu = dataInputUserWallet => {
             'Content-Type': "application/json"
         },
         type: 'POST',
-        url: 'http://localhost:8080/walletweb-1.0-SNAPSHOT/resources/javaee8/getWalletBalances',
+        url: 'http://localhost:8080/'+window.webappname+'/resources/javaee8/getWalletBalances',
         contentType: "application/json",
         dataType: "json",
         data: JSON.stringify(dataInputUserWallet),
