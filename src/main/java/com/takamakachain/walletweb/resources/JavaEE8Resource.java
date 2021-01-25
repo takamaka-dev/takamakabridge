@@ -53,16 +53,30 @@ import static com.takamakachain.walletweb.resources.support.CryptoHelper.getWebS
 import static com.takamakachain.walletweb.resources.support.ProjectHelper.ENC_LABEL;
 import static com.takamakachain.walletweb.resources.support.ProjectHelper.ENC_SEP;
 import com.takamakachain.walletweb.resources.support.TransactionsHelper;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
+import java.util.Arrays;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.ws.rs.FormParam;
+import javax.ws.rs.WebApplicationException;
+import org.apache.tika.exception.TikaException;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.metadata.TikaCoreProperties;
+import org.apache.tika.parser.AutoDetectParser;
+import org.apache.tika.parser.ParseContext;
+import org.apache.tika.parser.Parser;
+import org.apache.tika.sax.BodyContentHandler;
+import org.xml.sax.SAXException;
 
 /**
  *
@@ -159,15 +173,24 @@ public class JavaEE8Resource {
         return Response.status(Response.Status.OK).entity(wCrc).build();
 
     }
-    
-//    @POST
-//    @Path("getFileMeta")
-//    @Consumes(MediaType.MULTIPART_FORM_DATA)
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public static final Response getFileMeta(@FormParam("field") InputStream fileInputStream) {
-//        System.out.println("asd");
-//        return Response.status(Response.Status.OK).build();
-//    }
+
+    @POST
+    @Path("getFileMeta")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    public static final Response getFileMeta(@PathParam("file") InputStream fileInputStream) throws IOException, SAXException, TikaException {
+
+        BodyContentHandler bodyContentHandler = new BodyContentHandler();
+        Metadata metadata = new Metadata();
+        metadata.set(Metadata.RESOURCE_NAME_KEY, "UploadedFile");
+        Parser parser = new AutoDetectParser();
+        parser.parse(fileInputStream, bodyContentHandler, metadata, new ParseContext());
+        System.out.println("Mime: " + metadata.get(Metadata.CONTENT_TYPE));
+        System.out.println("Title: " + metadata.get(TikaCoreProperties.TITLE));
+        System.out.println("Author: " + metadata.get(TikaCoreProperties.CREATOR));
+        System.out.println("metas: " + Arrays.toString(metadata.names()));
+        return Response.status(Response.Status.OK).build();
+    }
 
     @POST
     @Path("getWalletIdenticon")

@@ -180,7 +180,7 @@ and open the template in the editor.
             var file = $(this)[0].files[0];
             fd.append('file', file);
             var xhr = new XMLHttpRequest();
-            xhr.open('POST', 'http://localhost:8080/'+window.webappname+'/resources/javaee8/signedRequest');
+            xhr.open('POST', 'http://localhost:8080/'+window.webappname+'/resources/javaee8/getFileMeta');
         });
 
         $('.nav-btn').on('click', function () {
