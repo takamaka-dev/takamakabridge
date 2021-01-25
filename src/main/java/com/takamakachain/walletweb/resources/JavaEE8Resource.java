@@ -10,8 +10,10 @@ import com.h2tcoin.takamakachain.globalContext.FixedParameters;
 import com.h2tcoin.takamakachain.globalContext.KeyContexts;
 import static com.h2tcoin.takamakachain.globalContext.KeyContexts.WalletCypher.BCQTESLA_PS_1_R2;
 import com.h2tcoin.takamakachain.saturn.exceptions.SaturnException;
+import com.h2tcoin.takamakachain.tkmdata.exceptions.TkmDataException;
 import com.h2tcoin.takamakachain.utils.F;
 import com.h2tcoin.takamakachain.utils.Log;
+import com.h2tcoin.takamakachain.utils.simpleWallet.SWInt;
 import com.h2tcoin.takamakachain.utils.simpleWallet.SWTracker;
 import com.h2tcoin.takamakachain.utils.simpleWallet.panels.support.ApiBalanceBean;
 import com.h2tcoin.takamakachain.utils.simpleWallet.panels.support.identicon.IdentiColorHelper;
@@ -54,7 +56,10 @@ import static com.takamakachain.walletweb.resources.support.ProjectHelper.ENC_LA
 import static com.takamakachain.walletweb.resources.support.ProjectHelper.ENC_SEP;
 import com.takamakachain.walletweb.resources.support.TransactionsHelper;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.util.Arrays;
@@ -62,6 +67,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
+import org.apache.commons.io.FileUtils;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.TikaCoreProperties;
@@ -111,6 +117,7 @@ public class JavaEE8Resource {
     @Path("getPage/{pageid}")
     @Produces(MediaType.TEXT_HTML)
     public String getPage(@PathParam("pageid") String pageid) throws FileNotFoundException, IOException, InterruptedException {
+        System.out.println("DIO: " + pageid);
         BufferedReader br = new BufferedReader(new FileReader(servletContext.getRealPath("/templates") + "/" + pageid + ".html"));
         String line;
         String contentResponse = "";
@@ -173,17 +180,57 @@ public class JavaEE8Resource {
     @Path("getFileMeta")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public void uploadFile(@FormDataParam("file") InputStream uploadedInputStream,
-            @FormDataParam("file") FormDataContentDisposition fileDetail) throws IOException {
+    public Response uploadFile(@FormDataParam("file") InputStream uploadedInputStream,
+            @FormDataParam("file") FormDataContentDisposition fileDetail) throws IOException, SAXException, TikaException {
+        String base64file;
 
-        System.out.println(fileDetail.getFileName());
-//        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-//        byte[] buffer = new byte[1024];
-//        int len;
-//
-//        while ((len = uploadedInputStream.read(buffer)) != -1) {
-//            byteArrayOutputStream.write(buffer, 0, len);
-//        }
+        BodyContentHandler bodyContentHandler = new BodyContentHandler();
+        Metadata metadata = new Metadata();
+        metadata.set(Metadata.RESOURCE_NAME_KEY, fileDetail.getFileName());
+        Parser parser = new AutoDetectParser();
+        parser.parse(uploadedInputStream, bodyContentHandler, metadata, new ParseContext());
+
+        FilePropertiesBean fpb = new FilePropertiesBean();
+
+        Arrays.stream(metadata.names()).parallel().forEach((String meta) -> {
+            String value = metadata.get(meta);
+            boolean selected = false;
+            if (!TkmTextUtils.isNullOrBlank(value)) {
+                selected = true;
+            }
+            fpb.add(meta, metadata.get(meta), false, selected);
+        });
+
+        File selectedFile = new File(fileDetail.getFileName());
+        copyInputStreamToFile(uploadedInputStream, selectedFile);
+
+        byte[] byteFile = FileUtils.readFileToByteArray(selectedFile);
+
+        if (byteFile.length > 4004215) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        } else {
+
+            base64file = TkmSignUtils.fromByteArrayToB64URL(byteFile);
+
+            fpb.setFileContent(base64file);
+            
+            fpb.setFileSize(ProjectHelper.convertToStringRepresentationFileSize(base64file.getBytes().length));
+            return Response.status(Response.Status.OK).entity(fpb).build();
+
+        }
+    }
+
+    private static void copyInputStreamToFile(InputStream inputStream, File file)
+            throws IOException {
+
+        // append = false
+        try ( FileOutputStream outputStream = new FileOutputStream(file, false)) {
+            int read;
+            byte[] bytes = new byte[8192];
+            while ((read = inputStream.read(bytes)) != -1) {
+                outputStream.write(bytes, 0, read);
+            }
+        }
 
     }
 
@@ -228,7 +275,7 @@ public class JavaEE8Resource {
     @Path("signedRequest")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public static final Response signedRequest(SignedRequestBean srb) throws TransactionCanNotBeCreatedException, IOException {
+    public static final Response signedRequest(SignedRequestBean srb) throws TransactionCanNotBeCreatedException, IOException, ProtocolException, ProtocolException, TkmDataException, TkmDataException, TkmDataException, TkmDataException {
         String plainPass;
         boolean passwordEncoded = false;
         SignedResponseBean signedResponse = new SignedResponseBean();

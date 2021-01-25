@@ -5,11 +5,13 @@
  */
 package com.takamakachain.walletweb.resources;
 
+import java.io.Serializable;
+
 /**
  *
  * @author isacco
  */
-public class WalletIdenticonResponseBean {
+public class WalletIdenticonResponseBean implements Serializable {
     private String address;
     private String identiconUrlBase64;
 

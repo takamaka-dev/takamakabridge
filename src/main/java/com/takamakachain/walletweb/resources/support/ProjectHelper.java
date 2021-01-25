@@ -51,7 +51,6 @@ public class ProjectHelper {
 
     public static final String ENC_LABEL = "isEncriptedPasswordWithAES256";
     public static final String ENC_SEP = "§";
-    
 
     public static final void initProject(String rootFolder) throws IOException, SaturnException, ClassNotFoundException, URISyntaxException, HashEncodeException, HashAlgorithmNotFoundException, HashProviderNotFoundException {
 //        Package[] definedPackages = Thread.currentThread().getContextClassLoader().getDefinedPackages();
@@ -142,9 +141,9 @@ public class ProjectHelper {
         }
         //method creates a new file if it doesn't exist and returns the keystore object if it did exist
         KeyStore ks = CryptoHelper.getKeyStoreOrNew(InternalParameters.getInternalWebWalletSecretKeyFilePath());
-        
+
         sk = CryptoHelper.getWebSessionSecret(ks);
-        
+
         return sk;
     }
 
@@ -180,7 +179,8 @@ public class ProjectHelper {
         }
         return keyStore;
     }
-/*
+
+    /*
     public static final SecretKey getWebSessionSecret(KeyStore ks) throws IOException {
         try {
             return getWebSessionSecret(ks);
@@ -188,7 +188,7 @@ public class ProjectHelper {
             throw new IOException(ex);
         }
     }
-    */
+     */
     public static final String doPost(String passedUrl, String key, String param) throws MalformedURLException, ProtocolException, IOException {
         String r = null;
         URL url = new URL(passedUrl);
@@ -225,6 +225,35 @@ public class ProjectHelper {
         http.disconnect();
 
         return r;
+    }
+
+    public static String convertToStringRepresentationFileSize(final long value) {
+        long K = 1024;
+        long M = K * K;
+        long G = M * K;
+        long T = G * K;
+        final long[] dividers = new long[]{T, G, M, K, 1};
+        final String[] units = new String[]{"TB", "GB", "MB", "KB", "Byte"};
+        if (value < 1) {
+            throw new IllegalArgumentException("Invalid file size: " + value);
+        }
+        String result = null;
+        for (int i = 0; i < dividers.length; i++) {
+            final long divider = dividers[i];
+            if (value >= divider) {
+                result = format(value, divider, units[i]);
+                break;
+            }
+        }
+        return result;
+    }
+
+    private static String format(final long value,
+            final long divider,
+            final String unit) {
+        final double result
+                = divider > 1 ? (double) value / (double) divider : (double) value;
+        return String.format("%.1f %s", Double.valueOf(result), unit);
     }
 
 }

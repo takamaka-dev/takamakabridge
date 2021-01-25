@@ -137,6 +137,8 @@ and open the template in the editor.
         };
 
         window.tags = {};
+        window.meta = {};
+        window.frb = {};
         let numberOfInsertedTags = 0;
         if (numberOfInsertedTags === 0) {
             $('.tags-container').html('<span class="no-results">No result :(</span>');
@@ -176,11 +178,76 @@ and open the template in the editor.
         });
 
         $('#fileupload').on('change', function () {
-            var fd = new FormData();
+            console.log('a!!!!');
+            var data = new FormData();
             var file = $(this)[0].files[0];
-            fd.append('file', file);
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', 'http://localhost:8080/'+window.webappname+'/resources/javaee8/getFileMeta');
+            data.append('file', file);
+
+            $.ajax({
+                url: 'http://localhost:8080/' + window.webappname + '/resources/javaee8/getFileMeta',
+                data: data,
+                cache: false,
+                contentType: false,
+                processData: false,
+                method: 'POST',
+                success: function (data) {
+                    console.log(data);
+                    window.frb = data;
+                    let result = "";
+                    $.each(data['all'], function (index, value) {
+                        meta[value['key']] = value['value'];
+                        result += value['key'] + "-" + value['value'] + "\n";
+                    });
+                    $('.mimetype-area').val(result + "\n" + "FILE SIZE: " + data['fileSize']);
+                }
+            });
+        });
+
+        $('.verify-btn').on('click', function (e) {
+            e.preventDefault();
+            if (!checkFields(true)) {
+                return false;
+            }
+
+            window.signedResponseBean['request']['itb'] = {};
+            fillPayItb(
+                    $('#fromAddr').val(),
+                    null,
+                    $('#message').val(),
+                    new Date(),
+                    null,
+                    null,
+                    'BLOB',
+                    null,
+                    null,
+                    null);
+
+            window.signedResponseBean['request']['tags'] = "";
+
+            $.each(window.tags, function(index, value) {
+                window.signedResponseBean['request']['tags'] += value + ",";
+            });
+
+            window.signedResponseBean['request']['rt'] = 'BLOB';
+            window.signedResponseBean['request']['frb'] = window.frb;
+            
+            $.ajax({
+                headers: {
+                    'Content-Type': "application/json"
+                },
+                type: 'POST',
+                url: 'http://localhost:8080/' + window.webappname + '/resources/javaee8/signedRequest',
+                contentType: "application/json",
+                data: JSON.stringify(window.signedResponseBean['request']),
+                success: function (dataRes) {
+                    console.log(dataRes);
+                    $('.collapse-section').trigger('click');
+                    $('#trxCost').html('<b>CPU: ' + dataRes['feeBean']['cpu'] / Math.pow(10, 9) + ' MEM: ' + dataRes['feeBean']['memory'] / Math.pow(10, 9) + ' DISK: ' + dataRes['feeBean']['disk'] / Math.pow(10, 9) + '</b>');
+                    $('#trxJson').val(dataRes['trxJson']);
+                    window.signedResponseBean['request']['trxJson'] = dataRes['trxJson'];
+                    $('.submit-button').prop('disabled', false);
+                }
+            });
         });
 
         $('.nav-btn').on('click', function () {

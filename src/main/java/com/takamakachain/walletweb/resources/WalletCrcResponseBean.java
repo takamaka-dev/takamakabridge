@@ -5,11 +5,13 @@
  */
 package com.takamakachain.walletweb.resources;
 
+import java.io.Serializable;
+
 /**
  *
  * @author isacco
  */
-public class WalletCrcResponseBean {
+public class WalletCrcResponseBean implements Serializable {
     private String address;
     private String crcAddress;
 

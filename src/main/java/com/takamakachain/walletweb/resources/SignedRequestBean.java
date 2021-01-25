@@ -21,6 +21,24 @@ public class SignedRequestBean implements Serializable {
     private WebHelper.RequestType rt;
     private String uuid;
     private String trxJson;
+    private FilePropertiesBean frb;
+    private String tags;
+
+    public FilePropertiesBean getFrb() {
+        return frb;
+    }
+
+    public void setFrb(FilePropertiesBean frb) {
+        this.frb = frb;
+    }
+
+    public String getTags() {
+        return tags;
+    }
+
+    public void setTags(String tags) {
+        this.tags = tags;
+    }
 
     public String getTrxJson() {
         return trxJson;
