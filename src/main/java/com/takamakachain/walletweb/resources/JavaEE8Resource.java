@@ -53,13 +53,8 @@ import static com.takamakachain.walletweb.resources.support.CryptoHelper.getWebS
 import static com.takamakachain.walletweb.resources.support.ProjectHelper.ENC_LABEL;
 import static com.takamakachain.walletweb.resources.support.ProjectHelper.ENC_SEP;
 import com.takamakachain.walletweb.resources.support.TransactionsHelper;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.util.Arrays;
@@ -67,8 +62,6 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.WebApplicationException;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.TikaCoreProperties;
@@ -76,6 +69,8 @@ import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
 import org.apache.tika.sax.BodyContentHandler;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.xml.sax.SAXException;
 
 /**
@@ -178,18 +173,18 @@ public class JavaEE8Resource {
     @Path("getFileMeta")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public static final Response getFileMeta(@PathParam("file") InputStream fileInputStream) throws IOException, SAXException, TikaException {
+    public void uploadFile(@FormDataParam("file") InputStream uploadedInputStream,
+            @FormDataParam("file") FormDataContentDisposition fileDetail) throws IOException {
 
-        BodyContentHandler bodyContentHandler = new BodyContentHandler();
-        Metadata metadata = new Metadata();
-        metadata.set(Metadata.RESOURCE_NAME_KEY, "UploadedFile");
-        Parser parser = new AutoDetectParser();
-        parser.parse(fileInputStream, bodyContentHandler, metadata, new ParseContext());
-        System.out.println("Mime: " + metadata.get(Metadata.CONTENT_TYPE));
-        System.out.println("Title: " + metadata.get(TikaCoreProperties.TITLE));
-        System.out.println("Author: " + metadata.get(TikaCoreProperties.CREATOR));
-        System.out.println("metas: " + Arrays.toString(metadata.names()));
-        return Response.status(Response.Status.OK).build();
+        System.out.println(fileDetail.getFileName());
+//        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+//        byte[] buffer = new byte[1024];
+//        int len;
+//
+//        while ((len = uploadedInputStream.read(buffer)) != -1) {
+//            byteArrayOutputStream.write(buffer, 0, len);
+//        }
+
     }
 
     @POST
