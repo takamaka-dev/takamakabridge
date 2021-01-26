@@ -75,7 +75,7 @@ populateUserMenu = dataInputUserWallet => {
     window.signedResponseBean = dataInputUserWallet;
     console.log(dataInputUserWallet);
     $('#wallet-address').html(dataInputUserWallet['walletAddress']);
-    $('#wallet-key').val(dataInputUserWallet['walletKey']);
+    $('#wallet-key').html(dataInputUserWallet['walletKey']);
     $.ajax({
         headers: {
             'Content-Type': "application/json"
