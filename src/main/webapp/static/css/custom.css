@@ -123,6 +123,10 @@ span.no-results {
     padding:10px
 }
 
+.main-logged-menu .main-btn-container.first, .main-logged-menu .main-btn-container.third {
+    max-height: 256px
+}
+
 .main-logged-menu .main-btn-container button.first {
     margin-top: 5px;
     width: 100%
