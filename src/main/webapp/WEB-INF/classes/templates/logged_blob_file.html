@@ -138,7 +138,6 @@ and open the template in the editor.
 
     $(document).ready(function () {
         deleteTag = el => {
-            console.log(el);
             el.remove();
             delete window.tags[el.attr('data-value-key')];
             if (Object.keys(window.tags).length === 0) {
@@ -172,7 +171,6 @@ and open the template in the editor.
                         + $(this).val() + '</div>'
                         );
                 $(this).val('');
-                console.log(window.tags);
             }
 
         });
@@ -183,12 +181,10 @@ and open the template in the editor.
 
         $('.upload-btn').click(function (e) {
             e.preventDefault();
-            console.log('a');
             $('#fileupload').trigger('click');
         });
 
         $('#fileupload').on('change', function () {
-            console.log('a!!!!');
             var data = new FormData();
             var file = $(this)[0].files[0];
             data.append('file', file);
@@ -201,7 +197,6 @@ and open the template in the editor.
                 processData: false,
                 method: 'POST',
                 success: function (data) {
-                    console.log(data);
                     window.frb = data;
                     let result = "";
                     $.each(data['all'], function (index, value) {
@@ -239,7 +234,6 @@ and open the template in the editor.
                 window.signedResponseBean['request']['tags'].push(value);
             });
 
-            console.log(window.signedResponseBean['request']['tags']);
 
             window.signedResponseBean['request']['rt'] = 'BLOB';
             window.signedResponseBean['request']['frb'] = window.frb;
@@ -255,11 +249,13 @@ and open the template in the editor.
 
             window.signedResponseBean['request']['itb']['message'] = JSON.stringify(sticazzi);
 
-            console.log(window.signedResponseBean['request']['itb']['message']);
 
             delete window.signedResponseBean['request']['frb'];
             delete window.signedResponseBean['request']['tags'];
-
+            
+            console.log(window.signedResponseBean['request']);
+            
+            
             $.ajax({
                 headers: {
                     'Content-Type': "application/json"
@@ -269,7 +265,6 @@ and open the template in the editor.
                 contentType: "application/json",
                 data: JSON.stringify(window.signedResponseBean['request']),
                 success: function (dataRes) {
-                    console.log(dataRes);
                     $('.collapse-section').trigger('click');
                     $('#trxCost').html('<b>CPU: ' + dataRes['feeBean']['cpu'] / Math.pow(10, 9) + ' MEM: ' + dataRes['feeBean']['memory'] / Math.pow(10, 9) + ' DISK: ' + dataRes['feeBean']['disk'] / Math.pow(10, 9) + '</b>');
                     $('#trxJson').val(dataRes['trxJson']);
@@ -287,6 +282,7 @@ and open the template in the editor.
         $('#new-upload-file-form').submit(function (e) {
             e.preventDefault();
             window.signedResponseBean['request']['rt'] = 'SEND_TRX';
+            console.log(window.signedResponseBean['request']);
             $.ajax({
                 headers: {
                     'Content-Type': "application/json"
