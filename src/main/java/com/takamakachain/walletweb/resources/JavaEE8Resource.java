@@ -58,6 +58,7 @@ import com.takamakachain.walletweb.resources.support.WebHelper;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.util.Arrays;
@@ -199,7 +200,7 @@ public class JavaEE8Resource {
         });
 
         File selectedFile = new File(fileDetail.getFileName());
-        copyInputStreamToFile(uploadedInputStream, selectedFile);
+        copyInputStreamToFileJava9(uploadedInputStream, selectedFile);
 
         byte[] byteFile = FileUtils.readFileToByteArray(selectedFile);
 
@@ -210,24 +211,27 @@ public class JavaEE8Resource {
             base64file = TkmSignUtils.fromByteArrayToB64URL(byteFile);
 
             fpb.setFileContent(base64file);
-            
+
             fpb.setFileSize(ProjectHelper.convertToStringRepresentationFileSize(base64file.getBytes().length));
             return Response.status(Response.Status.OK).entity(fpb).build();
 
         }
     }
 
-    private static void copyInputStreamToFile(InputStream inputStream, File file)
+    // Java 9
+    private static void copyInputStreamToFileJava9(InputStream input, File file)
             throws IOException {
 
         // append = false
-        try ( FileOutputStream outputStream = new FileOutputStream(file, false)) {
-            int read;
-            byte[] bytes = new byte[8192];
-            while ((read = inputStream.read(bytes)) != -1) {
-                outputStream.write(bytes, 0, read);
-            }
-        }
+//        try ( OutputStream output = new FileOutputStream(file, false)) {
+//            input.transferTo(output);
+//        }
+
+        OutputStream out = null;
+        out = new FileOutputStream(file, false);
+        input.transferTo(out);
+        input.close();
+        out.close();
 
     }
 
