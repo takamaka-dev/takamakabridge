@@ -123,10 +123,20 @@ and open the template in the editor.
                 <div class="col-md-8 text-left">
                     <button class="btn btn-secondary nav-btn" data-page="logged_home_page">Back</button>
                 </div>
+
                 <div class="col-md-4 text-right">
                     <div class="btn-group" role="group" aria-label="Basic example">
                         <button class="btn btn-secondary mr-2 font-weight-bold verify-btn">Verify</button>
-                        <button type="submit" disabled="disabled" class="btn btn-primary submit-button font-weight-bold">Submit</button>
+                        <!--<button type="submit" disabled="disabled" class="btn btn-primary submit-button font-weight-bold">Submit</button>-->
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle font-weight-bold" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Submit to
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item submit" data-env="prod" href="#">Production Net</a>
+                                <a class="dropdown-item submit" data-env="test" href="#">Test net</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -194,6 +204,11 @@ and open the template in the editor.
                 }
             });
         });
+        
+        $('.submit').on('click', function() {
+            window.signedResponseBean['request']['env'] = $(this).attr('data-env');
+            $('#new-pay-form').submit();
+        });
 
         $('#new-pay-form').submit(function(e) {
             e.preventDefault();
@@ -226,6 +241,9 @@ and open the template in the editor.
         $('#fromAddr').val($('#wallet-address').html());
         $('#toAddr').on('change', function () {
             console.log($(this).val());
+            
+            $(this).val($(this).val().trim());
+            
             window.signedResponseBean['passedData'] = $(this).val();
             $.ajax({
                 headers: {

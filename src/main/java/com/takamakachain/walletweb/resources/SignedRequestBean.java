@@ -6,7 +6,6 @@
 package com.takamakachain.walletweb.resources;
 
 import com.h2tcoin.takamakachain.transactions.InternalTransactionBean;
-import com.h2tcoin.takamakachain.utils.threadSafeUtils.TkmTextUtils;
 import com.takamakachain.walletweb.resources.support.WebHelper;
 import java.io.Serializable;
 
@@ -22,7 +21,24 @@ public class SignedRequestBean implements Serializable {
     private String uuid;
     private String trxJson;
     private FilePropertiesBean frb;
-    private String tags;
+    private String[] tags;
+    private String env;
+
+    public String getEnv() {
+        return env;
+    }
+
+    public void setEnv(String env) {
+        this.env = env;
+    }
+
+    public String[] getTags() {
+        return tags;
+    }
+
+    public void setTags(String[] tags) {
+        this.tags = tags;
+    }
 
     public FilePropertiesBean getFrb() {
         return frb;
@@ -30,14 +46,6 @@ public class SignedRequestBean implements Serializable {
 
     public void setFrb(FilePropertiesBean frb) {
         this.frb = frb;
-    }
-
-    public String getTags() {
-        return tags;
-    }
-
-    public void setTags(String tags) {
-        this.tags = tags;
     }
 
     public String getTrxJson() {

@@ -17,6 +17,14 @@ import java.util.concurrent.ConcurrentSkipListSet;
  */
 public class FilePropertiesBean {
     private ConcurrentSkipListMap<String, FilePropertyKeyValueBean> metas;
+
+    public ConcurrentSkipListMap<String, FilePropertyKeyValueBean> getMetas() {
+        return metas;
+    }
+
+    public void setMetas(ConcurrentSkipListMap<String, FilePropertyKeyValueBean> metas) {
+        this.metas = metas;
+    }
     private static final Object LOCK = new Object();
     private String fileSize;
     private String fileContent;
