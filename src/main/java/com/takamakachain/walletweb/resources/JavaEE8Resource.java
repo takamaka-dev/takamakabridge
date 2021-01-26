@@ -59,14 +59,21 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.security.CodeSource;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
+import java.security.ProtectionDomain;
 import java.util.Arrays;
+import java.util.stream.Stream;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
+import javax.faces.context.FacesContext;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
@@ -101,11 +108,10 @@ public class JavaEE8Resource {
         }
     }
 
-    @Context
-    ServletContext servletContext;
-
+    //@Context
+    //ServletContext servletContext;
     @GET
-    public Response ping() {
+    public static final Response ping() {
         return Response
                 .ok("ping")
                 .build();
@@ -114,15 +120,12 @@ public class JavaEE8Resource {
     @GET
     @Path("getPage/{pageid}")
     @Produces(MediaType.TEXT_HTML)
-    public String getPage(@PathParam("pageid") String pageid) throws FileNotFoundException, IOException, InterruptedException {
-        System.out.println("DIO: " + pageid);
-        BufferedReader br = new BufferedReader(new FileReader(servletContext.getRealPath("/templates") + "/" + pageid + ".html"));
-        String line;
-        String contentResponse = "";
-        while ((line = br.readLine()) != null) {
-            contentResponse += line;
-        }
-        return contentResponse;
+    public static final String getPage(@PathParam("pageid") String pageid) throws FileNotFoundException, IOException, InterruptedException {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        String resourceName = pageid + ".html";
+        InputStream resourceAsStream = classLoader.getResourceAsStream("templates/" + resourceName);
+        String toString = IOUtils.toString(resourceAsStream, StandardCharsets.UTF_8.name());
+        return toString;
     }
 
     @POST
@@ -178,7 +181,7 @@ public class JavaEE8Resource {
     @Path("getFileMeta")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response uploadFile(@FormDataParam("file") InputStream uploadedInputStream,
+    public static final Response uploadFile(@FormDataParam("file") InputStream uploadedInputStream,
             @FormDataParam("file") FormDataContentDisposition fileDetail) throws IOException, SAXException, TikaException {
         String base64file;
 
@@ -226,7 +229,6 @@ public class JavaEE8Resource {
 //        try ( OutputStream output = new FileOutputStream(file, false)) {
 //            input.transferTo(output);
 //        }
-
         OutputStream out = null;
         out = new FileOutputStream(file, false);
         input.transferTo(out);
@@ -395,7 +397,7 @@ public class JavaEE8Resource {
     @Path("createWallet")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
-    public Response createWallet(WalletBean wallet) throws WalletException {
+    public static final Response createWallet(WalletBean wallet) throws WalletException {
         System.out.println(wallet.getWalletName());
         System.out.println(wallet.getWalletCypher());
 
@@ -459,7 +461,7 @@ public class JavaEE8Resource {
 //    }
     @GET
     @Path("testy/{name}")
-    public String ping(@PathParam("name") String name) {
+    public static final String ping(@PathParam("name") String name) {
         return "Hello " + name;
     }
 
