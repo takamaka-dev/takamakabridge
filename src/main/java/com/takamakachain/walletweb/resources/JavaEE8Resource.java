@@ -56,6 +56,7 @@ import static com.takamakachain.walletweb.resources.support.ProjectHelper.ENC_SE
 import com.takamakachain.walletweb.resources.support.TransactionsHelper;
 import com.takamakachain.walletweb.resources.support.WebHelper;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -185,11 +186,18 @@ public class JavaEE8Resource {
             @FormDataParam("file") FormDataContentDisposition fileDetail) throws IOException, SAXException, TikaException {
         String base64file;
 
+        byte[] byteFile = IOUtils.toByteArray(uploadedInputStream);
+            
+        File temp = new File(fileDetail.getFileName());
+        FileUtils.writeByteArrayToFile(temp, byteFile);
+        
+        InputStream targetStreamMeta = new FileInputStream(temp);
+        
         BodyContentHandler bodyContentHandler = new BodyContentHandler();
         Metadata metadata = new Metadata();
         metadata.set(Metadata.RESOURCE_NAME_KEY, fileDetail.getFileName());
         Parser parser = new AutoDetectParser();
-        parser.parse(uploadedInputStream, bodyContentHandler, metadata, new ParseContext());
+        parser.parse(targetStreamMeta, bodyContentHandler, metadata, new ParseContext());
 
         FilePropertiesBean fpb = new FilePropertiesBean();
 
@@ -202,10 +210,14 @@ public class JavaEE8Resource {
             fpb.add(meta, metadata.get(meta), false, selected);
         });
 
-        File selectedFile = new File(fileDetail.getFileName());
+        /*File selectedFile = new File(fileDetail.getFileName());
         copyInputStreamToFileJava9(uploadedInputStream, selectedFile);
-
-        byte[] byteFile = FileUtils.readFileToByteArray(selectedFile);
+         */
+        //byte[] byteFile =  /*FileUtils.readFileToByteArray(selectedFile);*/
+        
+        
+        
+        
 
         if (byteFile.length > 4004215) {
             return Response.status(Response.Status.BAD_REQUEST).build();
