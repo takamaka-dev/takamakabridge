@@ -89,6 +89,7 @@ public class CryptoHelper {
             fis = new FileInputStream(keystore.toString());//open keystore
         }
         KeyStore ks = KeyStore.getInstance("pkcs12");
+        //KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
         ks.load(fis, keyStorePassword);
         if (ks.size() <= 0) {
             //load new key
