@@ -55,6 +55,7 @@ import static com.takamakachain.walletweb.resources.support.ProjectHelper.ENC_LA
 import static com.takamakachain.walletweb.resources.support.ProjectHelper.ENC_SEP;
 import com.takamakachain.walletweb.resources.support.TransactionsHelper;
 import com.takamakachain.walletweb.resources.support.WebHelper;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -186,13 +187,13 @@ public class JavaEE8Resource {
             @FormDataParam("file") FormDataContentDisposition fileDetail) throws IOException, SAXException, TikaException {
         String base64file;
 
-        byte[] byteFile = IOUtils.toByteArray(uploadedInputStream);
-            
+        byte[] byteFile = toByteArray(uploadedInputStream);
+
         File temp = new File(fileDetail.getFileName());
         FileUtils.writeByteArrayToFile(temp, byteFile);
-        
+
         InputStream targetStreamMeta = new FileInputStream(temp);
-        
+
         BodyContentHandler bodyContentHandler = new BodyContentHandler();
         Metadata metadata = new Metadata();
         metadata.set(Metadata.RESOURCE_NAME_KEY, fileDetail.getFileName());
@@ -210,16 +211,8 @@ public class JavaEE8Resource {
             fpb.add(meta, metadata.get(meta), false, selected);
         });
 
-        /*File selectedFile = new File(fileDetail.getFileName());
-        copyInputStreamToFileJava9(uploadedInputStream, selectedFile);
-         */
-        //byte[] byteFile =  /*FileUtils.readFileToByteArray(selectedFile);*/
-        
-        
-        
-        
-
         if (byteFile.length > 4004215) {
+            temp.delete();
             return Response.status(Response.Status.BAD_REQUEST).build();
         } else {
 
@@ -228,25 +221,25 @@ public class JavaEE8Resource {
             fpb.setFileContent(base64file);
 
             fpb.setFileSize(ProjectHelper.convertToStringRepresentationFileSize(base64file.getBytes().length));
+            temp.delete();
             return Response.status(Response.Status.OK).entity(fpb).build();
 
         }
+
     }
 
-    // Java 9
-    private static void copyInputStreamToFileJava9(InputStream input, File file)
-            throws IOException {
+    public static byte[] toByteArray(InputStream in) throws IOException {
 
-        // append = false
-//        try ( OutputStream output = new FileOutputStream(file, false)) {
-//            input.transferTo(output);
-//        }
-        OutputStream out = null;
-        out = new FileOutputStream(file, false);
-        input.transferTo(out);
-        input.close();
-        out.close();
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
 
+        byte[] buffer = new byte[1024];
+        int len;
+
+        while ((len = in.read(buffer)) != -1) {
+            os.write(buffer, 0, len);
+        }
+
+        return os.toByteArray();
     }
 
     @POST
