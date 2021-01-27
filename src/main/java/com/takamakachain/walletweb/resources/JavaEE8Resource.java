@@ -322,6 +322,7 @@ public class JavaEE8Resource {
                             passwordEncoded = true;
                         } catch (IOException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException ex) {
                             System.out.println("Malformed Encrypted Secret");
+                            ex.printStackTrace();
                             return Response.status(400).entity(signedResponse).build();
                         }
                     } else {

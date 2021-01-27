@@ -239,15 +239,15 @@ and open the template in the editor.
             window.signedResponseBean['request']['frb'] = window.frb;
 
 
-            let sticazzi = {};
+            let objData = {};
             $.each(window.signedResponseBean['request']['frb']['selected'], function (key, value) {
-                sticazzi[key] = value;
+                objData[key] = value;
             });
 
-            sticazzi['tags'] = window.signedResponseBean['request']['tags'];
-            sticazzi['data'] = window.signedResponseBean['request']['frb']['fileContent'];
+            objData['tags'] = window.signedResponseBean['request']['tags'];
+            objData['data'] = window.signedResponseBean['request']['frb']['fileContent'];
 
-            window.signedResponseBean['request']['itb']['message'] = JSON.stringify(sticazzi);
+            window.signedResponseBean['request']['itb']['message'] = JSON.stringify(objData);
 
 
             delete window.signedResponseBean['request']['frb'];

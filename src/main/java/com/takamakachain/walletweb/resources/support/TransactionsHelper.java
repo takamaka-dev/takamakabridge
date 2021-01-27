@@ -100,6 +100,7 @@ public class TransactionsHelper {
                 itb.setNotBefore(new Date((new Date()).getTime() + 60000L * 5));
                 
                 if (!TransactionsHelper.makeJsonTrx(signedResponse, itb, iwk, srb.getWallet().getAddressNumber())) {
+                    System.out.println("Failed");
                     return false;
                 }
 
