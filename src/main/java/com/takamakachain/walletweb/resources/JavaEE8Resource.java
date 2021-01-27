@@ -11,6 +11,7 @@ import com.h2tcoin.takamakachain.globalContext.KeyContexts;
 import static com.h2tcoin.takamakachain.globalContext.KeyContexts.WalletCypher.BCQTESLA_PS_1_R2;
 import com.h2tcoin.takamakachain.saturn.exceptions.SaturnException;
 import com.h2tcoin.takamakachain.tkmdata.exceptions.TkmDataException;
+import com.h2tcoin.takamakachain.transactions.InternalTransactionBean;
 import com.h2tcoin.takamakachain.utils.F;
 import com.h2tcoin.takamakachain.utils.Log;
 import com.h2tcoin.takamakachain.utils.simpleWallet.SWTracker;
@@ -84,6 +85,7 @@ import org.apache.tika.parser.Parser;
 import org.apache.tika.sax.BodyContentHandler;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.json.JSONObject;
 import org.xml.sax.SAXException;
 
 /**
@@ -176,6 +178,28 @@ public class JavaEE8Resource {
         wCrc.setCrcAddress(crc.toUpperCase());
 
         return Response.status(Response.Status.OK).entity(wCrc).build();
+
+    }
+
+    @POST
+    @Path("uploadBlob")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public static final Response uploadBlobFromJson(TransactionMessageBean tmb) {
+        JSONObject jsonObject = ProjectHelper.isJSONValid(tmb.getMessage());
+        if (jsonObject == null) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+
+        InternalTransactionBean itb = null;
+        itb.setEpoch(null);
+        itb.setGreenValue(null);
+        itb.setRedValue(null);
+        itb.setSlot(null);
+        itb.setTo(null);
+        itb.setTransactionHash(null);
+
+        return Response.status(Response.Status.CREATED).
+                entity(jsonObject.toString()).build();
 
     }
 
@@ -273,41 +297,18 @@ public class JavaEE8Resource {
 
     }
 
-    /**
-     * status codes https://developer.mozilla.org/it/docs/Web/HTTP/Status
-     *
-     * @param srb
-     * @return
-     */
-    @POST
-    @Path("signedRequest")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public static final Response signedRequest(SignedRequestBean srb) throws TransactionCanNotBeCreatedException, IOException, ProtocolException, ProtocolException, TkmDataException, TkmDataException, TkmDataException, TkmDataException {
-        String plainPass;
-        boolean passwordEncoded = false;
-        SignedResponseBean signedResponse = new SignedResponseBean();
-        //isEncriptedPasswordWithAES256§fc1c35134a497afb7a28da9297b7810e
-        if (srb == null) {
-            System.out.println("Empty request");
-            return Response.status(400).entity(signedResponse).build();
-        }
-        signedResponse.setRequest(srb);
-        signedResponse.setSignedResponse(srb.getRt().name());
-        signedResponse.setWalletKey(srb.getWallet().getAddressNumber());
-
-        WalletBean wb = srb.getWallet();
+    public static final InstanceWalletKeystoreInterface validateWalletCredentials(WalletBean wb, SignedResponseBean signedResponse) throws IOException {
         if (TkmTextUtils.isNullOrBlank(wb.getWalletPassword())) {
             System.out.println("Empty password");
-            return Response.status(400).entity(signedResponse).build();
+            return null;
         }
         if (TkmTextUtils.isNullOrBlank(wb.getWalletName())) {
             System.out.println("Empty wallet name");
-            return Response.status(400).entity(signedResponse).build();
+            return null;
         }
 
-        plainPass = wb.getWalletPassword();
-
+        String plainPass = wb.getWalletPassword();
+        boolean passwordEncoded = false;
         if (wb.getWalletPassword().contains(ENC_SEP)) {
             System.out.println("Possible password encrypted");
             String[] spResult = wb.getWalletPassword().split(ENC_SEP, 2);
@@ -323,7 +324,7 @@ public class JavaEE8Resource {
                         } catch (IOException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException ex) {
                             System.out.println("Malformed Encrypted Secret");
                             ex.printStackTrace();
-                            return Response.status(400).entity(signedResponse).build();
+                            return null;
                         }
                     } else {
                         System.out.println("password with " + ENC_SEP + " ... continue");
@@ -334,31 +335,77 @@ public class JavaEE8Resource {
                 }
             } else {
                 System.out.println("Decode Error");
-                return Response.status(500).entity(signedResponse).build();
+                return null;
             }
         }
 
+        InstanceWalletKeystoreInterface iwk = null;
         try {
-            System.out.println("req");
-            InstanceWalletKeystoreInterface iwk;
-            System.out.println("srb.getWallet().getWalletCypher(): " + srb.getWallet().getWalletCypher());
-            switch (srb.getWallet().getWalletCypher()) {
+            switch (wb.getWalletCypher()) {
                 case "BCQTESLA_PS_1":
                     //SWTracker.i().setIwk(new InstanceWalletKeyStoreBCQTESLAPSSC1Round1(srb.getWallet().getWalletName(), srb.getWallet().getWalletPassword()));
-                    iwk = new InstanceWalletKeyStoreBCQTESLAPSSC1Round1(srb.getWallet().getWalletName(), plainPass);
+                    iwk = new InstanceWalletKeyStoreBCQTESLAPSSC1Round1(wb.getWalletName(), plainPass);
                     break;
                 case "BCQTESLA_PS_1_R2":
                     //SWTracker.i().setIwk(new InstanceWalletKeyStoreBCQTESLAPSSC1Round2(srb.getWallet().getWalletName(), plainPass));
-                    iwk = new InstanceWalletKeyStoreBCQTESLAPSSC1Round2(srb.getWallet().getWalletName(), plainPass);
+                    iwk = new InstanceWalletKeyStoreBCQTESLAPSSC1Round2(wb.getWalletName(), plainPass);
                     break;
                 case "Ed25519BC":
                     //SWTracker.i().setIwk(new InstanceWalletKeyStoreBCED25519(srb.getWallet().getWalletName(), plainPass));
-                    iwk = new InstanceWalletKeyStoreBCED25519(srb.getWallet().getWalletName(), plainPass);
+                    iwk = new InstanceWalletKeyStoreBCED25519(wb.getWalletName(), plainPass);
                     break;
                 default:
-                    System.out.println("Unsupported Cypher " + srb.getWallet().getWalletCypher());
+                    System.out.println("Unsupported Cypher " + wb.getWalletCypher());
                     iwk = null;
             }
+            
+            if (!passwordEncoded && null != signedResponse) {
+                try {
+                    IvParameterSpec ivParameterSpec;
+                    ivParameterSpec = ProjectHelper.getIVParameterSpec(wb.getWalletName());
+                    String encryptPasswordHEX = encryptPasswordHEX(plainPass, ivParameterSpec, webSessionSecret);
+                    signedResponse.getRequest().getWallet().setWalletPassword(ENC_LABEL + ENC_SEP + encryptPasswordHEX);
+                } catch (InvalidAlgorithmParameterException | InvalidKeyException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException ex) {
+                    ex.printStackTrace();
+                    System.out.println("ENC ERROR");
+                    return null;
+                }
+            }
+            
+        } catch (UnlockWalletException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+
+        return iwk;
+
+    }
+
+    /**
+     * status codes https://developer.mozilla.org/it/docs/Web/HTTP/Status
+     *
+     * @param srb
+     * @return
+     */
+    @POST
+    @Path("signedRequest")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public static final Response signedRequest(SignedRequestBean srb) throws TransactionCanNotBeCreatedException, IOException, ProtocolException, ProtocolException, TkmDataException, TkmDataException, TkmDataException, TkmDataException {
+        SignedResponseBean signedResponse = new SignedResponseBean();
+        //isEncriptedPasswordWithAES256§fc1c35134a497afb7a28da9297b7810e
+        if (srb == null) {
+            System.out.println("Empty request");
+            return Response.status(400).entity(signedResponse).build();
+        }
+        signedResponse.setRequest(srb);
+        signedResponse.setSignedResponse(srb.getRt().name());
+        signedResponse.setWalletKey(srb.getWallet().getAddressNumber());
+
+        InstanceWalletKeystoreInterface iwk;
+
+        try {
+            iwk = validateWalletCredentials(srb.getWallet(), signedResponse);
 
             if (iwk == null) {
                 return Response.status(401).entity(signedResponse).build();
@@ -375,18 +422,7 @@ public class JavaEE8Resource {
                 Logger.getLogger(JavaEE8Resource.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-            if (!passwordEncoded) {
-                try {
-                    IvParameterSpec ivParameterSpec;
-                    ivParameterSpec = ProjectHelper.getIVParameterSpec(wb.getWalletName());
-                    String encryptPasswordHEX = encryptPasswordHEX(plainPass, ivParameterSpec, webSessionSecret);
-                    signedResponse.getRequest().getWallet().setWalletPassword(ENC_LABEL + ENC_SEP + encryptPasswordHEX);
-                } catch (IOException | InvalidAlgorithmParameterException | InvalidKeyException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException ex) {
-                    ex.printStackTrace();
-                    System.out.println("ENC ERROR");
-                    return Response.status(500).entity(signedResponse).build();
-                }
-            }
+            
 
             System.out.println(srb.getWallet().getWalletName());
             System.out.println(srb.getWallet().getWalletPassword());

@@ -8,17 +8,12 @@ package com.takamakachain.walletweb.resources.support;
 import com.h2tcoin.takamakachain.exceptions.threadSafeUtils.HashAlgorithmNotFoundException;
 import com.h2tcoin.takamakachain.exceptions.threadSafeUtils.HashEncodeException;
 import com.h2tcoin.takamakachain.exceptions.threadSafeUtils.HashProviderNotFoundException;
-import com.h2tcoin.takamakachain.main.defaults.DefaultInitParameters;
 import com.h2tcoin.takamakachain.saturn.SatUtils;
 import com.h2tcoin.takamakachain.saturn.exceptions.SaturnException;
 import com.h2tcoin.takamakachain.utils.FileHelper;
 import com.h2tcoin.takamakachain.utils.threadSafeUtils.TkmSignUtils;
-import static com.takamakachain.walletweb.resources.support.InternalParameters.getInternalWebWalletSecretKeyFilePath;
-import io.hotmoka.nodes.Node;
-import io.takamaka.code.verification.IncompleteClasspathError;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -26,15 +21,10 @@ import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
-import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
-import static com.takamakachain.walletweb.resources.support.CryptoHelper.getWebSessionSecret;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -42,6 +32,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.nio.charset.StandardCharsets;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  *
@@ -254,6 +247,14 @@ public class ProjectHelper {
         final double result
                 = divider > 1 ? (double) value / (double) divider : (double) value;
         return String.format("%.1f %s", Double.valueOf(result), unit);
+    }
+
+    public static final JSONObject isJSONValid(String test) {
+        try {
+            return new JSONObject(test);
+        } catch (JSONException ex) {
+            return null;
+        }
     }
 
 }
