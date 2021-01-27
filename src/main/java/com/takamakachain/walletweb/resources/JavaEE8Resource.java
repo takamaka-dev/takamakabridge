@@ -11,8 +11,11 @@ import com.h2tcoin.takamakachain.globalContext.KeyContexts;
 import static com.h2tcoin.takamakachain.globalContext.KeyContexts.WalletCypher.BCQTESLA_PS_1_R2;
 import com.h2tcoin.takamakachain.saturn.exceptions.SaturnException;
 import com.h2tcoin.takamakachain.tkmdata.exceptions.TkmDataException;
+import com.h2tcoin.takamakachain.transactions.BuilderITB;
 import com.h2tcoin.takamakachain.transactions.InternalTransactionBean;
+import com.h2tcoin.takamakachain.transactions.TransactionBean;
 import com.h2tcoin.takamakachain.utils.F;
+import com.h2tcoin.takamakachain.utils.FileHelper;
 import com.h2tcoin.takamakachain.utils.Log;
 import com.h2tcoin.takamakachain.utils.simpleWallet.SWTracker;
 import com.h2tcoin.takamakachain.utils.simpleWallet.panels.support.ApiBalanceBean;
@@ -23,6 +26,8 @@ import com.h2tcoin.takamakachain.wallet.InstanceWalletKeyStoreBCED25519;
 import com.h2tcoin.takamakachain.wallet.InstanceWalletKeyStoreBCQTESLAPSSC1Round1;
 import com.h2tcoin.takamakachain.wallet.InstanceWalletKeyStoreBCQTESLAPSSC1Round2;
 import com.h2tcoin.takamakachain.wallet.InstanceWalletKeystoreInterface;
+import com.h2tcoin.takamakachain.wallet.TkmWallet;
+import com.h2tcoin.takamakachain.wallet.TransactionBox;
 import static com.takamakachain.walletweb.resources.support.CryptoHelper.decryptPasswordHEX;
 import static com.takamakachain.walletweb.resources.support.CryptoHelper.encryptPasswordHEX;
 import com.takamakachain.walletweb.resources.support.ProjectHelper;
@@ -64,6 +69,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.security.CodeSource;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -184,22 +190,74 @@ public class JavaEE8Resource {
     @POST
     @Path("uploadBlob")
     @Consumes(MediaType.APPLICATION_JSON)
-    public static final Response uploadBlobFromJson(TransactionMessageBean tmb) {
-        JSONObject jsonObject = ProjectHelper.isJSONValid(tmb.getMessage());
-        if (jsonObject == null) {
+    public static final Response uploadBlobFromJson(TransactionMessageBean tmb) throws IOException, WalletException, HashEncodeException, HashAlgorithmNotFoundException, HashProviderNotFoundException {
+        JSONObject jsonObjectMessage = ProjectHelper.isJSONValid(tmb.getMessage());
+        if (jsonObjectMessage == null) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
-        InternalTransactionBean itb = null;
-        itb.setEpoch(null);
-        itb.setGreenValue(null);
-        itb.setRedValue(null);
-        itb.setSlot(null);
-        itb.setTo(null);
-        itb.setTransactionHash(null);
+        InstanceWalletKeystoreInterface iwk = validateWalletCredentials(
+                new WalletBean(
+                        tmb.getWalletName(),
+                        tmb.getWalletPassword(),
+                        tmb.getWalletCypher(),
+                        tmb.getAddressNumber()
+                ), null
+        );
 
-        return Response.status(Response.Status.CREATED).
-                entity(jsonObject.toString()).build();
+        if (iwk == null) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+
+        InternalTransactionBean itb = BuilderITB.blob(iwk.getPublicKeyAtIndexURL64(tmb.getAddressNumber()), null, jsonObjectMessage.toString());
+
+        TransactionBean genericTRA;
+
+        genericTRA = TkmWallet.createGenericTransaction(
+                itb,
+                iwk,
+                tmb.getAddressNumber());
+
+        String txJson = TkmTextUtils.toJson(genericTRA);
+        TransactionBox tbox = TkmWallet.verifyTransactionIntegrity(txJson);
+
+        if (!tbox.isValid()) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+
+        String hexBody = TkmSignUtils.fromStringToHexString(txJson);
+        String transactionEndpoint = "https://dev.takamaka.io/api/V2/testapi/transaction/";
+        String r = ProjectHelper.doPost(transactionEndpoint, "tx", hexBody);
+
+        JSONObject responseSubmitTransaction = ProjectHelper.isJSONValid(r);
+        if (responseSubmitTransaction == null || !responseSubmitTransaction.getBoolean("TxIsVerified")) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+
+        if (!FileHelper.directoryExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "pending"))) {
+            FileHelper.createDir(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "pending"));
+        }
+
+        if (!FileHelper.directoryExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "succeeded"))) {
+            FileHelper.createDir(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "succeeded"));
+        }
+
+        if (!FileHelper.directoryExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "failed"))) {
+            FileHelper.createDir(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "failed"));
+        }
+
+        String hexTransactionHash = TkmSignUtils.Hash256ToHex(tbox.getItb().getTransactionHash());
+
+        JSONObject finalResponse = new JSONObject();
+
+        finalResponse.append("transactionHash", itb.getTransactionHash());
+        if (!FileHelper.writeStringToFile(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "pending"), hexTransactionHash, tbox.getTransactionJson(), false)) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).
+                    entity(finalResponse).build();
+        }
+
+        return Response.status(Response.Status.OK).
+                entity(finalResponse).build();
 
     }
 
@@ -358,7 +416,7 @@ public class JavaEE8Resource {
                     System.out.println("Unsupported Cypher " + wb.getWalletCypher());
                     iwk = null;
             }
-            
+
             if (!passwordEncoded && null != signedResponse) {
                 try {
                     IvParameterSpec ivParameterSpec;
@@ -371,7 +429,7 @@ public class JavaEE8Resource {
                     return null;
                 }
             }
-            
+
         } catch (UnlockWalletException ex) {
             ex.printStackTrace();
             return null;
@@ -421,8 +479,6 @@ public class JavaEE8Resource {
             } catch (IOException ex) {
                 Logger.getLogger(JavaEE8Resource.class.getName()).log(Level.SEVERE, null, ex);
             }
-
-            
 
             System.out.println(srb.getWallet().getWalletName());
             System.out.println(srb.getWallet().getWalletPassword());

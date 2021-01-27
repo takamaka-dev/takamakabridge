@@ -18,6 +18,13 @@ public class WalletBean implements Serializable {
     private String walletCypher;
     private int addressNumber;
 
+    public WalletBean(String walletName, String walletPassword, String walletCypher, int addressNumber) {
+        this.walletName = walletName;
+        this.walletPassword = walletPassword;
+        this.walletCypher = walletCypher;
+        this.addressNumber = addressNumber;
+    }
+
     public int getAddressNumber() {
         return addressNumber;
     }
