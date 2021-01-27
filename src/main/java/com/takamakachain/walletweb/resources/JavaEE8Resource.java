@@ -190,6 +190,7 @@ public class JavaEE8Resource {
     @POST
     @Path("uploadBlob")
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
     public static final Response uploadBlobFromJson(TransactionMessageBean tmb) throws IOException, WalletException, HashEncodeException, HashAlgorithmNotFoundException, HashProviderNotFoundException {
         JSONObject jsonObjectMessage = ProjectHelper.isJSONValid(tmb.getMessage());
         if (jsonObjectMessage == null) {
@@ -233,6 +234,10 @@ public class JavaEE8Resource {
         if (responseSubmitTransaction == null || !responseSubmitTransaction.getBoolean("TxIsVerified")) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
+        
+        if (!FileHelper.directoryExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm"))) {
+            FileHelper.createDir(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm"));
+        }
 
         if (!FileHelper.directoryExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "pending"))) {
             FileHelper.createDir(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "pending"));
@@ -253,11 +258,11 @@ public class JavaEE8Resource {
         finalResponse.append("transactionHash", itb.getTransactionHash());
         if (!FileHelper.writeStringToFile(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "pending"), hexTransactionHash, tbox.getTransactionJson(), false)) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).
-                    entity(finalResponse).build();
+                    entity(finalResponse.toString()).build();
         }
 
         return Response.status(Response.Status.OK).
-                entity(finalResponse).build();
+                entity(finalResponse.toString()).build();
 
     }
 

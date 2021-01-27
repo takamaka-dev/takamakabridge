@@ -5,13 +5,51 @@
  */
 package com.takamakachain.walletweb.resources;
 
+import java.io.Serializable;
+
 /**
  *
  * @author isacco
  */
-public class TransactionMessageBean extends WalletBean {
+public class TransactionMessageBean implements Serializable {
 
     private String message;
+    private String walletName;
+    private String walletPassword;
+    private String walletCypher;
+    private int addressNumber;
+
+    public String getWalletName() {
+        return walletName;
+    }
+
+    public void setWalletName(String walletName) {
+        this.walletName = walletName;
+    }
+
+    public String getWalletPassword() {
+        return walletPassword;
+    }
+
+    public void setWalletPassword(String walletPassword) {
+        this.walletPassword = walletPassword;
+    }
+
+    public String getWalletCypher() {
+        return walletCypher;
+    }
+
+    public void setWalletCypher(String walletCypher) {
+        this.walletCypher = walletCypher;
+    }
+
+    public int getAddressNumber() {
+        return addressNumber;
+    }
+
+    public void setAddressNumber(int addressNumber) {
+        this.addressNumber = addressNumber;
+    }
 
     public String getMessage() {
         return message;
