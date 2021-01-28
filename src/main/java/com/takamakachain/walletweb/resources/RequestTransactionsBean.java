@@ -9,10 +9,19 @@ package com.takamakachain.walletweb.resources;
  *
  * @author isacco
  */
-public class requestTransactionsBean {
+public class RequestTransactionsBean {
 
     private String action;
+    private String param;
     private String[] targets;
+
+    public String getParam() {
+        return param;
+    }
+
+    public void setParam(String param) {
+        this.param = param;
+    }
 
     public String getAction() {
         return action;

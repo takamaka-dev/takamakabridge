@@ -12,6 +12,7 @@ import com.h2tcoin.takamakachain.saturn.SatUtils;
 import com.h2tcoin.takamakachain.saturn.exceptions.SaturnException;
 import com.h2tcoin.takamakachain.utils.FileHelper;
 import com.h2tcoin.takamakachain.utils.threadSafeUtils.TkmSignUtils;
+import com.h2tcoin.takamakachain.utils.threadSafeUtils.TkmTextUtils;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -32,6 +33,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -275,6 +279,33 @@ public class ProjectHelper {
             sb.append(hexString);
         }
         String result = sb.toString();
+        return result;
+    }
+
+    public static final void createFileCollectionTransactionHash(String targetFolder, HashMap<String, String[]> result) {
+        if (FileHelper.directoryExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", targetFolder))) {
+            String[] files = FileHelper.getFileNameList(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", targetFolder));
+            List<String> convFiles = new ArrayList<String>();
+            for (String file : files) {
+                String fileName = Paths.get(file).getFileName().toString();
+                String convertedFileName = TkmSignUtils.fromHexToString(fileName); 
+                convFiles.add(convertedFileName);
+            }
+                        
+            result.put(targetFolder, convFiles.toArray(String[]::new));
+        }
+    }
+
+    public static final HashMap<String, String[]> manageListTransactions(String param) throws IOException {
+        HashMap<String, String[]> result = new HashMap<>();
+        if (TkmTextUtils.isNullOrBlank(param)) {
+            String[] targetFolders = {"transactions", "pending", "succeeded", "failed"};
+            for (String targetFolder : targetFolders) {
+                createFileCollectionTransactionHash(targetFolder, result);
+            }
+            return result;
+        }
+        createFileCollectionTransactionHash(param, result);
         return result;
     }
 

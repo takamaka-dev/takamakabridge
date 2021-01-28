@@ -14,7 +14,7 @@ import java.util.HashMap;
 public class QueryActionsResponseBean {
 
     private HashMap<String, String> getResponse;
-    private String[] listResponse;
+    private HashMap<String, String[]> listResponse;
     private boolean success;
     private String error;
     private String requestType;
@@ -27,11 +27,11 @@ public class QueryActionsResponseBean {
         this.getResponse = getResponse;
     }
 
-    public String[] getListResponse() {
+    public HashMap<String, String[]> getListResponse() {
         return listResponse;
     }
 
-    public void setListResponse(String[] listResponse) {
+    public void setListResponse(HashMap<String, String[]> listResponse) {
         this.listResponse = listResponse;
     }
 

@@ -75,6 +75,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.ProtectionDomain;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.stream.Stream;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -210,11 +211,11 @@ public class JavaEE8Resource {
         if (iwk == null) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
-        
+
         String from = iwk.getPublicKeyAtIndexURL64(tmb.getAddressNumber());
 
         InternalTransactionBean itb = BuilderITB.blob(from, null, jsonObjectMessage.toString());
-        
+
         if (itb == null) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
@@ -293,7 +294,7 @@ public class JavaEE8Resource {
         if (fileNameList.length == 0) {
             return true;
         }
-        
+
         for (String fileName : fileNameList) {
             fileName = Paths.get(fileName).getFileName().toString();
             TransactionBox tbox = TkmWallet.verifyTransactionIntegrity(FileHelper.readStringFromFile(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "transactions", fileName)));
@@ -328,6 +329,37 @@ public class JavaEE8Resource {
         }
 
         return true;
+    }
+
+    @POST
+    @Path("transactions")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public static final Response queryForTransactions(RequestTransactionsBean rtb) throws IOException {
+        QueryActionsResponseBean qarb = new QueryActionsResponseBean();
+        qarb.setError("");
+        qarb.setSuccess(true);
+        qarb.setListResponse(null);
+        qarb.setRequestType(null);
+        qarb.setGetResponse(null);
+        switch (rtb.getAction()) {
+            case "get":
+                break;
+            case "delete":
+                break;
+            case "list":
+                HashMap<String, String[]> result = ProjectHelper.manageListTransactions(rtb.getParam());
+                if (result == null) {
+                    return Response.status(Response.Status.BAD_REQUEST).entity(qarb).build();
+                }
+                qarb.setListResponse(result);
+                break;
+            default:
+                qarb.setError("Unknow request");
+                qarb.setSuccess(false);
+                return Response.status(Response.Status.BAD_REQUEST).entity(qarb).build();
+        }
+        return Response.status(Response.Status.OK).entity(qarb).build();
     }
 
     @GET
