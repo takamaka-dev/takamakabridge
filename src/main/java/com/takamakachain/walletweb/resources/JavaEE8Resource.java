@@ -340,19 +340,34 @@ public class JavaEE8Resource {
         qarb.setError("");
         qarb.setSuccess(true);
         qarb.setListResponse(null);
-        qarb.setRequestType(null);
+        qarb.setRequestType(rtb.getAction());
         qarb.setGetResponse(null);
         switch (rtb.getAction()) {
             case "get":
+                HashMap<String, String> resultGet = ProjectHelper.manageGetTransactions(rtb.getTargets());
+                if (resultGet == null) {
+                    qarb.setError("General error get Response");
+                    qarb.setSuccess(false);
+                    return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(qarb).build();
+                }
+                qarb.setGetResponse(resultGet);
                 break;
             case "delete":
+                boolean resultDelete = ProjectHelper.manageDeleteTransactions(rtb.getTargets());
+                if (!resultDelete) {
+                    qarb.setError("General error delete");
+                    qarb.setSuccess(false);
+                    return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(qarb).build();
+                }
                 break;
             case "list":
-                HashMap<String, String[]> result = ProjectHelper.manageListTransactions(rtb.getParam());
-                if (result == null) {
+                HashMap<String, String[]> resultList = ProjectHelper.manageListTransactions(rtb.getParam());
+                if (resultList == null) {
+                    qarb.setError("Unknow param");
+                    qarb.setSuccess(false);
                     return Response.status(Response.Status.BAD_REQUEST).entity(qarb).build();
                 }
-                qarb.setListResponse(result);
+                qarb.setListResponse(resultList);
                 break;
             default:
                 qarb.setError("Unknow request");

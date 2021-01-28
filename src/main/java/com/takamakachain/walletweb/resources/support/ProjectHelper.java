@@ -34,6 +34,7 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import org.json.JSONArray;
@@ -288,10 +289,10 @@ public class ProjectHelper {
             List<String> convFiles = new ArrayList<String>();
             for (String file : files) {
                 String fileName = Paths.get(file).getFileName().toString();
-                String convertedFileName = TkmSignUtils.fromHexToString(fileName); 
+                String convertedFileName = TkmSignUtils.fromHexToString(fileName);
                 convFiles.add(convertedFileName);
             }
-                        
+
             result.put(targetFolder, convFiles.toArray(String[]::new));
         }
     }
@@ -307,6 +308,48 @@ public class ProjectHelper {
         }
         createFileCollectionTransactionHash(param, result);
         return result;
+    }
+
+    public static final HashMap<String, String> manageGetTransactions(String[] targets) throws FileNotFoundException {
+        HashMap<String, String> result = new HashMap<>();
+        if (targets.length == 0) {
+            return null;
+        }
+        if (!FileHelper.directoryExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "transactions"))) {
+            return null;
+        }
+
+        for (String absolutePathFile : FileHelper.getFileNameList(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "transactions"))) {
+            String fileName = Paths.get(absolutePathFile).getFileName().toString();
+            String hexToStringFileName = TkmSignUtils.fromHexToString(fileName);
+            if (Arrays.asList(targets).contains(hexToStringFileName)) {
+                result.put(hexToStringFileName, FileHelper.readStringFromFile(Paths.get(absolutePathFile)));
+            }
+
+        }
+
+        return result;
+    }
+
+    public static final boolean manageDeleteTransactions(String[] targets) throws IOException {
+        if (targets.length == 0) {
+            return false;
+        }
+
+        String[] targetFolders = {"transactions", "pending", "succeeded", "failed"};
+        for (String singleHash : targets) {
+            for (String singleTargetFolder : targetFolders) {
+                if (FileHelper.fileExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", singleTargetFolder, convertToHex(singleHash)))) {
+                    FileHelper.delete(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", singleTargetFolder, convertToHex(singleHash)));
+                }
+            }
+        }
+
+        if (FileHelper.directoryExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "transactions"))) {
+
+        }
+
+        return true;
     }
 
 }
