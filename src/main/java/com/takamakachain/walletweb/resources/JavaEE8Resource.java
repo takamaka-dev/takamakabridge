@@ -214,7 +214,7 @@ public class JavaEE8Resource {
 
         String from = iwk.getPublicKeyAtIndexURL64(tmb.getAddressNumber());
 
-        InternalTransactionBean itb = BuilderITB.blob(from, null, jsonObjectMessage.toString());
+        InternalTransactionBean itb = BuilderITB.blob(from, null, jsonObjectMessage.toString(), new Date(new Date().getTime() + (60000L * 5)));
 
         if (itb == null) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
