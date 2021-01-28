@@ -91,6 +91,7 @@ import org.apache.tika.parser.Parser;
 import org.apache.tika.sax.BodyContentHandler;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.xml.sax.SAXException;
 
@@ -209,8 +210,14 @@ public class JavaEE8Resource {
         if (iwk == null) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
+        
+        String from = iwk.getPublicKeyAtIndexURL64(tmb.getAddressNumber());
 
-        InternalTransactionBean itb = BuilderITB.blob(iwk.getPublicKeyAtIndexURL64(tmb.getAddressNumber()), null, jsonObjectMessage.toString());
+        InternalTransactionBean itb = BuilderITB.blob(from, null, jsonObjectMessage.toString());
+        
+        if (itb == null) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
 
         TransactionBean genericTRA;
 
@@ -234,9 +241,13 @@ public class JavaEE8Resource {
         if (responseSubmitTransaction == null || !responseSubmitTransaction.getBoolean("TxIsVerified")) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
-        
+
         if (!FileHelper.directoryExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm"))) {
             FileHelper.createDir(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm"));
+        }
+
+        if (!FileHelper.directoryExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "transactions"))) {
+            FileHelper.createDir(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "transactions"));
         }
 
         if (!FileHelper.directoryExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "pending"))) {
@@ -251,12 +262,17 @@ public class JavaEE8Resource {
             FileHelper.createDir(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "failed"));
         }
 
-        String hexTransactionHash = TkmSignUtils.Hash256ToHex(tbox.getItb().getTransactionHash());
+        String hexTransactionHash = ProjectHelper.convertToHex(tbox.getItb().getTransactionHash());
 
         JSONObject finalResponse = new JSONObject();
 
         finalResponse.append("transactionHash", itb.getTransactionHash());
-        if (!FileHelper.writeStringToFile(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "pending"), hexTransactionHash, tbox.getTransactionJson(), false)) {
+        if (!FileHelper.writeStringToFile(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "pending"), hexTransactionHash, "", false)) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).
+                    entity(finalResponse.toString()).build();
+        }
+
+        if (!FileHelper.writeStringToFile(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "transactions"), hexTransactionHash, tbox.getTransactionJson(), false)) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).
                     entity(finalResponse.toString()).build();
         }
@@ -264,6 +280,70 @@ public class JavaEE8Resource {
         return Response.status(Response.Status.OK).
                 entity(finalResponse.toString()).build();
 
+    }
+
+    public static final boolean managePendingTransactions() throws ProtocolException, IOException {
+        int twoMinsMillis = 120000;
+        if (!FileHelper.directoryExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "pending"))) {
+            return false;
+        }
+
+        String[] fileNameList = FileHelper.getFileNameList(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "pending"));
+
+        if (fileNameList.length == 0) {
+            return true;
+        }
+        
+        for (String fileName : fileNameList) {
+            fileName = Paths.get(fileName).getFileName().toString();
+            TransactionBox tbox = TkmWallet.verifyTransactionIntegrity(FileHelper.readStringFromFile(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "transactions", fileName)));
+            if (!tbox.isValid()) {
+                FileHelper.delete(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "pending", fileName));
+                if (!FileHelper.directoryExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "notvalid"))) {
+                    FileHelper.createDir(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "notvalid"));
+                }
+                FileHelper.writeStringToFile(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "notvalid"), fileName, "", true);
+            }
+
+            Date d = tbox.getItb().getNotBefore();
+            long time = d.getTime();
+
+            String response = ProjectHelper.doPost("https://dev.takamaka.io/api/V2/testapi/listtransactions", "address", TkmSignUtils.fromHexToString(fileName));
+            JSONArray jsonObjectResponse = ProjectHelper.getJsonArrayObject(response);
+
+            if ((time + twoMinsMillis) > new Date().getTime()) {
+                if (jsonObjectResponse.length() > 0 && jsonObjectResponse.getJSONObject(0).get("transactionHash").equals(tbox.getItb().getTransactionHash())) {
+                    FileHelper.delete(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "pending", fileName));
+                    FileHelper.writeStringToFile(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "succeeded"), fileName, "", true);
+                }
+            } else {
+                if (jsonObjectResponse.length() > 0 && jsonObjectResponse.getJSONObject(0).get("transactionHash").equals(tbox.getItb().getTransactionHash())) {
+                    FileHelper.delete(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "pending", fileName));
+                    FileHelper.writeStringToFile(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "succeeded"), fileName, "", true);
+                } else {
+                    FileHelper.delete(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "pending", fileName));
+                    FileHelper.writeStringToFile(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "failed"), fileName, "", true);
+                }
+            }
+        }
+
+        return true;
+    }
+
+    @GET
+    @Path("cronjob")
+    @Produces(MediaType.APPLICATION_JSON)
+    public static final Response checkUploadBlobInBlockchain() throws IOException {
+        CronBean cb = new CronBean();
+        cb.setStartTime(new Date().getTime());
+        cb.setSuccess(false);
+
+        if (!managePendingTransactions()) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(cb).build();
+        }
+
+        cb.setEndTime(new Date().getTime());
+        return Response.status(Response.Status.OK).entity(cb).build();
     }
 
     @POST

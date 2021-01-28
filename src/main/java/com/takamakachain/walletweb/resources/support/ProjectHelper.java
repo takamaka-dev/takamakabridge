@@ -253,8 +253,29 @@ public class ProjectHelper {
         try {
             return new JSONObject(test);
         } catch (JSONException ex) {
+            ex.printStackTrace();
             return null;
         }
+    }
+
+    public static final JSONArray getJsonArrayObject(String test) {
+        try {
+            return new JSONArray(test);
+        } catch (JSONException ex1) {
+            return null;
+        }
+    }
+
+    public static final String convertToHex(String str) {
+        StringBuffer sb = new StringBuffer();
+        //Converting string to character array
+        char ch[] = str.toCharArray();
+        for (int i = 0; i < ch.length; i++) {
+            String hexString = Integer.toHexString(ch[i]);
+            sb.append(hexString);
+        }
+        String result = sb.toString();
+        return result;
     }
 
 }
