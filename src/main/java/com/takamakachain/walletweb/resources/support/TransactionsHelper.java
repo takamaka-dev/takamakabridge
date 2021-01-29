@@ -5,13 +5,9 @@
  */
 package com.takamakachain.walletweb.resources.support;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.h2tcoin.takamakachain.exceptions.wallet.TransactionCanNotBeCreatedException;
 import com.h2tcoin.takamakachain.exceptions.wallet.WalletException;
-import com.h2tcoin.takamakachain.globalContext.FixedParameters;
 import com.h2tcoin.takamakachain.tkmdata.exceptions.TkmDataException;
-import com.h2tcoin.takamakachain.tkmdata.utils.TkmDataUtils;
 import com.h2tcoin.takamakachain.transactions.InternalTransactionBean;
 import com.h2tcoin.takamakachain.transactions.TransactionBean;
 import com.h2tcoin.takamakachain.transactions.fee.FeeBean;
@@ -24,16 +20,9 @@ import com.h2tcoin.takamakachain.wallet.TkmWallet;
 import com.h2tcoin.takamakachain.wallet.TransactionBox;
 import com.takamakachain.walletweb.resources.SignedRequestBean;
 import com.takamakachain.walletweb.resources.SignedResponseBean;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.ProtocolException;
 import java.util.Date;
-import java.util.Map;
-import java.util.concurrent.ConcurrentSkipListMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.util.Strings;
 
 /**
  *

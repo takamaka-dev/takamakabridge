@@ -6,7 +6,8 @@
 
 //walletwebversion
 //walletweb-1.0-SNAPSHOT
-window.webappname = "walletwebversion";
+window.webappname = window.location.href.toString().substring(window.location.href.slice(0, -1).lastIndexOf('/') + 1).slice(0, -1);
+
 
 resetFieldsError = el => {
     el.removeClass('is-invalid');
@@ -50,7 +51,7 @@ checkFields = (isComplexStructure) => {
 
 goToPage = (pageid) => {
     $.ajax({
-        url: 'http://localhost:8080/'+window.webappname+'/resources/javaee8/getPage/'
+        url: 'http://localhost:8080/' + window.webappname + '/resources/javaee8/getPage/'
                 + pageid,
         beforeSend: function () {
             // setting a timeout
@@ -81,7 +82,7 @@ populateUserMenu = dataInputUserWallet => {
             'Content-Type': "application/json"
         },
         type: 'POST',
-        url: 'http://localhost:8080/'+window.webappname+'/resources/javaee8/getWalletIdenticon',
+        url: 'http://localhost:8080/' + window.webappname + '/resources/javaee8/getWalletIdenticon',
         contentType: "application/json",
         dataType: "json",
         data: JSON.stringify(dataInputUserWallet),
@@ -95,7 +96,7 @@ populateUserMenu = dataInputUserWallet => {
             'Content-Type': "application/json"
         },
         type: 'POST',
-        url: 'http://localhost:8080/'+window.webappname+'/resources/javaee8/getWalletCrc',
+        url: 'http://localhost:8080/' + window.webappname + '/resources/javaee8/getWalletCrc',
         contentType: "application/json",
         dataType: "json",
         data: JSON.stringify(dataInputUserWallet),
@@ -104,24 +105,35 @@ populateUserMenu = dataInputUserWallet => {
         }
     });
 
+    getAddressBalance(dataInputUserWallet['walletAddress']);
+};
+
+getAddressBalance = (walletAddress) => {
+    let dataForBalance = {};
+    dataForBalance['data'] = walletAddress;
+    dataForBalance['endpoint'] = $('.env-select-balance').val();
+
     $.ajax({
         headers: {
             'Content-Type': "application/json"
         },
         type: 'POST',
-        url: 'http://localhost:8080/'+window.webappname+'/resources/javaee8/getWalletBalances',
+        url: 'http://localhost:8080/' + window.webappname + '/resources/javaee8/getWalletBalances',
         contentType: "application/json",
         dataType: "json",
-        data: JSON.stringify(dataInputUserWallet),
+        data: JSON.stringify(dataForBalance),
         success: function (dataRes) {
-            $('#wallet-tkg').html(dataRes['greenBalance']);
-            $('#wallet-tkr').html(dataRes['redBalance']);
-            $('#wallet-ftkg').html(dataRes['greenPenalty']);
-            $('#wallet-ftkr').html(dataRes['redPenalty']);
+            dataRes['greenBalance'] /= Math.pow(10, 9);
+            dataRes['redBalance'] /= Math.pow(10, 9);
+            dataRes['greenPenalty'] /= Math.pow(10, 9);
+            dataRes['redPenalty'] /= Math.pow(10, 9);
+
+            $('#wallet-tkg').html(new Number(dataRes['greenBalance']).toLocaleString("de-DE"));
+            $('#wallet-tkr').html(new Number(dataRes['redBalance']).toLocaleString("de-DE"));
+            $('#wallet-ftkg').html(new Number(dataRes['greenPenalty']).toLocaleString("de-DE"));
+            $('#wallet-ftkr').html(new Number(dataRes['redPenalty']).toLocaleString("de-DE"));
         }
-    })
-
-
+    });
 }
 
 fillPayItb = (

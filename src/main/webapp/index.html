@@ -16,7 +16,7 @@
         <script src="static/js/jquery-confirm.js"></script>
     </head>
     <body>
-        
+
         <!--        <div class="menu-wallet-bar">
                     <ul>
                         <li class="menu-btn nav-btn" data-page="home">
@@ -76,6 +76,19 @@
                 </div>
                 <div class="row">
                     <div class="col">
+                        <select class="form-control env-select-balance">
+                            <option value="https://dev.takamaka.io/api/V2/nodeapi/balanceof/">MAIN NETWORK</option>
+                            <option value="https://dev.takamaka.io/api/V2/testapi/balanceof/">TEST</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <br/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
                         <label>TKG </label>
                         <p id="wallet-tkg"></p>
                     </div>
@@ -94,15 +107,6 @@
                         <p id="wallet-ftkr"></p>
                     </div>
                 </div>
-                <!--<div class="row">
-                    <div class="col">
-                        <select class="form-control">
-                            <option>MAIN NETWORK</option>
-                            <option>TEST</option>
-                            <option>LOCALHOST</option>
-                        </select>
-                    </div>
-                </div>-->
             </div>
         </div>
 
@@ -176,6 +180,10 @@
         $(document).ready(function () {
             goToPage('test_signed_request');
 
+            $('.env-select-balance').on('change', function () {
+                getAddressBalance($('#wallet-address').html())
+            });
+
             $('.btn-open-user-menu').on('click', function () {
                 if ($('#wallet-address').html() === '') {
                     $.alert({
@@ -220,7 +228,7 @@
                         content: 'First login to your wallet !'
                     });
                     return false;
-                } 
+                }
                 goToPage($(this).attr('data-page'));
             });
         });
