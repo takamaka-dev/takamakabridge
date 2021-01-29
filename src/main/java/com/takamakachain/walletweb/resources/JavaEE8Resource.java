@@ -235,7 +235,8 @@ public class JavaEE8Resource {
         }
 
         String hexBody = TkmSignUtils.fromStringToHexString(txJson);
-        String transactionEndpoint = "https://dev.takamaka.io/api/V2/testapi/transaction/";
+        //String transactionEndpoint = "https://dev.takamaka.io/api/V2/testapi/transaction/";
+        String transactionEndpoint = tmb.getEndpoint();
         String r = ProjectHelper.doPost(transactionEndpoint, "tx", hexBody);
 
         JSONObject responseSubmitTransaction = ProjectHelper.isJSONValid(r);
@@ -283,7 +284,7 @@ public class JavaEE8Resource {
 
     }
 
-    public static final boolean managePendingTransactions() throws ProtocolException, IOException {
+    public static final boolean managePendingTransactions(String endpoint) throws ProtocolException, IOException {
         int twoMinsMillis = 120000;
         if (!FileHelper.directoryExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "pending"))) {
             return false;
@@ -309,7 +310,7 @@ public class JavaEE8Resource {
             Date d = tbox.getItb().getNotBefore();
             long time = d.getTime();
 
-            String response = ProjectHelper.doPost("https://dev.takamaka.io/api/V2/testapi/listtransactions", "address", TkmSignUtils.fromHexToString(fileName));
+            String response = ProjectHelper.doPost(endpoint, "address", TkmSignUtils.fromHexToString(fileName));
             JSONArray jsonObjectResponse = ProjectHelper.getJsonArrayObject(response);
 
             if ((time + twoMinsMillis) > new Date().getTime()) {
@@ -377,15 +378,16 @@ public class JavaEE8Resource {
         return Response.status(Response.Status.OK).entity(qarb).build();
     }
 
-    @GET
+    @POST
     @Path("cronjob")
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public static final Response checkUploadBlobInBlockchain() throws IOException {
+    public static final Response checkUploadBlobInBlockchain(CronjobBean cjb) throws IOException {
         CronBean cb = new CronBean();
         cb.setStartTime(new Date().getTime());
         cb.setSuccess(false);
 
-        if (!managePendingTransactions()) {
+        if (!managePendingTransactions(cjb.getEndpoint())) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(cb).build();
         }
 

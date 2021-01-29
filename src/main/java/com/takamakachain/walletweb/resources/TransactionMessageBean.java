@@ -18,6 +18,15 @@ public class TransactionMessageBean implements Serializable {
     private String walletPassword;
     private String walletCypher;
     private int addressNumber;
+    private String endpoint;
+
+    public String getEndpoint() {
+        return endpoint;
+    }
+
+    public void setEndpoint(String endpoint) {
+        this.endpoint = endpoint;
+    }
 
     public String getWalletName() {
         return walletName;
