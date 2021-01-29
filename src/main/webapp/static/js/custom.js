@@ -6,7 +6,7 @@
 
 //walletwebversion
 //walletweb-1.0-SNAPSHOT
-window.webappname = "walletwebversion";
+window.webappname = "takamakabridge";
 
 resetFieldsError = el => {
     el.removeClass('is-invalid');
