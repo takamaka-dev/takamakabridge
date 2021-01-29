@@ -9,9 +9,18 @@ package com.takamakachain.walletweb.resources;
  *
  * @author isacco
  */
-public class CronjobBean {
+public class ParamBean {
 
     private String endpoint;
+    private String data;
+
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
+    }
 
     public String getEndpoint() {
         return endpoint;

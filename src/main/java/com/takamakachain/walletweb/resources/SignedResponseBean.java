@@ -21,6 +21,15 @@ public class SignedResponseBean implements Serializable {
     private String passedData;
     private FeeBean feeBean;
     private String trxJson;
+    private String endpoint;
+
+    public String getEndpoint() {
+        return endpoint;
+    }
+
+    public void setEndpoint(String endpoint) {
+        this.endpoint = endpoint;
+    }
 
     public FeeBean getFeeBean() {
         return feeBean;
@@ -53,7 +62,7 @@ public class SignedResponseBean implements Serializable {
     public void setWalletKey(int walletKey) {
         this.walletKey = walletKey;
     }
-    
+
     public String getWalletAddress() {
         return walletAddress;
     }
@@ -61,7 +70,7 @@ public class SignedResponseBean implements Serializable {
     public void setWalletAddress(String walletAddress) {
         this.walletAddress = walletAddress;
     }
-    
+
     public String getSignedResponse() {
         return signedResponse;
     }

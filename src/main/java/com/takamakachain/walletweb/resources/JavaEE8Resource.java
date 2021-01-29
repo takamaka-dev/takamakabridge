@@ -31,9 +31,7 @@ import com.h2tcoin.takamakachain.wallet.TransactionBox;
 import static com.takamakachain.walletweb.resources.support.CryptoHelper.decryptPasswordHEX;
 import static com.takamakachain.walletweb.resources.support.CryptoHelper.encryptPasswordHEX;
 import com.takamakachain.walletweb.resources.support.ProjectHelper;
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.ProtocolException;
 import java.net.URISyntaxException;
@@ -46,42 +44,32 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.crypto.SecretKey;
-import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import static com.takamakachain.walletweb.resources.support.CryptoHelper.getWebSessionSecret;
 import static com.takamakachain.walletweb.resources.support.ProjectHelper.ENC_LABEL;
 import static com.takamakachain.walletweb.resources.support.ProjectHelper.ENC_SEP;
 import com.takamakachain.walletweb.resources.support.TransactionsHelper;
-import com.takamakachain.walletweb.resources.support.WebHelper;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
-import java.security.CodeSource;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
-import java.security.ProtectionDomain;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.stream.Stream;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
-import javax.faces.context.FacesContext;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.tika.exception.TikaException;
@@ -144,15 +132,16 @@ public class JavaEE8Resource {
     @Path("getWalletBalances")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public static final Response getWalletBalances(SignedResponseBean srb) throws ProtocolException, IOException, IOException {
+    public static final Response getWalletBalances(ParamBean pb) throws ProtocolException, IOException, IOException {
 
-        if (TkmTextUtils.isNullOrBlank(srb.getWalletAddress()) || (srb.getWalletAddress().length() != 44 && srb.getWalletAddress().length() != 19840)) {
+        if (TkmTextUtils.isNullOrBlank(pb.getData()) || (pb.getData().length() != 44 && pb.getData().length() != 19840)) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
-        String balanceOfEndpoint = "https://dev.takamaka.io/api/V2/nodeapi/balanceof/";
+        String balanceOfEndpoint = pb.getEndpoint();
+        /*"https://dev.takamaka.io/api/V2/nodeapi/balanceof/";*/
         String jsonResponseBalanceBean = null;
-        jsonResponseBalanceBean = ProjectHelper.doPost(balanceOfEndpoint, "address", srb.getWalletAddress());
+        jsonResponseBalanceBean = ProjectHelper.doPost(balanceOfEndpoint, "address", pb.getData());
 
         if (TkmTextUtils.isNullOrBlank(jsonResponseBalanceBean)) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -242,26 +231,6 @@ public class JavaEE8Resource {
         JSONObject responseSubmitTransaction = ProjectHelper.isJSONValid(r);
         if (responseSubmitTransaction == null || !responseSubmitTransaction.getBoolean("TxIsVerified")) {
             return Response.status(Response.Status.BAD_REQUEST).build();
-        }
-
-        if (!FileHelper.directoryExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm"))) {
-            FileHelper.createDir(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm"));
-        }
-
-        if (!FileHelper.directoryExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "transactions"))) {
-            FileHelper.createDir(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "transactions"));
-        }
-
-        if (!FileHelper.directoryExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "pending"))) {
-            FileHelper.createDir(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "pending"));
-        }
-
-        if (!FileHelper.directoryExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "succeeded"))) {
-            FileHelper.createDir(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "succeeded"));
-        }
-
-        if (!FileHelper.directoryExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "failed"))) {
-            FileHelper.createDir(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "failed"));
         }
 
         String hexTransactionHash = ProjectHelper.convertToHex(tbox.getItb().getTransactionHash());
@@ -382,7 +351,7 @@ public class JavaEE8Resource {
     @Path("cronjob")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public static final Response checkUploadBlobInBlockchain(CronjobBean cjb) throws IOException {
+    public static final Response checkUploadBlobInBlockchain(ParamBean cjb) throws IOException {
         CronBean cb = new CronBean();
         cb.setStartTime(new Date().getTime());
         cb.setSuccess(false);
@@ -678,19 +647,6 @@ public class JavaEE8Resource {
         return Response.status(200).entity("ciao").type(MediaType.TEXT_PLAIN).build();
     }
 
-//    @POST
-//    @Path("printForm")
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    public Response printForm(WalletBean wallet) {
-//        //process parameters
-//        System.out.println(wallet.getEmail());
-//        return Response.status(200).build();
-//    }
-//    @POST
-//    @Path("printForm")
-//    public void printFormOld() {
-//        System.out.println("ciao mondo");
-//    }
     @GET
     @Path("testy/{name}")
     public static final String ping(@PathParam("name") String name) {
