@@ -7,6 +7,7 @@ package com.takamakachain.walletweb.resources.support;
 
 import com.h2tcoin.takamakachain.exceptions.wallet.TransactionCanNotBeCreatedException;
 import com.h2tcoin.takamakachain.exceptions.wallet.WalletException;
+import com.h2tcoin.takamakachain.globalContext.FixedParameters;
 import com.h2tcoin.takamakachain.tkmdata.exceptions.TkmDataException;
 import com.h2tcoin.takamakachain.transactions.InternalTransactionBean;
 import com.h2tcoin.takamakachain.transactions.TransactionBean;
@@ -18,11 +19,14 @@ import com.h2tcoin.takamakachain.utils.threadSafeUtils.TkmTextUtils;
 import com.h2tcoin.takamakachain.wallet.InstanceWalletKeystoreInterface;
 import com.h2tcoin.takamakachain.wallet.TkmWallet;
 import com.h2tcoin.takamakachain.wallet.TransactionBox;
+import com.hazelcast.internal.json.JsonObject;
 import com.takamakachain.walletweb.resources.SignedRequestBean;
 import com.takamakachain.walletweb.resources.SignedResponseBean;
 import java.io.IOException;
 import java.net.ProtocolException;
 import java.util.Date;
+import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
 
 /**
  *
@@ -66,6 +70,16 @@ public class TransactionsHelper {
         return false;
     }
 
+    public static final String prepareMessageBase64(String oldMessage) {
+        JSONObject jsonObjectMessage = ProjectHelper.isJSONValid(oldMessage);
+        String oldData = jsonObjectMessage.getString("data");
+        String textTrimToNull = StringUtils.trimToNull(oldData);
+        String b64Message = TkmSignUtils.fromByteArrayToB64URL(textTrimToNull.getBytes(FixedParameters.CHARSET));
+        jsonObjectMessage.remove("data");
+        jsonObjectMessage.append("data", b64Message);
+        return jsonObjectMessage.toString();
+    }
+    
     public static final boolean manageRequests(
             SignedRequestBean srb,
             SignedResponseBean signedResponse,
@@ -81,6 +95,17 @@ public class TransactionsHelper {
                 if (!TransactionsHelper.makeJsonTrx(signedResponse, itb, iwk, srb.getWallet().getAddressNumber())) {
                     return false;
                 }
+                break;
+            case BLOB_RICH_TEXT:
+                itb = srb.getItb();
+                itb.setMessage(prepareMessageBase64(itb.getMessage()));
+                itb.setNotBefore(new Date((new Date()).getTime() + 60000L * 5));
+                
+                if (!TransactionsHelper.makeJsonTrx(signedResponse, itb, iwk, srb.getWallet().getAddressNumber())) {
+                    System.out.println("Failed");
+                    return false;
+                }
+
                 break;
             case BLOB:
                 //System.out.println(srb.getTags()); //null

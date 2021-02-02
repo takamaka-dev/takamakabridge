@@ -6,8 +6,6 @@
 
 //walletwebversion
 //walletweb-1.0-SNAPSHOT
-window.webappname = window.location.href.toString().substring(window.location.href.slice(0, -1).lastIndexOf('/') + 1).slice(0, -1);
-
 
 resetFieldsError = el => {
     el.removeClass('is-invalid');
@@ -53,14 +51,14 @@ goToPage = (pageid) => {
     
     let pageBean = {};
     pageBean['pageId'] = pageid;
-    pageBean['contextRoot'] = window.location.href;
+    pageBean['contextRoot'] = window.webappname;
     
     $.ajax({
         headers: {
             'Content-Type': "application/json"
         },
         type: 'POST',
-        url: 'http://localhost:8080/' + window.webappname + '/resources/javaee8/getPage',
+        url: window.webappname + '/resources/javaee8/getPage',
         contentType: "application/json",
         dataType: "json",
         data: JSON.stringify(pageBean),
@@ -97,7 +95,7 @@ populateUserMenu = dataInputUserWallet => {
             'Content-Type': "application/json"
         },
         type: 'POST',
-        url: 'http://localhost:8080/' + window.webappname + '/resources/javaee8/getWalletIdenticon',
+        url: window.webappname + '/resources/javaee8/getWalletIdenticon',
         contentType: "application/json",
         dataType: "json",
         data: JSON.stringify(dataInputUserWallet),
@@ -111,7 +109,7 @@ populateUserMenu = dataInputUserWallet => {
             'Content-Type': "application/json"
         },
         type: 'POST',
-        url: 'http://localhost:8080/' + window.webappname + '/resources/javaee8/getWalletCrc',
+        url: window.webappname + '/resources/javaee8/getWalletCrc',
         contentType: "application/json",
         dataType: "json",
         data: JSON.stringify(dataInputUserWallet),
@@ -133,7 +131,7 @@ getAddressBalance = (walletAddress) => {
             'Content-Type': "application/json"
         },
         type: 'POST',
-        url: 'http://localhost:8080/' + window.webappname + '/resources/javaee8/getWalletBalances',
+        url: window.webappname + '/resources/javaee8/getWalletBalances',
         contentType: "application/json",
         dataType: "json",
         data: JSON.stringify(dataForBalance),
@@ -151,7 +149,7 @@ getAddressBalance = (walletAddress) => {
     });
 }
 
-fillPayItb = (
+fillItb = (
         from,
         to,
         message,

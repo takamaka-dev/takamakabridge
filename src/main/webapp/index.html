@@ -178,10 +178,15 @@
 
     <script>
         $(document).ready(function () {
+            if (window.webappname === undefined || window.webappname === '') {
+                let splittedHref = window.location.href.toString().split("/");
+                window.webappname = splittedHref[0] + '/' + splittedHref[1] + "/" + splittedHref[2] + "/" + splittedHref[3] ;
+            }
+
             goToPage('logged_blob_text');
 
             $('.env-select-balance').on('change', function () {
-                getAddressBalance($('#wallet-address').html())
+                getAddressBalance($('#wallet-address').html());
             });
 
             $('.btn-open-user-menu').on('click', function () {

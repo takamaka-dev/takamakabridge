@@ -173,7 +173,7 @@ and open the template in the editor.
             }
 
             window.signedResponseBean['request']['itb'] = {};
-            fillPayItb(
+            fillItb(
                     $('#fromAddr').val(),
                     $('#toAddr').val(),
                     $('#message').val(),
@@ -191,7 +191,7 @@ and open the template in the editor.
                     'Content-Type': "application/json"
                 },
                 type: 'POST',
-                url: 'http://localhost:8080/'+window.webappname+'/resources/javaee8/signedRequest',
+                url: window.webappname+'/resources/javaee8/signedRequest',
                 contentType: "application/json",
                 data: JSON.stringify(window.signedResponseBean['request']),
                 success: function (dataRes) {
@@ -218,7 +218,7 @@ and open the template in the editor.
                     'Content-Type': "application/json"
                 },
                 type: 'POST',
-                url: 'http://localhost:8080/'+window.webappname+'/resources/javaee8/signedRequest',
+                url: window.webappname+'/resources/javaee8/signedRequest',
                 contentType: "application/json",
                 data: JSON.stringify(window.signedResponseBean['request']),
                 beforeSend: function() {
@@ -250,7 +250,7 @@ and open the template in the editor.
                     'Content-Type': "application/json"
                 },
                 type: 'POST',
-                url: 'http://localhost:8080/'+window.webappname+'/resources/javaee8/getWalletIdenticon',
+                url: window.webappname+'/resources/javaee8/getWalletIdenticon',
                 contentType: "application/json",
                 data: JSON.stringify(window.signedResponseBean),
                 success: function (dataRes) {

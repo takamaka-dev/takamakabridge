@@ -128,7 +128,7 @@ public class JavaEE8Resource {
     @Produces(MediaType.APPLICATION_JSON)
     public static final Response getPage(PageBean pb) throws FileNotFoundException, IOException, InterruptedException {
         String result = "";        
-        URL oracle = new URL(pb.getContextRoot() + "templates/" + pb.getPageId() + ".html");
+        URL oracle = new URL(pb.getContextRoot() + "/templates/" + pb.getPageId() + ".html");
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(oracle.openStream()));
 

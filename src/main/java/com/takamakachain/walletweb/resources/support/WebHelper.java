@@ -19,6 +19,7 @@ public class WebHelper {
         GET_ADDRESS,
         PAY,
         BLOB,
+        BLOB_RICH_TEXT,
         SEND_TRX
     }
 }
