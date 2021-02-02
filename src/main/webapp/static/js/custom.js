@@ -50,19 +50,34 @@ checkFields = (isComplexStructure) => {
 }
 
 goToPage = (pageid) => {
+    
+    let pageBean = {};
+    pageBean['pageId'] = pageid;
+    pageBean['contextRoot'] = window.location.href;
+    
     $.ajax({
-        url: 'http://localhost:8080/' + window.webappname + '/resources/javaee8/getPage/'
-                + pageid,
+        headers: {
+            'Content-Type': "application/json"
+        },
+        type: 'POST',
+        url: 'http://localhost:8080/' + window.webappname + '/resources/javaee8/getPage',
+        contentType: "application/json",
+        dataType: "json",
+        data: JSON.stringify(pageBean),
         beforeSend: function () {
-            // setting a timeout
-            $('.page').html('<div class="loading-container"><img src="static/images/loading.gif" alt=""/></div')
+            $('.page').html('<div class="loading-container"><img src="static/images/loading.gif" alt=""/></div');
         },
         success: function (data) {
             setTimeout(() => {
-                $('.page').html(data)
+                $('.page').html(data['pageContent']);
             }, 500);
+        },
+        error: function(data) {
+            alert('General error retrieving page');
         }
     });
+
+    
 }
 
 uuidv4 = () => {

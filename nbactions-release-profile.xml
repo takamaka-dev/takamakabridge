@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+        <action>
+            <actionName>CUSTOM-asd</actionName>
+            <displayName>asd</displayName>
+            <preAction>build-with-dependencies</preAction>
+            <properties>
+                <netbeans.deploy></netbeans.deploy>
+            </properties>
+        </action>
+    </actions>

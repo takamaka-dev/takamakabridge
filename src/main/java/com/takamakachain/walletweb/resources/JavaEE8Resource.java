@@ -56,10 +56,13 @@ import static com.takamakachain.walletweb.resources.support.CryptoHelper.getWebS
 import static com.takamakachain.walletweb.resources.support.ProjectHelper.ENC_LABEL;
 import static com.takamakachain.walletweb.resources.support.ProjectHelper.ENC_SEP;
 import com.takamakachain.walletweb.resources.support.TransactionsHelper;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.security.InvalidAlgorithmParameterException;
@@ -70,6 +73,8 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.tika.exception.TikaException;
@@ -117,15 +122,22 @@ public class JavaEE8Resource {
                 .build();
     }
 
-    @GET
-    @Path("getPage/{pageid}")
-    @Produces(MediaType.TEXT_HTML)
-    public static final String getPage(@PathParam("pageid") String pageid) throws FileNotFoundException, IOException, InterruptedException {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        String resourceName = pageid + ".html";
-        InputStream resourceAsStream = classLoader.getResourceAsStream("templates/" + resourceName);
-        String toString = IOUtils.toString(resourceAsStream, StandardCharsets.UTF_8.name());
-        return toString;
+    @POST
+    @Path("getPage")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public static final Response getPage(PageBean pb) throws FileNotFoundException, IOException, InterruptedException {
+        String result = "";        
+        URL oracle = new URL(pb.getContextRoot() + "templates/" + pb.getPageId() + ".html");
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(oracle.openStream()));
+
+        String inputLine;
+        while ((inputLine = in.readLine()) != null) {
+            result += inputLine;
+        }
+        pb.setPageContent(result);
+        return Response.status(Response.Status.OK).entity(pb).build();
     }
 
     @POST
