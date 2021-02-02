@@ -183,7 +183,7 @@
                 window.webappname = splittedHref[0] + '/' + splittedHref[1] + "/" + splittedHref[2] + "/" + splittedHref[3] ;
             }
 
-            goToPage('logged_blob_text');
+            goToPage('test_signed_request');
 
             $('.env-select-balance').on('change', function () {
                 getAddressBalance($('#wallet-address').html());
@@ -198,8 +198,6 @@
                     });
                     return false;
                 }
-
-                console.log($(this).find('i'));
 
                 if ($('.menu-wallet-user').hasClass("slide-in-user-menu")) {
                     $('.menu-wallet-user').removeClass("slide-in-user-menu");

@@ -76,7 +76,7 @@ public class TransactionsHelper {
         String textTrimToNull = StringUtils.trimToNull(oldData);
         String b64Message = TkmSignUtils.fromByteArrayToB64URL(textTrimToNull.getBytes(FixedParameters.CHARSET));
         jsonObjectMessage.remove("data");
-        jsonObjectMessage.append("data", b64Message);
+        jsonObjectMessage.accumulate("data", b64Message);
         return jsonObjectMessage.toString();
     }
     
