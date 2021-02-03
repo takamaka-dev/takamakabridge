@@ -90,6 +90,7 @@ populateUserMenu = dataInputUserWallet => {
     console.log(dataInputUserWallet);
     $('#wallet-address').html(dataInputUserWallet['walletAddress']);
     $('#wallet-key').html(dataInputUserWallet['walletKey']);
+    $('#secret-words').val(dataInputUserWallet['words']);
     $.ajax({
         headers: {
             'Content-Type': "application/json"

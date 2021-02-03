@@ -67,6 +67,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
+import java.security.NoSuchProviderException;
 import java.util.Arrays;
 import java.util.HashMap;
 import javax.crypto.BadPaddingException;
@@ -559,18 +560,39 @@ public class JavaEE8Resource {
      *
      * @param srb
      * @return
+     * @throws com.h2tcoin.takamakachain.exceptions.wallet.TransactionCanNotBeCreatedException
+     * @throws java.net.ProtocolException
+     * @throws java.io.FileNotFoundException
+     * @throws java.security.NoSuchProviderException
+     * @throws com.h2tcoin.takamakachain.tkmdata.exceptions.TkmDataException
+     * @throws java.security.InvalidKeyException
+     * @throws java.security.InvalidAlgorithmParameterException
+     * @throws javax.crypto.NoSuchPaddingException
      */
     @POST
     @Path("signedRequest")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public static final Response signedRequest(SignedRequestBean srb) throws TransactionCanNotBeCreatedException, IOException, ProtocolException, ProtocolException, TkmDataException, TkmDataException, TkmDataException, TkmDataException {
+    public static final Response signedRequest(SignedRequestBean srb) throws 
+            TransactionCanNotBeCreatedException, 
+            IOException, 
+            ProtocolException, 
+            ProtocolException, 
+            TkmDataException,
+            FileNotFoundException, 
+            NoSuchProviderException, 
+            NoSuchProviderException, 
+            InvalidKeyException, 
+            InvalidAlgorithmParameterException,
+            NoSuchPaddingException {
         SignedResponseBean signedResponse = new SignedResponseBean();
         //isEncriptedPasswordWithAES256§fc1c35134a497afb7a28da9297b7810e
         if (srb == null) {
             System.out.println("Empty request");
             return Response.status(400).entity(signedResponse).build();
         }
+        String plainPassword = srb.getWallet().getWalletPassword();
+        
         signedResponse.setRequest(srb);
         signedResponse.setSignedResponse(srb.getRt().name());
         signedResponse.setWalletKey(srb.getWallet().getAddressNumber());
@@ -586,7 +608,7 @@ public class JavaEE8Resource {
 
             try {
                 //gestisci le richieste
-                boolean b = TransactionsHelper.manageRequests(srb, signedResponse, iwk);
+                boolean b = TransactionsHelper.manageRequests(srb, signedResponse, iwk, plainPassword);
                 System.out.println("boolean transaction: " + b);
                 if (!b) {
                     return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(signedResponse).build();

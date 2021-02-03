@@ -22,6 +22,15 @@ public class SignedResponseBean implements Serializable {
     private FeeBean feeBean;
     private String trxJson;
     private String endpoint;
+    private String words;
+
+    public String getWords() {
+        return words;
+    }
+
+    public void setWords(String words) {
+        this.words = words;
+    }
 
     public String getEndpoint() {
         return endpoint;

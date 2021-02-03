@@ -19,12 +19,18 @@ import com.h2tcoin.takamakachain.utils.threadSafeUtils.TkmTextUtils;
 import com.h2tcoin.takamakachain.wallet.InstanceWalletKeystoreInterface;
 import com.h2tcoin.takamakachain.wallet.TkmWallet;
 import com.h2tcoin.takamakachain.wallet.TransactionBox;
+import com.h2tcoin.takamakachain.wallet.WalletHelper;
 import com.hazelcast.internal.json.JsonObject;
 import com.takamakachain.walletweb.resources.SignedRequestBean;
 import com.takamakachain.walletweb.resources.SignedResponseBean;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.ProtocolException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchProviderException;
 import java.util.Date;
+import javax.crypto.NoSuchPaddingException;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
@@ -83,11 +89,17 @@ public class TransactionsHelper {
     public static final boolean manageRequests(
             SignedRequestBean srb,
             SignedResponseBean signedResponse,
-            InstanceWalletKeystoreInterface iwk) throws TransactionCanNotBeCreatedException, WalletException, ProtocolException, IOException, TkmDataException {
+            InstanceWalletKeystoreInterface iwk,
+            String plainPassword
+            ) throws TransactionCanNotBeCreatedException, WalletException, ProtocolException, IOException, TkmDataException, FileNotFoundException, NoSuchProviderException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException {
         InternalTransactionBean itb = null;
         switch (srb.getRt()) {
             case GET_ADDRESS:
                 signedResponse.setWalletAddress(iwk.getPublicKeyAtIndexURL64(srb.getWallet().getAddressNumber()));
+                String words = WalletHelper.readKeyFile(ProjectHelper.getCurrentWalletpath(srb.getWallet().getWalletName()), plainPassword).getWords();
+                if (!TkmTextUtils.isNullOrBlank(words)) {
+                    signedResponse.setWords(words);
+                }
                 break;
             case PAY:
                 itb = srb.getItb();

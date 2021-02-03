@@ -8,9 +8,11 @@ package com.takamakachain.walletweb.resources.support;
 import com.h2tcoin.takamakachain.exceptions.threadSafeUtils.HashAlgorithmNotFoundException;
 import com.h2tcoin.takamakachain.exceptions.threadSafeUtils.HashEncodeException;
 import com.h2tcoin.takamakachain.exceptions.threadSafeUtils.HashProviderNotFoundException;
+import com.h2tcoin.takamakachain.main.defaults.DefaultInitParameters;
 import com.h2tcoin.takamakachain.saturn.SatUtils;
 import com.h2tcoin.takamakachain.saturn.exceptions.SaturnException;
 import com.h2tcoin.takamakachain.utils.FileHelper;
+import com.h2tcoin.takamakachain.utils.simpleWallet.SWTracker;
 import com.h2tcoin.takamakachain.utils.threadSafeUtils.TkmSignUtils;
 import com.h2tcoin.takamakachain.utils.threadSafeUtils.TkmTextUtils;
 import java.io.FileNotFoundException;
@@ -350,6 +352,12 @@ public class ProjectHelper {
         }
 
         return true;
+    }
+    
+    public static Path getCurrentWalletpath(String wname) {
+        String currentWalletName = wname + DefaultInitParameters.WALLET_EXTENSION;
+        Path currentWalletPath = Paths.get(FileHelper.getDefaultWalletDirectoryPath().toString(), currentWalletName);
+        return currentWalletPath;
     }
 
 }
