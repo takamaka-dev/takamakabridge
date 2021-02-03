@@ -12,6 +12,18 @@ and open the template in the editor.
     padding: 0 !important
 }
 
+.mb10 {
+    margin-bottom: 10px
+}
+
+.height1 {
+    height: 0 !important
+}
+
+.not-visible {
+    visibility: hidden
+}
+
 .tags-container {
     border: 2px solid #ccc;
     border-radius: 6px;
@@ -264,7 +276,7 @@ span.error {
 .menu-wallet-user #wallet-address {
     overflow-wrap: break-word;
     max-height: 100px;
-    overflow-y: scroll
+    overflow-y: auto
 }
 
 .menu-wallet-user .container {

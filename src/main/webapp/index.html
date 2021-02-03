@@ -107,6 +107,16 @@
                         <p id="wallet-ftkr"></p>
                     </div>
                 </div>
+                <div class="row mb10">
+                    <div class="col text-center">
+                        <button class="btn btn-sm btn-secondary btn-show-secret-words"><b>Show secret Words!</b></button>
+                    </div>
+                </div>
+                <div class="row mb10 hidden secret-words-container">
+                    <div class="col">
+                        <textarea class="form-control no-resize">asdasdsdad</textarea>  
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -187,6 +197,13 @@
 
             $('.env-select-balance').on('change', function () {
                 getAddressBalance($('#wallet-address').html());
+            });
+
+            $('.btn-show-secret-words').on('click', function() {
+                if ($('.secret-words-container').hasClass('hidden')) {
+                    $('.secret-words-container').removeClass('hidden');
+                    $(this).parent().parent().addClass('hidden');
+                }
             });
 
             $('.btn-open-user-menu').on('click', function () {
