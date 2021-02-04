@@ -9,6 +9,7 @@ import com.h2tcoin.takamakachain.exceptions.wallet.WalletException;
 import com.h2tcoin.takamakachain.globalContext.FixedParameters;
 import com.h2tcoin.takamakachain.globalContext.KeyContexts;
 import static com.h2tcoin.takamakachain.globalContext.KeyContexts.WalletCypher.BCQTESLA_PS_1_R2;
+import com.h2tcoin.takamakachain.main.defaults.DefaultInitParameters;
 import com.h2tcoin.takamakachain.saturn.exceptions.SaturnException;
 import com.h2tcoin.takamakachain.tkmdata.exceptions.TkmDataException;
 import com.h2tcoin.takamakachain.transactions.BuilderITB;
@@ -28,6 +29,7 @@ import com.h2tcoin.takamakachain.wallet.InstanceWalletKeyStoreBCQTESLAPSSC1Round
 import com.h2tcoin.takamakachain.wallet.InstanceWalletKeystoreInterface;
 import com.h2tcoin.takamakachain.wallet.TkmWallet;
 import com.h2tcoin.takamakachain.wallet.TransactionBox;
+import com.h2tcoin.takamakachain.wallet.WalletHelper;
 import static com.takamakachain.walletweb.resources.support.CryptoHelper.decryptPasswordHEX;
 import static com.takamakachain.walletweb.resources.support.CryptoHelper.encryptPasswordHEX;
 import com.takamakachain.walletweb.resources.support.ProjectHelper;
@@ -70,6 +72,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchProviderException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
@@ -128,7 +131,7 @@ public class JavaEE8Resource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public static final Response getPage(PageBean pb) throws FileNotFoundException, IOException, InterruptedException {
-        String result = "";        
+        String result = "";
         URL oracle = new URL(pb.getContextRoot() + "/templates/" + pb.getPageId() + ".html");
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(oracle.openStream()));
@@ -207,7 +210,7 @@ public class JavaEE8Resource {
                         tmb.getWalletPassword(),
                         tmb.getWalletCypher(),
                         tmb.getAddressNumber()
-                ), null
+                ), null, null
         );
 
         if (iwk == null) {
@@ -446,13 +449,16 @@ public class JavaEE8Resource {
     @Produces(MediaType.APPLICATION_JSON)
     public static final Response getWalletIdenticon(SignedResponseBean srb) {
         String walletAddress = !TkmTextUtils.isNullOrBlank(srb.getPassedData()) ? srb.getPassedData() : srb.getWalletAddress();
-        System.out.println(srb.getPassedData());
+        System.out.println("Data for identicon: " + srb.getPassedData());
+        System.out.println("Identicon address: " + walletAddress);
         if (TkmTextUtils.isNullOrBlank(walletAddress) || (walletAddress.length() != 44 && walletAddress.length() != 19840)) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
         String walletIdenticonUrl64 = IdentiColorHelper.getAvatarBase64URL256(walletAddress);
-
+        
+        
+        
         walletIdenticonUrl64 = walletIdenticonUrl64.replace(".", "=").replace("-", "+").replace("_", "/");
 
         if (TkmTextUtils.isNullOrBlank(walletIdenticonUrl64)) {
@@ -471,7 +477,7 @@ public class JavaEE8Resource {
 
     }
 
-    public static final InstanceWalletKeystoreInterface validateWalletCredentials(WalletBean wb, SignedResponseBean signedResponse) throws IOException {
+    public static final InstanceWalletKeystoreInterface validateWalletCredentials(WalletBean wb, SignedResponseBean signedResponse, String recoveryWords) throws IOException {
         if (TkmTextUtils.isNullOrBlank(wb.getWalletPassword())) {
             System.out.println("Empty password");
             return null;
@@ -511,6 +517,37 @@ public class JavaEE8Resource {
                 System.out.println("Decode Error");
                 return null;
             }
+        }
+
+        if (!TkmTextUtils.isNullOrBlank(recoveryWords)) {
+            java.nio.file.Path importWalletFromWords = null;
+            List<String> words = Arrays.asList(recoveryWords.split(" "));
+            try {
+                
+                switch (wb.getWalletCypher()) {
+                    case "BCQTESLA_PS_1":
+                        importWalletFromWords = WalletHelper.importKeyFromWords(words, FileHelper.getDefaultWalletDirectoryPath(), wb.getWalletName(), KeyContexts.WalletCypher.BCQTESLA_PS_1, wb.getWalletPassword());
+                        break;
+
+                    case "BCQTESLA_PS_1_R2":
+                        importWalletFromWords = WalletHelper.importKeyFromWords(words, FileHelper.getDefaultWalletDirectoryPath(), wb.getWalletName(), KeyContexts.WalletCypher.BCQTESLA_PS_1_R2, wb.getWalletPassword());
+                        break;
+                    case "Ed25519BC":
+                        importWalletFromWords = WalletHelper.importKeyFromWords(words, FileHelper.getDefaultWalletDirectoryPath(), wb.getWalletName(), KeyContexts.WalletCypher.Ed25519BC, wb.getWalletPassword());
+                        break;
+
+                    default:
+                        F.rb("NOT IMPLEMENTED");
+                }
+            } catch (NoSuchAlgorithmException | InvalidKeyException | NoSuchPaddingException ex) {
+                System.out.println("error1");
+
+            }
+
+            String currentWalletName = wb.getWalletName() + DefaultInitParameters.WALLET_EXTENSION;
+            java.nio.file.Path currentWalletPath = Paths.get(FileHelper.getDefaultWalletDirectoryPath().toString(), currentWalletName);
+
+            FileHelper.copy(importWalletFromWords, currentWalletPath);
         }
 
         InstanceWalletKeystoreInterface iwk = null;
@@ -560,7 +597,8 @@ public class JavaEE8Resource {
      *
      * @param srb
      * @return
-     * @throws com.h2tcoin.takamakachain.exceptions.wallet.TransactionCanNotBeCreatedException
+     * @throws
+     * com.h2tcoin.takamakachain.exceptions.wallet.TransactionCanNotBeCreatedException
      * @throws java.net.ProtocolException
      * @throws java.io.FileNotFoundException
      * @throws java.security.NoSuchProviderException
@@ -573,16 +611,16 @@ public class JavaEE8Resource {
     @Path("signedRequest")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public static final Response signedRequest(SignedRequestBean srb) throws 
-            TransactionCanNotBeCreatedException, 
-            IOException, 
-            ProtocolException, 
-            ProtocolException, 
+    public static final Response signedRequest(SignedRequestBean srb) throws
+            TransactionCanNotBeCreatedException,
+            IOException,
+            ProtocolException,
+            ProtocolException,
             TkmDataException,
-            FileNotFoundException, 
-            NoSuchProviderException, 
-            NoSuchProviderException, 
-            InvalidKeyException, 
+            FileNotFoundException,
+            NoSuchProviderException,
+            NoSuchProviderException,
+            InvalidKeyException,
             InvalidAlgorithmParameterException,
             NoSuchPaddingException {
         SignedResponseBean signedResponse = new SignedResponseBean();
@@ -592,7 +630,7 @@ public class JavaEE8Resource {
             return Response.status(400).entity(signedResponse).build();
         }
         String plainPassword = srb.getWallet().getWalletPassword();
-        
+
         signedResponse.setRequest(srb);
         signedResponse.setSignedResponse(srb.getRt().name());
         signedResponse.setWalletKey(srb.getWallet().getAddressNumber());
@@ -600,7 +638,7 @@ public class JavaEE8Resource {
         InstanceWalletKeystoreInterface iwk;
 
         try {
-            iwk = validateWalletCredentials(srb.getWallet(), signedResponse);
+            iwk = validateWalletCredentials(srb.getWallet(), signedResponse, srb.getRecoveryWords());
 
             if (iwk == null) {
                 return Response.status(401).entity(signedResponse).build();

@@ -16,40 +16,6 @@
         <script src="static/js/jquery-confirm.js"></script>
     </head>
     <body>
-
-        <!--        <div class="menu-wallet-bar">
-                    <ul>
-                        <li class="menu-btn nav-btn" data-page="home">
-                            <i class="fal fa-home"></i>
-                            <span>Home</span>
-                        </li>
-                        <li class="menu-btn">
-                            <i class="fal fa-wallet"></i><br>
-                            <span>Wallet</span>
-                        </li>
-                        <li class="menu-btn">
-                            <i class="fal fa-cogs"></i>
-                            <span>Settings</span>
-                        </li>
-                        <li class="menu-btn">
-                            <i class="fal fa-question-square"></i>
-                            <span>Help</span>
-                        </li>
-                        <li class="menu-btn">
-                            <i class="fal fa-info-circle"></i>
-                            <span>About</span>
-                        </li>
-                        <li class="menu-btn">
-                            <i class="fal fa-sign-out"></i>
-                            <span>Log out</span>
-                        </li>
-        
-        
-                    </ul>
-        
-                    <i class="fas fa-caret-down open-menu-btn"></i>
-                </div>-->
-
         <div class="menu-wallet-user">
             <div class="container">
                 <button class="btn btn-outline-dark btn-open-user-menu"><i class="fal fa-chevron-circle-right"></i></button>
@@ -134,13 +100,12 @@
         </div>
 
         <div class ="row main-logged-menu-misc" >
-            <div class="btn-group btn-group-md upper-menu" role="group">
+            <div class="btn-group btn-group-sm upper-menu" role="group">
                 <button type="button" class="btn  btn-tkm first nav-btn home" data-page="logged_home_page"><i class="fal fa-home"></i> <span>Home</span></button>
-                <button type="button" class="btn btn-tkm first nav-btn" data-page="test_signed_request"><i class="fal fa-wallet"></i> <span>New login</span></button>
+                <button type="button" class="btn btn-tkm first nav-btn" data-page="test_signed_request"><i class="fal fa-wallet"></i> <span>New Login</span></button>
+                <button type="button" class="btn btn-tkm first nav-btn" data-page="recover_wallet"><i class="fal fa-recycle"></i> <span>Recover Wallet</span></button>
                 <!--<button type="button" class="btn btn-tkm first nav-btn" data-page="test_signed_request"><i class="fal fa-question"></i> <span>Help</span></button>-->
                 <button type="button" class="btn btn-tkm first" data-toggle="modal" data-target="#aboutModal"><i class="fal fa-info"></i> <span>About</span></button>
-
-
             </div>
 
         </div>
@@ -190,7 +155,7 @@
         $(document).ready(function () {
             if (window.webappname === undefined || window.webappname === '') {
                 let splittedHref = window.location.href.toString().split("/");
-                window.webappname = splittedHref[0] + '/' + splittedHref[1] + "/" + splittedHref[2] + "/" + splittedHref[3] ;
+                window.webappname = splittedHref[0] + '/' + splittedHref[1] + "/" + splittedHref[2] + "/" + splittedHref[3];
             }
 
             goToPage('test_signed_request');
@@ -199,7 +164,7 @@
                 getAddressBalance($('#wallet-address').html());
             });
 
-            $('.btn-show-secret-words').on('click', function() {
+            $('.btn-show-secret-words').on('click', function () {
                 if ($('.secret-words-container').hasClass('hidden')) {
                     $('.secret-words-container').removeClass('hidden');
                     $(this).parent().parent().addClass('hidden');

@@ -23,6 +23,15 @@ public class SignedRequestBean implements Serializable {
     private FilePropertiesBean frb;
     private String[] tags;
     private String env;
+    private String recoveryWords;
+
+    public String getRecoveryWords() {
+        return recoveryWords;
+    }
+
+    public void setRecoveryWords(String recoveryWords) {
+        this.recoveryWords = recoveryWords;
+    }
 
     public String getEnv() {
         return env;

@@ -93,10 +93,18 @@ public class TransactionsHelper {
             String plainPassword
             ) throws TransactionCanNotBeCreatedException, WalletException, ProtocolException, IOException, TkmDataException, FileNotFoundException, NoSuchProviderException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException {
         InternalTransactionBean itb = null;
+        String words;
         switch (srb.getRt()) {
             case GET_ADDRESS:
                 signedResponse.setWalletAddress(iwk.getPublicKeyAtIndexURL64(srb.getWallet().getAddressNumber()));
-                String words = WalletHelper.readKeyFile(ProjectHelper.getCurrentWalletpath(srb.getWallet().getWalletName()), plainPassword).getWords();
+                words = WalletHelper.readKeyFile(ProjectHelper.getCurrentWalletpath(srb.getWallet().getWalletName()), plainPassword).getWords();
+                if (!TkmTextUtils.isNullOrBlank(words)) {
+                    signedResponse.setWords(words);
+                }
+                break;
+            case RECOVER_WALLET:
+                signedResponse.setWalletAddress(iwk.getPublicKeyAtIndexURL64(srb.getWallet().getAddressNumber()));
+                words = WalletHelper.readKeyFile(ProjectHelper.getCurrentWalletpath(srb.getWallet().getWalletName()), plainPassword).getWords();
                 if (!TkmTextUtils.isNullOrBlank(words)) {
                     signedResponse.setWords(words);
                 }

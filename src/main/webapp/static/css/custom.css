@@ -8,6 +8,55 @@ and open the template in the editor.
     Author     : isacco.borsani@h2tcoin.com
 */
 
+body {
+    background-color: rgb(235 235 235 / 0%)
+}
+
+@media screen and (max-width: 768px) {
+    #ONDE, #ONDE2, #ONDE3 {
+        display: none
+    }
+}
+
+#ONDE {
+    position: fixed;
+    width: 360px;
+    /* height: 1080px; */
+    /* left: 0px; */
+    /* top: 301px; */
+    bottom: 0;
+    left: 0;
+    overflow: visible;
+}
+
+#ONDE2 {
+    position: fixed;
+    width: 360px;
+    /* height: 1080px; */
+    /* left: 0px; */
+    /* top: 301px; */
+    bottom: -15px;
+    overflow: visible;
+    transform: rotate(270deg);
+    right: 15px;
+}
+
+#ONDE3 {
+    position: fixed;
+    width: 360px;
+    /* height: 1080px; */
+    /* left: 0px; */
+    /* top: 301px; */
+    /* bottom: -15px; */
+    top: -88px;
+    overflow: visible;
+    transform: rotate( 
+        90deg
+        );
+    right: 15px;
+    left: 0;
+}
+
 .nopadding {
     padding: 0 !important
 }
