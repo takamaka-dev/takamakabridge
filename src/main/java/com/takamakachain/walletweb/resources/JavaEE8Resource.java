@@ -172,18 +172,17 @@ public class JavaEE8Resource {
     @Path("getWalletCrc")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public static final Response getWalletCrc(SignedResponseBean srb) {
-
-        System.out.println(srb.getWalletAddress());
-
-        if (TkmTextUtils.isNullOrBlank(srb.getWalletAddress()) || (srb.getWalletAddress().length() != 44 && srb.getWalletAddress().length() != 19840)) {
+    public static final Response getWalletCrc(SignedResponseBean srb) {        
+        String walletAddress = !TkmTextUtils.isNullOrBlank(srb.getPassedData()) ? srb.getPassedData() : srb.getWalletAddress();
+        
+        if (TkmTextUtils.isNullOrBlank(walletAddress) || (walletAddress.length() != 44 && walletAddress.length() != 19840)) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
-        String crc = TkmSignUtils.getHexCRC(srb.getWalletAddress());
+        String crc = TkmSignUtils.getHexCRC(walletAddress);
 
         WalletCrcResponseBean wCrc = new WalletCrcResponseBean();
-        wCrc.setAddress(srb.getWalletAddress());
+        wCrc.setAddress(walletAddress);
         wCrc.setCrcAddress(crc.toUpperCase());
 
         return Response.status(Response.Status.OK).entity(wCrc).build();

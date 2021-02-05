@@ -234,6 +234,10 @@ span.no-results {
     height: 700px;
 }
 
+ul.list-style-none, ol.list-style-none {
+    list-style: none !important
+}
+
 .main-logged-menu {
     border-bottom: 2px solid #295b8d;
     border-radius: 100px;

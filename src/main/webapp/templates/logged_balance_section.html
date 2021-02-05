@@ -19,7 +19,7 @@ and open the template in the editor.
                 <span>Wallet Identicon</span>
             </div>
             <div class="col-md-9">
-                <textarea placeholder="Paste here your address!" class="form-control check-form-field not-empty no-resize h250"></textarea>
+                <textarea placeholder="Paste here your address!" class="form-control check-form-field not-empty no-resize h250 address-field"></textarea>
             </div>
             <div class="col-md-12">
                 <br/>
@@ -31,31 +31,31 @@ and open the template in the editor.
                 <tbody>
                     <tr>
                         <td scope="row">Wallet Cypher</td>
-                        <td><span class="badge-app badge-secondary">N/A</span></td>
+                        <td><span class="badge-app badge-secondary wallet-cypher-value">N/A</span></td>
                     </tr>
                     <tr>
                         <td scope="row">Tkg</td>
-                        <td><span class="badge-app badge-success">N/A</span></td>
+                        <td><span class="badge-app badge-success tkg-value">N/A</span></td>
                     </tr>
                     <tr>
                         <td scope="row">Tkr</td>
-                        <td><span class="badge-app badge-danger">N/A</span></td>
+                        <td><span class="badge-app badge-danger tkr-value">N/A</span></td>
                     </tr>
                     <tr>
                         <td scope="row">Frozen Tkg</td>
-                        <td><span class="badge-app badge-primary">N/A</span></td>
+                        <td><span class="badge-app badge-primary ftkg-value">N/A</span></td>
                     </tr>
                     <tr>
                         <td scope="row">Frozen Tkr</td>
-                        <td><span class="badge-app badge-primary">N/A</span></td>
+                        <td><span class="badge-app badge-primary ftkr-value">N/A</span></td>
                     </tr>
-                    <tr>
+                    <!--<tr>
                         <td scope="row">Recovery Rounds</td>
                         <td><span class="badge-app badge-primary">N/A</span></td>
-                    </tr>
+                    </tr>-->
                     <tr>
                         <td scope="row">CRC (Control Code)</td>
-                        <td><span class="badge-app badge-secondary">N/A</span></td>
+                        <td><span class="badge-app badge-secondary crc-value">N/A</span></td>
                     </tr>
                 </tbody>
             </table>
@@ -93,6 +93,31 @@ and open the template in the editor.
 
 <script>
     $(document).ready(function () {
-        
+        $('.submit').on('click', function () {
+            getBalances($(this).attr('data-env'));
+        });
+
+        $('.address-field').on('change', function () {
+            getBalances($('.env-select-balance').val());
+        });
     });
+
+    getBalances = (env) => {
+        if ($('.address-field').val().toString().length === 44) {
+            $('.wallet-cypher-value').html('ED25519');
+        } else if ($('.address-field').val().toString().length === 19840) {
+            $('.wallet-cypher-value').html('QTESLA');
+        }
+        window.signedResponseBean['passedData'] = $('.address-field').val();
+        populateIdenticon(window.signedResponseBean, '.wallet-container', 'wallet-balance-identicon', 250);
+        populateCrc(window.signedResponseBean, '.crc-value');
+        getAddressBalance($('.address-field').val(), {
+            "tkg": ".tkg-value",
+            "tkr": ".tkr-value",
+            "ftkg": ".ftkg-value",
+            "ftkr": ".ftkr-value",
+            "env": env
+        });
+    }
+
 </script>

@@ -100,12 +100,7 @@ uuidv4 = () => {
     });
 }
 
-populateUserMenu = dataInputUserWallet => {
-    window.signedResponseBean = dataInputUserWallet;
-    console.log(dataInputUserWallet);
-    $('#wallet-address').html(dataInputUserWallet['walletAddress']);
-    $('#wallet-key').html(dataInputUserWallet['walletKey']);
-    $('#secret-words').val(dataInputUserWallet['words']);
+populateIdenticon = (param, selector, id_identicon, pref_width) => {
     $.ajax({
         headers: {
             'Content-Type': "application/json"
@@ -114,12 +109,18 @@ populateUserMenu = dataInputUserWallet => {
         url: window.webappname + '/resources/javaee8/getWalletIdenticon',
         contentType: "application/json",
         dataType: "json",
-        data: JSON.stringify(dataInputUserWallet),
+        data: JSON.stringify(param),
         success: function (dataRes) {
-            $('#wallet-identicon').attr('src', 'data:image/png;base64, ' + dataRes['identiconUrlBase64']);
+            width = 128;
+            if (pref_width !== null) {
+                width = pref_width;
+            }
+            $(selector).html('<img width="'+width+'" id="'+id_identicon+'" src="data:image/png;base64, ' + dataRes['identiconUrlBase64']+'"/>');
         }
     });
+}
 
+populateCrc = (param, selector) => {
     $.ajax({
         headers: {
             'Content-Type': "application/json"
@@ -128,19 +129,34 @@ populateUserMenu = dataInputUserWallet => {
         url: window.webappname + '/resources/javaee8/getWalletCrc',
         contentType: "application/json",
         dataType: "json",
-        data: JSON.stringify(dataInputUserWallet),
+        data: JSON.stringify(param),
         success: function (dataRes) {
-            $('#wallet-crc').html(dataRes['crcAddress']);
+            $(selector).html(dataRes['crcAddress']);
         }
     });
+}
 
-    getAddressBalance(dataInputUserWallet['walletAddress']);
+populateUserMenu = dataInputUserWallet => {
+    window.signedResponseBean = dataInputUserWallet;
+    console.log('popolamento');
+    console.log(dataInputUserWallet);
+    $('#wallet-address').html(dataInputUserWallet['walletAddress']);
+    $('#wallet-key').html(dataInputUserWallet['walletKey']);
+    $('#secret-words').val(dataInputUserWallet['words']);
+    populateIdenticon(dataInputUserWallet, '.identicon-container', 'wallet-identicon');
+    populateCrc(dataInputUserWallet, '#wallet-crc');
+    getAddressBalance(dataInputUserWallet['walletAddress'], null);
 };
 
-getAddressBalance = (walletAddress) => {
+getAddressBalance = (walletAddress, selectors) => {
     let dataForBalance = {};
     dataForBalance['data'] = walletAddress;
-    dataForBalance['endpoint'] = $('.env-select-balance').val();
+    if (selectors === null) {
+        dataForBalance['endpoint'] = $('.env-select-balance').val();
+    } else {
+        dataForBalance['endpoint'] = selectors['env'];
+    }
+
 
     $.ajax({
         headers: {
@@ -157,10 +173,19 @@ getAddressBalance = (walletAddress) => {
             dataRes['greenPenalty'] /= Math.pow(10, 9);
             dataRes['redPenalty'] /= Math.pow(10, 9);
 
-            $('#wallet-tkg').html(new Number(dataRes['greenBalance']).toLocaleString("de-DE"));
-            $('#wallet-tkr').html(new Number(dataRes['redBalance']).toLocaleString("de-DE"));
-            $('#wallet-ftkg').html(new Number(dataRes['greenPenalty']).toLocaleString("de-DE"));
-            $('#wallet-ftkr').html(new Number(dataRes['redPenalty']).toLocaleString("de-DE"));
+            if (null !== selectors) {
+                $(selectors['tkg']).html(new Number(dataRes['greenBalance']).toLocaleString("de-DE"));
+                $(selectors['tkr']).html(new Number(dataRes['greenBalance']).toLocaleString("de-DE"));
+                $(selectors['ftkg']).html(new Number(dataRes['greenBalance']).toLocaleString("de-DE"));
+                $(selectors['ftkr']).html(new Number(dataRes['greenBalance']).toLocaleString("de-DE"));
+            } else {
+                $('#wallet-tkg').html(new Number(dataRes['greenBalance']).toLocaleString("de-DE"));
+                $('#wallet-tkr').html(new Number(dataRes['redBalance']).toLocaleString("de-DE"));
+                $('#wallet-ftkg').html(new Number(dataRes['greenPenalty']).toLocaleString("de-DE"));
+                $('#wallet-ftkr').html(new Number(dataRes['redPenalty']).toLocaleString("de-DE"));
+            }
+
+
         }
     });
 }
