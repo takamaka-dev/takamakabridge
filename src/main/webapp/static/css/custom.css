@@ -143,10 +143,26 @@ span.no-results {
     position: relative;
 }
 
+.dot {
+    height: 25px;
+    width: 25px;
+    background-color: #bbb;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.dot.green {
+    background-color: #4fd253
+}
+
+.dot.red {
+    background-color: #e03f3f
+}
+
 .qr-code-container span {
     position: absolute;
     top: 44%;
-    left: 38%;
+    left: 34%;
     color: #ccc;
     font-weight: 600;
     text-transform: uppercase;

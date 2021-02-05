@@ -16,7 +16,7 @@ and open the template in the editor.
 
     <div class="col-md-12">
         <div class="row">
-            <div class="col">
+            <div class="col text-left">
                 <label>Kind of Token</label>
             </div>
             <div class="col">
@@ -24,16 +24,26 @@ and open the template in the editor.
             </div>
         </div>
         <div class="row">
-            <div class="col">
-                <label>Amount of tokens required</label>
+            <div class="col-md-12">
+                <br/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col text-left">
+                <label>Amount of Tokens</label>
             </div>
             <div class="col">
                 <span class="token-amount"></span>
             </div>
         </div>
         <div class="row">
-            <div class="col">
-                <label>Kind of request</label>
+            <div class="col-md-12">
+                <br/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col text-left">
+                <label>Kind of Request</label>
             </div>
             <div class="col">
                 <span class="request-type"></span>
@@ -48,16 +58,14 @@ and open the template in the editor.
     <div class="col-md-12">
         <div class="row">
             <div class="col-md-2">
-                <div class="input-group-prepend">
-                    <button class="btn btn-outline-secondary dropdown-toggle margin0" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Select a Token</button>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item tkr-opt" href="#">TKR</a>
-                        <a class="dropdown-item tkg-opt" href="#">TKG</a>
-                    </div>
-                </div>
+                <select class="form-control tokens-type-input">
+                    <option selected="selected">Select</option>
+                    <option value="tkr">TKR</option>
+                    <option value="tkg">TKG</option>
+                </select>
             </div>
             <div class="col-md-10">
-                <input type="number" class="form-control" aria-label="Text input with dropdown button">
+                <input type="number" placeholder="Token amount" class="form-control check-form-field not-empty is-integer tokens-amount-input" aria-label="Text input with dropdown button">
             </div>
         </div>
     </div>
@@ -98,15 +106,45 @@ and open the template in the editor.
 </div>
 
 <script>
-    $('.nav-btn').on('click', function () {
-        if ($(this).hasClass('home') && $('#wallet-address').html() === '') {
-            $.alert({
-                title: 'Hi there!',
-                type: 'blue',
-                content: 'First login to your wallet !'
-            });
-            return false;
-        }
-        goToPage($(this).attr('data-page'));
+    $(document).ready(function () {
+        $('.request-type').html(window.signedResponseBean['request']['wallet']['walletCypher']);
+        $('.nav-btn').on('click', function () {
+            if ($(this).hasClass('home') && $('#wallet-address').html() === '') {
+                $.alert({
+                    title: 'Hi there!',
+                    type: 'blue',
+                    content: 'First login to your wallet !'
+                });
+                return false;
+            }
+            goToPage($(this).attr('data-page'));
+        });
+
+        $('input').on('change', function () {
+            resetFieldsError($(this));
+        });
+
+        $('#createQrCode').submit(function (e) {
+            e.preventDefault();
+
+            if (!checkFields(false)) {
+                return false;
+            }
+        });
+
+        $('.tokens-type-input').on('change', function () {
+            if ($(this).val() === 'tkr') {
+                $('.token-type').html('<span class="dot red"></span>');
+            } else if ($(this).val() === 'tkg') {
+                $('.token-type').html('<span class="dot green"></span>');
+            }
+        });
+
+        $('.tokens-amount-input').on('change', function () {
+            if ($(this).val() > 0) {
+                $('.token-amount').html($(this).val());
+            }
+        });
     });
+
 </script>
