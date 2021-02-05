@@ -65,7 +65,6 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -77,10 +76,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
-import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
@@ -393,11 +389,28 @@ public class JavaEE8Resource {
         File temp = new File(fileDetail.getFileName());
         FileUtils.writeByteArrayToFile(temp, byteFile);
 
-        InputStream targetStreamMeta = new FileInputStream(temp);
+        FilePropertiesBean fpb = prepareFileMeta(fileDetail.getFileName(), new FileInputStream(temp));
 
+        if (byteFile.length > 4004215) {
+            temp.delete();
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        } else {
+            base64file = TkmSignUtils.fromByteArrayToB64URL(byteFile);
+
+            fpb.setFileContent(base64file);
+
+            fpb.setFileSize(ProjectHelper.convertToStringRepresentationFileSize(base64file.getBytes().length));
+            temp.delete();
+            return Response.status(Response.Status.OK).entity(fpb).build();
+
+        }
+
+    }
+
+    public static final FilePropertiesBean prepareFileMeta(String filename, FileInputStream targetStreamMeta) throws IOException, SAXException, TikaException {
         BodyContentHandler bodyContentHandler = new BodyContentHandler();
         Metadata metadata = new Metadata();
-        metadata.set(Metadata.RESOURCE_NAME_KEY, fileDetail.getFileName());
+        metadata.set(Metadata.RESOURCE_NAME_KEY, filename);
         Parser parser = new AutoDetectParser();
         parser.parse(targetStreamMeta, bodyContentHandler, metadata, new ParseContext());
 
@@ -411,13 +424,32 @@ public class JavaEE8Resource {
             }
             fpb.add(meta, metadata.get(meta), false, selected);
         });
+        
+        return fpb;
+    }
+
+    @POST
+    @Path("getFileHash")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    public static final Response uploadFileHash(@FormDataParam("file") InputStream uploadedInputStream,
+            @FormDataParam("file") FormDataContentDisposition fileDetail) throws IOException, SAXException, TikaException, NoSuchAlgorithmException, NoSuchProviderException {
+        String base64file;
+
+        byte[] byteFile = toByteArray(uploadedInputStream);
+
+        File temp = new File(fileDetail.getFileName());
+        FileUtils.writeByteArrayToFile(temp, byteFile);
+
+        FilePropertiesBean fpb = prepareFileMeta(fileDetail.getFileName(), new FileInputStream(temp));
 
         if (byteFile.length > 4004215) {
             temp.delete();
             return Response.status(Response.Status.BAD_REQUEST).build();
         } else {
-
-            base64file = TkmSignUtils.fromByteArrayToB64URL(byteFile);
+            byte[] fileHash = TkmSignUtils.Hash256Byte(byteFile, FixedParameters.HASH_256_ALGORITHM);
+            String fileHashB64Url = TkmSignUtils.fromByteArrayToB64URL(fileHash);
+            base64file = fileHashB64Url;
 
             fpb.setFileContent(base64file);
 
@@ -456,9 +488,7 @@ public class JavaEE8Resource {
         }
 
         String walletIdenticonUrl64 = IdentiColorHelper.getAvatarBase64URL256(walletAddress);
-        
-        
-        
+
         walletIdenticonUrl64 = walletIdenticonUrl64.replace(".", "=").replace("-", "+").replace("_", "/");
 
         if (TkmTextUtils.isNullOrBlank(walletIdenticonUrl64)) {
@@ -523,7 +553,7 @@ public class JavaEE8Resource {
             java.nio.file.Path importWalletFromWords = null;
             List<String> words = Arrays.asList(recoveryWords.split(" "));
             try {
-                
+
                 switch (wb.getWalletCypher()) {
                     case "BCQTESLA_PS_1":
                         importWalletFromWords = WalletHelper.importKeyFromWords(words, FileHelper.getDefaultWalletDirectoryPath(), wb.getWalletName(), KeyContexts.WalletCypher.BCQTESLA_PS_1, wb.getWalletPassword());

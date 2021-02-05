@@ -131,8 +131,8 @@ span.no-results {
     resize: none !important
 }
 
-#new-upload-file-form .mimetype-area {
-    height: 120px;
+.mimetype-area {
+    height: 120px !important;
     resize: none
 }
 
@@ -170,6 +170,11 @@ span.no-results {
     height: 700px;
 }
 
+.main-logged-menu {
+    border-bottom: 2px solid #295b8d;
+    border-radius: 100px
+}
+
 .main-logged-menu i.badge-section {
     position: absolute;
     font-size: 35px;
@@ -194,7 +199,8 @@ span.no-results {
     border-radius: 5px;
     min-height: 75px;
     background-color: #ffffff;
-    padding:10px
+    padding:10px;
+    box-shadow: 2px 2px 5px #ccc
 }
 
 .main-logged-menu .main-btn-container.first, .main-logged-menu .main-btn-container.third {
