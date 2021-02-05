@@ -121,7 +121,7 @@ and open the template in the editor.
 
             <div class="row">
                 <div class="col-md-8 text-left">
-                    <button class="btn btn-secondary nav-btn" data-page="logged_home_page">Back</button>
+                    <button class="btn btn-secondary" onclick="goToPage($(this))" data-page="logged_home_page">Back</button>
                 </div>
 
                 <div class="col-md-4 text-right">
@@ -191,7 +191,7 @@ and open the template in the editor.
                     'Content-Type': "application/json"
                 },
                 type: 'POST',
-                url: window.webappname+'/resources/javaee8/signedRequest',
+                url: window.webappname + '/resources/javaee8/signedRequest',
                 contentType: "application/json",
                 data: JSON.stringify(window.signedResponseBean['request']),
                 success: function (dataRes) {
@@ -204,13 +204,13 @@ and open the template in the editor.
                 }
             });
         });
-        
-        $('.submit').on('click', function() {
+
+        $('.submit').on('click', function () {
             window.signedResponseBean['request']['env'] = $(this).attr('data-env');
             $('#new-pay-form').submit();
         });
 
-        $('#new-pay-form').submit(function(e) {
+        $('#new-pay-form').submit(function (e) {
             e.preventDefault();
             window.signedResponseBean['request']['rt'] = 'SEND_TRX';
             $.ajax({
@@ -218,39 +218,35 @@ and open the template in the editor.
                     'Content-Type': "application/json"
                 },
                 type: 'POST',
-                url: window.webappname+'/resources/javaee8/signedRequest',
+                url: window.webappname + '/resources/javaee8/signedRequest',
                 contentType: "application/json",
                 data: JSON.stringify(window.signedResponseBean['request']),
-                beforeSend: function() {
+                beforeSend: function () {
                     $('.page').html('<div class="loading-container"><img src="static/images/loading.gif" alt=""/></div');
                 },
                 success: function () {
-                    goToPage('success_transaction');
+                    goToPage(null, 'success_transaction');
                 },
-                error: function() {
-                    goToPage('failed_transaction');
+                error: function () {
+                    goToPage(null, 'failed_transaction');
                 }
             });
-        });
-
-        $('.nav-btn').on('click', function () {
-            goToPage($(this).attr('data-page'));
         });
 
         $('#fromAddrIdenticon').attr('src', $('#wallet-identicon').attr('src'));
         $('#fromAddr').val($('#wallet-address').html());
         $('#toAddr').on('change', function () {
             console.log($(this).val());
-            
+
             $(this).val($(this).val().trim());
-            
+
             window.signedResponseBean['passedData'] = $(this).val();
             $.ajax({
                 headers: {
                     'Content-Type': "application/json"
                 },
                 type: 'POST',
-                url: window.webappname+'/resources/javaee8/getWalletIdenticon',
+                url: window.webappname + '/resources/javaee8/getWalletIdenticon',
                 contentType: "application/json",
                 data: JSON.stringify(window.signedResponseBean),
                 success: function (dataRes) {
