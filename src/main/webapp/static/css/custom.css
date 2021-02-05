@@ -136,8 +136,8 @@ span.no-results {
 }
 
 .qr-code-container {
-    width: 300px;
-    height: 300px;
+    width: 250px;
+    height: 250px;
     border: 3px dashed #ccc;
     margin: 0 auto;
     position: relative;
