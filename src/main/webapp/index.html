@@ -156,10 +156,15 @@
             if (window.webappname === undefined || window.webappname === '') {
                 let splittedHref = window.location.href.toString();
                 //window.webappname = splittedHref[0] + '/' + splittedHref[1] + "/" + splittedHref[2] + "/" + splittedHref[3];
-                window.webappname = window.location.href.toString().slice(0, -1);
-        }
 
-            goToPage(null, 'logged_balance_section');
+                if (window.location.href.toString().substr(window.location.href.toString().length - 1) === '#') {
+                    window.webappname = window.location.href.toString().slice(0, -2);
+                } else {
+                    window.webappname = window.location.href.toString().slice(0, -1);
+                }
+            }
+
+            goToPage(null, 'test_signed_request');
 
             $('.env-select-balance').on('change', function () {
                 getAddressBalance($('#wallet-address').html(), null);
