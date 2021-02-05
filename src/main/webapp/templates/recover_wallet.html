@@ -63,7 +63,6 @@ and open the template in the editor.
             resetFieldsError($(this));
         });
 
-
         $('#uuid').val(uuidv4());
         $('#new-wallet-form').submit(function (e) {
             e.preventDefault();
@@ -104,8 +103,6 @@ and open the template in the editor.
             signedRequestBean['rt'] = 'RECOVER_WALLET';
             signedRequestBean['itb'] = null;
 
-            console.log(JSON.stringify(signedRequestBean));
-
             $.ajax({
                 headers: {
                     'Content-Type': "application/json"
@@ -118,7 +115,7 @@ and open the template in the editor.
                 success: function (data) {
                     console.log(data);
                     populateUserMenu(data);
-                    goToPage("logged_home_page");
+                    goToPage(null, "logged_home_page");
                 }
             });
         });

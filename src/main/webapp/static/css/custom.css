@@ -24,7 +24,7 @@ body {
     /* height: 1080px; */
     /* left: 0px; */
     /* top: 301px; */
-    bottom: 0;
+    bottom: -95px;
     left: 0;
     overflow: visible;
 }
@@ -135,7 +135,7 @@ span.no-results {
     margin: 0 auto !important
 }
 
-.qr-code-container {
+.qr-code-container, .wallet-container {
     width: 250px;
     height: 250px;
     border: 3px dashed #ccc;
@@ -151,6 +151,12 @@ span.no-results {
     display: inline-block;
 }
 
+.badge-app {
+    padding: 6px;
+    border-radius: 100px;
+    font-weight: 600
+}
+
 .dot.green {
     background-color: #4fd253
 }
@@ -159,10 +165,30 @@ span.no-results {
     background-color: #e03f3f
 }
 
+.h250 {
+    height: 250px !important
+}
+
+.table-balance tr td {
+    text-align: left;
+    position: relative;
+    padding-left: 80px
+}
+
 .qr-code-container span {
     position: absolute;
     top: 44%;
     left: 34%;
+    color: #ccc;
+    font-weight: 600;
+    text-transform: uppercase;
+    cursor: default
+}
+
+.wallet-container span {
+    position: absolute;
+    top: 44%;
+    left: 23%;
     color: #ccc;
     font-weight: 600;
     text-transform: uppercase;
@@ -210,7 +236,10 @@ span.no-results {
 
 .main-logged-menu {
     border-bottom: 2px solid #295b8d;
-    border-radius: 100px
+    border-radius: 100px;
+    border-top: 2px solid #205b8d;
+    border-top-left-radius: 25px;
+    border-top-right-radius: 25px
 }
 
 .main-logged-menu i.badge-section {

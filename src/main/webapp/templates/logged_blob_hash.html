@@ -99,7 +99,7 @@ and open the template in the editor.
 
             <div class="row">
                 <div class="col-md-8 text-left">
-                    <button class="btn btn-secondary nav-btn" data-page="logged_home_page">Back</button>
+                    <button class="btn btn-secondary" onclick="goToPage($(this))" data-page="logged_home_page">Back</button>
                 </div>
 
                 <div class="col-md-4 text-right">
@@ -292,16 +292,12 @@ and open the template in the editor.
                     $('.page').html('<div class="loading-container"><img src="static/images/loading.gif" alt=""/></div');
                 },
                 success: function () {
-                    goToPage('success_transaction');
+                    goToPage(null, 'success_transaction');
                 },
                 error: function () {
-                    goToPage('failed_transaction');
+                    goToPage(null, 'failed_transaction');
                 }
             });
-        });
-
-        $('.nav-btn').on('click', function () {
-            goToPage($(this).attr('data-page'));
         });
 
         $('#fromAddrIdenticon').attr('src', $('#wallet-identicon').attr('src'));

@@ -47,12 +47,27 @@ checkFields = (isComplexStructure) => {
     return checkFormResult;
 }
 
-goToPage = (pageid) => {
-    
+goToPage = (el, page_name) => {
+    if (page_name !== null && page_name !== undefined && page_name !== '') {
+        pageid = page_name
+    } else if (el !== null && el !== undefined && el.hasClass('home') && $('#wallet-address').html() === '') {
+        $.alert({
+            title: 'Hi there!',
+            type: 'blue',
+            content: 'First login to your wallet !'
+        });
+        return false;
+    } else if (el !== null && el !== undefined) {
+        pageid = $(el).attr('data-page');
+    } else {
+        pageid = 'logged_home_page';
+    }
+
+    console.log(pageid);
     let pageBean = {};
     pageBean['pageId'] = pageid;
     pageBean['contextRoot'] = window.webappname;
-    
+
     $.ajax({
         headers: {
             'Content-Type': "application/json"
@@ -70,12 +85,12 @@ goToPage = (pageid) => {
                 $('.page').html(data['pageContent']);
             }, 500);
         },
-        error: function(data) {
+        error: function (data) {
             alert('General error retrieving page');
         }
     });
 
-    
+
 }
 
 uuidv4 = () => {

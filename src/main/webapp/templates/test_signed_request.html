@@ -99,8 +99,6 @@ and open the template in the editor.
             signedRequestBean['rt'] = 'GET_ADDRESS';
             signedRequestBean['itb'] = null;
 
-            console.log(signedRequestBean);
-
             $.ajax({
                 headers: {
                     'Content-Type': "application/json"
@@ -112,7 +110,7 @@ and open the template in the editor.
                 data: JSON.stringify(signedRequestBean),
                 success: function (data) {
                     populateUserMenu(data);
-                    goToPage("logged_home_page");
+                    goToPage(null, "logged_home_page");
                 }
             });
         });

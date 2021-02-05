@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<div class="row mt20 text-center">
+    <div class="col-md-12 text-center">
+        <span class="section-title">Check Balance</span>
+    </div>
+    <div class="col-md-12">
+        <hr/>
+        <br/>
+    </div>
+
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-3 wallet-container">
+                <span>Wallet Identicon</span>
+            </div>
+            <div class="col-md-9">
+                <textarea placeholder="Paste here your address!" class="form-control check-form-field not-empty no-resize h250"></textarea>
+            </div>
+            <div class="col-md-12">
+                <br/>
+            </div>
+        </div>
+
+        <div class="row">
+            <table class="table table-striped table-balance">
+                <tbody>
+                    <tr>
+                        <td scope="row">Wallet Cypher</td>
+                        <td><span class="badge-app badge-secondary">N/A</span></td>
+                    </tr>
+                    <tr>
+                        <td scope="row">Tkg</td>
+                        <td><span class="badge-app badge-success">N/A</span></td>
+                    </tr>
+                    <tr>
+                        <td scope="row">Tkr</td>
+                        <td><span class="badge-app badge-danger">N/A</span></td>
+                    </tr>
+                    <tr>
+                        <td scope="row">Frozen Tkg</td>
+                        <td><span class="badge-app badge-primary">N/A</span></td>
+                    </tr>
+                    <tr>
+                        <td scope="row">Frozen Tkr</td>
+                        <td><span class="badge-app badge-primary">N/A</span></td>
+                    </tr>
+                    <tr>
+                        <td scope="row">Recovery Rounds</td>
+                        <td><span class="badge-app badge-primary">N/A</span></td>
+                    </tr>
+                    <tr>
+                        <td scope="row">CRC (Control Code)</td>
+                        <td><span class="badge-app badge-secondary">N/A</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <br/>
+            </div>
+            <div class="col-md-8 text-left">
+                <button class="btn btn-secondary" onclick="goToPage($(this))" data-page="logged_home_page">Back</button>
+            </div>
+
+            <div class="col-md-4 text-right">
+                <div class="btn-group" role="group" aria-label="Basic example">
+                    <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle font-weight-bold" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Submit to
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item submit" data-env="prod" href="#">Production Net</a>
+                            <a class="dropdown-item submit" data-env="test" href="#">Test net</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <br/>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    $(document).ready(function () {
+        
+    });
+</script>

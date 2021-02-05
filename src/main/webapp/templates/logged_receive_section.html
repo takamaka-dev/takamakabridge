@@ -92,7 +92,7 @@ and open the template in the editor.
     <div class="col-md-12">
         <div class="row">
             <div class="col-md-10 text-left">
-                <button class="btn btn-secondary nav-btn" data-page="logged_home_page">Back</button>
+                <button class="btn btn-secondary" onclick="goToPage($(this))" data-page="logged_home_page">Back</button>
             </div>
 
             <div class="col-md-2 text-right">
@@ -108,22 +108,11 @@ and open the template in the editor.
 <script>
     $(document).ready(function () {
         $('.request-type').html(window.signedResponseBean['request']['wallet']['walletCypher']);
-        $('.nav-btn').on('click', function () {
-            if ($(this).hasClass('home') && $('#wallet-address').html() === '') {
-                $.alert({
-                    title: 'Hi there!',
-                    type: 'blue',
-                    content: 'First login to your wallet !'
-                });
-                return false;
-            }
-            goToPage($(this).attr('data-page'));
-        });
-
+        
         $('input').on('change', function () {
             resetFieldsError($(this));
         });
-        
+
         $('select').on('change', function () {
             resetFieldsError($(this));
         });

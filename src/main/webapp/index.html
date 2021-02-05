@@ -101,9 +101,9 @@
 
         <div class ="row main-logged-menu-misc" >
             <div class="btn-group btn-group-sm upper-menu" role="group">
-                <button type="button" class="btn  btn-tkm first nav-btn home" data-page="logged_home_page"><i class="fal fa-home"></i> <span>Home</span></button>
-                <button type="button" class="btn btn-tkm first nav-btn" data-page="test_signed_request"><i class="fal fa-wallet"></i> <span>New Login</span></button>
-                <button type="button" class="btn btn-tkm first nav-btn" data-page="recover_wallet"><i class="fal fa-recycle"></i> <span>Recover Wallet</span></button>
+                <button type="button" class="btn  btn-tkm first home" onclick="goToPage($(this))" data-page="logged_home_page"><i class="fal fa-home"></i> <span>Home</span></button>
+                <button type="button" class="btn btn-tkm first" onclick="goToPage($(this))" data-page="test_signed_request"><i class="fal fa-wallet"></i> <span>New Login</span></button>
+                <button type="button" class="btn btn-tkm first" onclick="goToPage($(this))" data-page="recover_wallet"><i class="fal fa-recycle"></i> <span>Recover Wallet</span></button>
                 <!--<button type="button" class="btn btn-tkm first nav-btn" data-page="test_signed_request"><i class="fal fa-question"></i> <span>Help</span></button>-->
                 <button type="button" class="btn btn-tkm first" data-toggle="modal" data-target="#aboutModal"><i class="fal fa-info"></i> <span>About</span></button>
             </div>
@@ -158,7 +158,7 @@
                 window.webappname = splittedHref[0] + '/' + splittedHref[1] + "/" + splittedHref[2] + "/" + splittedHref[3];
             }
 
-            goToPage('logged_receive_section');
+            goToPage(null, 'logged_balance_section');
 
             $('.env-select-balance').on('change', function () {
                 getAddressBalance($('#wallet-address').html());
@@ -203,18 +203,6 @@
                     $('.menu-wallet-bar').removeClass("slide-out");
                     $('.menu-wallet-bar').addClass("slide-in");
                 }
-            });
-
-            $('.nav-btn').on('click', function () {
-                if ($(this).hasClass('home') && $('#wallet-address').html() === '') {
-                    $.alert({
-                        title: 'Hi there!',
-                        type: 'blue',
-                        content: 'First login to your wallet !'
-                    });
-                    return false;
-                }
-                goToPage($(this).attr('data-page'));
             });
         });
 
