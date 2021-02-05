@@ -5,14 +5,19 @@
  */
 package com.takamakachain.walletweb.resources.support;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 import com.h2tcoin.takamakachain.exceptions.wallet.TransactionCanNotBeCreatedException;
 import com.h2tcoin.takamakachain.exceptions.wallet.WalletException;
 import com.h2tcoin.takamakachain.globalContext.FixedParameters;
+import com.h2tcoin.takamakachain.main.defaults.DefaultInitParameters;
 import com.h2tcoin.takamakachain.tkmdata.exceptions.TkmDataException;
 import com.h2tcoin.takamakachain.transactions.InternalTransactionBean;
 import com.h2tcoin.takamakachain.transactions.TransactionBean;
 import com.h2tcoin.takamakachain.transactions.fee.FeeBean;
 import com.h2tcoin.takamakachain.transactions.fee.TransactionFeeCalculator;
+import com.h2tcoin.takamakachain.utils.networking.RequestPaymentBean;
 import com.takamakachain.walletweb.resources.FilePropertiesBean;
 import com.h2tcoin.takamakachain.utils.threadSafeUtils.TkmSignUtils;
 import com.h2tcoin.takamakachain.utils.threadSafeUtils.TkmTextUtils;
@@ -21,16 +26,23 @@ import com.h2tcoin.takamakachain.wallet.TkmWallet;
 import com.h2tcoin.takamakachain.wallet.TransactionBox;
 import com.h2tcoin.takamakachain.wallet.WalletHelper;
 import com.hazelcast.internal.json.JsonObject;
+import com.takamakachain.walletweb.resources.ReceiveTokenBalanceRequestBean;
 import com.takamakachain.walletweb.resources.SignedRequestBean;
 import com.takamakachain.walletweb.resources.SignedResponseBean;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.ProtocolException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchProviderException;
+import java.util.Base64;
 import java.util.Date;
 import javax.crypto.NoSuchPaddingException;
+import javax.imageio.ImageIO;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
@@ -85,13 +97,13 @@ public class TransactionsHelper {
         jsonObjectMessage.accumulate("data", b64Message);
         return jsonObjectMessage.toString();
     }
-    
+
     public static final boolean manageRequests(
             SignedRequestBean srb,
             SignedResponseBean signedResponse,
             InstanceWalletKeystoreInterface iwk,
             String plainPassword
-            ) throws TransactionCanNotBeCreatedException, WalletException, ProtocolException, IOException, TkmDataException, FileNotFoundException, NoSuchProviderException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException {
+    ) throws TransactionCanNotBeCreatedException, WalletException, ProtocolException, IOException, TkmDataException, FileNotFoundException, NoSuchProviderException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException {
         InternalTransactionBean itb = null;
         String words;
         switch (srb.getRt()) {
@@ -120,7 +132,7 @@ public class TransactionsHelper {
                 itb = srb.getItb();
                 itb.setMessage(prepareMessageBase64(itb.getMessage()));
                 itb.setNotBefore(new Date((new Date()).getTime() + 60000L * 5));
-                
+
                 if (!TransactionsHelper.makeJsonTrx(signedResponse, itb, iwk, srb.getWallet().getAddressNumber())) {
                     System.out.println("Failed");
                     return false;
@@ -132,12 +144,17 @@ public class TransactionsHelper {
                 //System.out.println(srb.getFrb().getAll().toString());
                 itb = srb.getItb();
                 itb.setNotBefore(new Date((new Date()).getTime() + 60000L * 5));
-                
+
                 if (!TransactionsHelper.makeJsonTrx(signedResponse, itb, iwk, srb.getWallet().getAddressNumber())) {
                     System.out.println("Failed");
                     return false;
                 }
 
+                break;
+
+            case RECEIVE_TOKENS:
+                ReceiveTokenBalanceRequestBean rtbr = srb.getRtbr();
+                signedResponse.setBase64QrCodeReceiveBalance(getQR(createQRString(rtbr)));
                 break;
 
             case SEND_TRX:
@@ -161,6 +178,65 @@ public class TransactionsHelper {
     public static final String generateMessageText(String[] tags, FilePropertiesBean fpb) throws IOException, TkmDataException {
         String messageText = null;
         return messageText;
+    }
+
+    public static final String createQRString(ReceiveTokenBalanceRequestBean rtbr) {
+        String qrString;
+        String message = rtbr.getqMessage();
+        if (TkmTextUtils.isNullOrBlank(message)) {
+            System.out.println("NULL message");
+            qrString = TkmTextUtils.toJson(new RequestPaymentBean(
+                    rtbr.getqColor(),
+                    rtbr.getqValue(),
+                    rtbr.getqAddr()));
+        } else {
+            message = message.trim();
+            if (message.length() > 200) {
+                message = message.substring(0, DefaultInitParameters.REQUEST_PAY_MESSAGE_LIMIT);
+            }
+            qrString = TkmTextUtils.toJson(new RequestPaymentBean(
+                    rtbr.getqColor(),
+                    rtbr.getqValue(),
+                    rtbr.getqAddr(),
+                    message
+            ));
+            System.out.println("QR STRING: " + qrString);
+        }
+        return qrString;
+    }
+
+    public static final String getQR(String qrString) {
+        QRCodeWriter qrCodeWriter = new QRCodeWriter();
+        int width = 250;
+        int height = 250;
+        BufferedImage bufferedImage = null;
+        try {
+            BitMatrix byteMatrix = qrCodeWriter.encode(qrString, BarcodeFormat.QR_CODE, width, height);
+            bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+            bufferedImage.createGraphics();
+            Graphics2D graphics = (Graphics2D) bufferedImage.getGraphics();
+            graphics.setColor(Color.WHITE);
+            graphics.fillRect(0, 0, width, height);
+            graphics.setColor(Color.BLACK);
+            for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width; j++) {
+                    if (byteMatrix.get(i, j)) {
+                        graphics.fillRect(i, j, 1, 1);
+                    }
+                }
+            }
+            System.out.println("Success...");
+
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ImageIO.write(bufferedImage, "PNG", out);
+            byte[] bytes = out.toByteArray();
+
+            String base64bytes = Base64.getEncoder().encodeToString(bytes);
+            return base64bytes;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 
 }

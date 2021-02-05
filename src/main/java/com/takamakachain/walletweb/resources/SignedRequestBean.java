@@ -24,6 +24,15 @@ public class SignedRequestBean implements Serializable {
     private String[] tags;
     private String env;
     private String recoveryWords;
+    private ReceiveTokenBalanceRequestBean rtbr;
+
+    public ReceiveTokenBalanceRequestBean getRtbr() {
+        return rtbr;
+    }
+
+    public void setRtbr(ReceiveTokenBalanceRequestBean rtbr) {
+        this.rtbr = rtbr;
+    }
 
     public String getRecoveryWords() {
         return recoveryWords;

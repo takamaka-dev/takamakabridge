@@ -21,6 +21,7 @@ public class WebHelper {
         PAY,
         BLOB,
         BLOB_RICH_TEXT,
+        RECEIVE_TOKENS,
         SEND_TRX
     }
 }
