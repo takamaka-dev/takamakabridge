@@ -49,7 +49,8 @@ checkFields = (isComplexStructure) => {
 
 goToPage = (el, page_name) => {
     if (page_name !== null && page_name !== undefined && page_name !== '') {
-        pageid = page_name
+        pageid = page_name;
+        console.log(window.webappname + '/resources/javaee8/getPage');
     } else if (el !== null && el !== undefined && el.hasClass('home') && $('#wallet-address').html() === '') {
         $.alert({
             title: 'Hi there!',
@@ -175,9 +176,9 @@ getAddressBalance = (walletAddress, selectors) => {
 
             if (null !== selectors) {
                 $(selectors['tkg']).html(new Number(dataRes['greenBalance']).toLocaleString("de-DE"));
-                $(selectors['tkr']).html(new Number(dataRes['greenBalance']).toLocaleString("de-DE"));
-                $(selectors['ftkg']).html(new Number(dataRes['greenBalance']).toLocaleString("de-DE"));
-                $(selectors['ftkr']).html(new Number(dataRes['greenBalance']).toLocaleString("de-DE"));
+                $(selectors['tkr']).html(new Number(dataRes['redBalance']).toLocaleString("de-DE"));
+                $(selectors['ftkg']).html(new Number(dataRes['greenPenalty']).toLocaleString("de-DE"));
+                $(selectors['ftkr']).html(new Number(dataRes['redPenalty']).toLocaleString("de-DE"));
             } else {
                 $('#wallet-tkg').html(new Number(dataRes['greenBalance']).toLocaleString("de-DE"));
                 $('#wallet-tkr').html(new Number(dataRes['redBalance']).toLocaleString("de-DE"));

@@ -154,14 +154,15 @@
     <script>
         $(document).ready(function () {
             if (window.webappname === undefined || window.webappname === '') {
-                let splittedHref = window.location.href.toString().split("/");
-                window.webappname = splittedHref[0] + '/' + splittedHref[1] + "/" + splittedHref[2] + "/" + splittedHref[3];
-            }
+                let splittedHref = window.location.href.toString();
+                //window.webappname = splittedHref[0] + '/' + splittedHref[1] + "/" + splittedHref[2] + "/" + splittedHref[3];
+                window.webappname = window.location.href.toString().slice(0, -1);
+        }
 
             goToPage(null, 'logged_balance_section');
 
             $('.env-select-balance').on('change', function () {
-                getAddressBalance($('#wallet-address').html());
+                getAddressBalance($('#wallet-address').html(), null);
             });
 
             $('.btn-show-secret-words').on('click', function () {
