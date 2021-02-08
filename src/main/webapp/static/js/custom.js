@@ -38,6 +38,10 @@ checkFields = (isComplexStructure) => {
             highlightError(el, '( Minimum length required: ' + el.attr('data-min-length') + ' )', isComplexStructure);
             checkFormResult = false;
         }
+        if (el.hasClass("min-value") && el.val() < el.attr('data-min-value')) {
+            highlightError(el, '( Minimum value required: ' + el.attr('data-min-value') + ' )', isComplexStructure);
+            checkFormResult = false;
+        }
         if (el.hasClass('is-integer') && isNaN(parseInt(el.val()))) {
             highlightError(el, '( Invalid input )', isComplexStructure);
             checkFormResult = false;
@@ -102,7 +106,10 @@ uuidv4 = () => {
 };
 
 aimNode = (el) => {
-    $('#selectedAddress').val(el.attr('data-short-addr'));
+    $('#selectedAddress').val(el.attr('data-addr'));
+    populateIdenticon({
+            "passedData": el.attr('data-addr')
+        }, '.identicon-selected', el.attr('data-short-addr'), 128);
 };
 
 populateIdenticon = (param, selector, id_identicon, pref_width) => {

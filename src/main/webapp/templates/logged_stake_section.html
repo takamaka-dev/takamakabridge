@@ -7,17 +7,13 @@ and open the template in the editor.
 
 <div class="row mt20">
     <div class="col-md-12 text-center">
-
         <span class="section-title "> Stake section </span>
-
     </div>
+
     <div class="col-md-12">
-
-        
-
+        <br/>
+        <hr/>
     </div>
-
-
 
     <div class="col-md-12">
         <form id="new-stake-form">
@@ -41,7 +37,7 @@ and open the template in the editor.
                 </label>
                 <div class="row">
                     <div class="col-md-10">
-                        <input type="text" disabled="disabled" name="selectedAddress" data-label-ref="labelSelectedAddress" id="selectedAddress" class="form-control check-form-field not-empty"/>
+                        <textarea style="resize: none; height:128px" disabled="disabled" class="form-control check-form-field not-empty" id="selectedAddress" name="selectedAddress" data-label-ref="labelSelectedAddress"></textarea>
                     </div>
                     <div class="col-md-2 identicon-selected">
 
@@ -57,7 +53,7 @@ and open the template in the editor.
                 </label>
                 <div class="row">
                     <div class="col">
-                        <input type="number" placeholder="Place your bet here" name="tkgVal" data-label-ref="labelTkgVal" id="tkgVal" class="form-control check-form-field not-empty"/>
+                        <input type="number" min="200" placeholder="Place your bet here (Min. 200TKG)" name="tkgVal" data-label-ref="labelTkgVal" id="tkgVal" class="form-control check-form-field not-empty min-value" data-min-value="200"/>
                     </div>
                 </div>
             </div>
@@ -126,26 +122,34 @@ and open the template in the editor.
                     </div>
                 </div>
 
+                <div class="row">
+                    <div class="col">
+                        <br/>
+                        <br/>
+                    </div>
+                </div>
+
+            </div>
+
             <div class="row">
-                <div class="col">
-                    <br/>
-                    <br/>
+                <div class="col-md-12">
+                    <br/><br/>
                 </div>
             </div>
 
+            <div class="row">
+                <div class="col-md-12">
+                    <ul class="list-style-none node-list nopadding"></ul>
+                </div>
+            </div>
+
+        </form>
+
     </div>
-
-    <div class="col-md-12">
-        <ul class="list-style-none node-list nopadding">
-
-        </ul>
-    </div>
-
 </div>
 
 <script>
     $(document).ready(function () {
-
         let param = {};
         param['endpoint'] = "https://dev.takamaka.io/api/V2/nodeapi/assignoverflow";
         param['contextRoot'] = window.webappname;
@@ -169,8 +173,79 @@ and open the template in the editor.
             }
         });
         
+        $('.form-control').on('change', function () {
+            resetFieldsError($(this));
+        });
+
         $('#fromAddrIdenticon').attr('src', $('#wallet-identicon').attr('src'));
         $('#fromAddr').val($('#wallet-address').html());
-        
+
+        $('.verify-btn').on('click', function (e) {
+            e.preventDefault();
+            if (!checkFields(true)) {
+                return false;
+            }
+
+            window.signedResponseBean['request']['itb'] = {};
+            fillItb(
+                    $('#fromAddr').val(),
+                    $('#selectedAddress').val(),
+                    null,
+                    new Date(),
+                    null,
+                    $('#tkgVal').val() * Math.pow(10, 9),
+                    'STAKE',
+                    null,
+                    null,
+                    null);
+
+            window.signedResponseBean['request']['rt'] = 'STAKE';
+            $.ajax({
+                headers: {
+                    'Content-Type': "application/json"
+                },
+                type: 'POST',
+                url: window.webappname + '/resources/javaee8/signedRequest',
+                contentType: "application/json",
+                data: JSON.stringify(window.signedResponseBean['request']),
+                success: function (dataRes) {
+                    console.log(dataRes);
+                    $('.collapse-section').trigger('click');
+                    $('#trxCost').html('<b>CPU: ' + dataRes['feeBean']['cpu'] / Math.pow(10, 9) + ' MEM: ' + dataRes['feeBean']['memory'] / Math.pow(10, 9) + ' DISK: ' + dataRes['feeBean']['disk'] / Math.pow(10, 9) + '</b>');
+                    $('#trxJson').val(dataRes['trxJson']);
+                    window.signedResponseBean['request']['trxJson'] = dataRes['trxJson'];
+                    $('.submit-button').prop('disabled', false);
+                }
+            });
+        });
+
+        $('.submit').on('click', function () {
+            window.signedResponseBean['request']['env'] = $(this).attr('data-env');
+            $('#new-stake-form').submit();
+        });
+
+        $('#new-stake-form').submit(function (e) {
+            e.preventDefault();
+            window.signedResponseBean['request']['rt'] = 'SEND_TRX';
+            $.ajax({
+                headers: {
+                    'Content-Type': "application/json"
+                },
+                type: 'POST',
+                url: window.webappname + '/resources/javaee8/signedRequest',
+                contentType: "application/json",
+                data: JSON.stringify(window.signedResponseBean['request']),
+                beforeSend: function () {
+                    $('.page').html('<div class="loading-container"><img src="static/images/loading.gif" alt=""/></div');
+                },
+                success: function () {
+                    goToPage(null, 'success_transaction');
+                },
+                error: function () {
+                    goToPage(null, 'failed_transaction');
+                }
+            });
+        });
+
     });
 </script>

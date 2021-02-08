@@ -20,6 +20,7 @@ public class WebHelper {
         RECOVER_WALLET,
         PAY,
         BLOB,
+        STAKE,
         BLOB_RICH_TEXT,
         RECEIVE_TOKENS,
         SEND_TRX

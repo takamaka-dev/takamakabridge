@@ -152,6 +152,17 @@ public class TransactionsHelper {
 
                 break;
 
+            case STAKE:
+                itb = srb.getItb();
+                itb.setNotBefore(new Date((new Date()).getTime() + 60000L * 5));
+
+                if (!TransactionsHelper.makeJsonTrx(signedResponse, itb, iwk, srb.getWallet().getAddressNumber())) {
+                    System.out.println("Failed");
+                    return false;
+                }
+                
+                break;
+
             case RECEIVE_TOKENS:
                 ReceiveTokenBalanceRequestBean rtbr = srb.getRtbr();
                 signedResponse.setBase64QrCodeReceiveBalance(getQR(createQRString(rtbr)));
