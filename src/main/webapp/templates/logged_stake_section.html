@@ -5,7 +5,6 @@ To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
 
-
 <div class="row mt20">
     <div class="col-md-12 text-center">
 
@@ -16,48 +15,164 @@ and open the template in the editor.
         <br/>
         <hr/>
     </div>
-    <div class="col">
-        
-        <form>
-            
-        </form>
- 
-        <ul class="list-style-none">
-                <li>
-                    <div class="form-group-node">
-                        <label id="labelNodeAddr" for="nodeAddr">
-                            <b> Node NAME </b> <span class="error hidden"></span>
-                        </label>
-                        <div class="row"> 
-                            <div class="col-md-2"> 
-                                <img id="nodeAddrIdenticon" width="128" src=""/>
+
+
+
+    <div class="col-md-12">
+        <form id="new-stake-form">
+            <div class="form-group">
+                <label id="labelFromAddr" for="fromAddr">
+                    <b>From</b> <span class="error hidden"></span>    
+                </label>
+                <div class="row">
+                    <div class="col-md-2">
+                        <img id="fromAddrIdenticon" width="128" src=""/>
+                    </div>
+                    <div class="col-md-10">
+                        <textarea readonly name="fromAddr" id="fromAddr" data-label-ref="labelFromAddr" class="form-control check-form-field not-empty" style="resize: none; height:128px"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label id="labelSelectedAddress" for="selectedAddress">
+                    <b>Selected Address</b> <span class="error hidden"></span>    
+                </label>
+                <div class="row">
+                    <div class="col-md-10">
+                        <input type="text" disabled="disabled" name="selectedAddress" data-label-ref="labelSelectedAddress" id="selectedAddress" class="form-control check-form-field not-empty"/>
+                    </div>
+                    <div class="col-md-2 identicon-selected">
+
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label id="labelTkgVal" for="tkgVal">
+                    <b>TKG</b> <span class="error hidden"></span>    
+                </label>
+                <div class="row">
+                    <div class="col">
+                        <input type="number" placeholder="Place your bet here" name="tkgVal" data-label-ref="labelTkgVal" id="tkgVal" class="form-control check-form-field not-empty"/>
+                    </div>
+                </div>
+            </div>
+
+            <div id="accordion">
+                <div class="card">
+                    <div class="card-header text-center collapse-section font-weight-bold" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" id="headingOne">
+                        <i class="fal fa-arrows-v"></i>
+                    </div>
+
+                    <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+                        <div class="card-body">
+                            <div class="form-group text-center">
+                                <label for="message">
+                                    <b>Transaction json</b>    
+                                </label>
+                                <div class="row">
+                                    <div class="col">
+                                        <textarea name="trxJson" id="trxJson" class="form-control" style="resize: none; height:128px"></textarea>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-md-10"> 
-                                <textarea readonly name="nodeAddr" id="nodeAddr" data-label-ref="labelNodeAddr" class="form-control check-form-field not-empty" style="resize:none; height:128px"></textarea>
-                            </div>
-                            <div class="col-md-12 text-center">
-                                <label id="labelNodeBookmark"> 
-                                    <b> EXAMPLE here goes the bookmark address of the Node address once calculated </b>
-                                </label>                                              
-                            </div>
-                            <div class="col-md-12 text-right">
-                                <button class="btn btn-secondary mr-2 font-weight-bold verify-btn"> Aim on this Node </button>
+
+                            <div class="row">
+                                <div class="col-md-12 text-center">
+                                    <label for="trxCost" class="font-weight-bold">
+                                        Transaction cost
+                                    </label>
+                                </div>
+                                <div class="col-md-12">
+                                    <div id="trxCost" class="alert alert-success text-center" role="alert">
+                                        <span class="font-weight-bold">N/A</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-12">
-                        <br/>
-                        <hr/>
+                </div>
+
+            </div>
+
+            <div class="row">
+                <div class="col">
+                    <br/>
+                    <br/>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8 text-left">
+                </div>
+
+                <div class="col-md-4 text-right">
+                    <div class="btn-group" role="group" aria-label="Basic example">
+                        <button class="btn btn-secondary mr-2 font-weight-bold verify-btn">Verify</button>
+                        <!--<button type="submit" disabled="disabled" class="btn btn-primary submit-button font-weight-bold">Submit</button>-->
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle font-weight-bold" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Submit to
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item submit" data-env="prod" href="#">Production Net</a>
+                                <a class="dropdown-item submit" data-env="test" href="#">Test net</a>
+                            </div>
+                        </div>
                     </div>
-                </li>
-                <li>
-                    
-                </li>
+                </div>
+            </div>
 
+            <div class="row">
+                <div class="col">
+                    <br/>
+                    <br/>
+                </div>
+            </div>
 
-            </ul>
-
+        </form>
     </div>
 
+    <div class="col-md-12">
+        <ul class="list-style-none node-list nopadding">
+
+        </ul>
+    </div>
 
 </div>
+
+<script>
+    $(document).ready(function () {
+
+        let param = {};
+        param['endpoint'] = "https://dev.takamaka.io/api/V2/nodeapi/assignoverflow";
+        param['contextRoot'] = window.webappname;
+        param['data'] = 'html';
+        $.ajax({
+            headers: {
+                'Content-Type': "application/json"
+            },
+            type: 'POST',
+            url: window.webappname + '/resources/javaee8/getAssignOverflowList',
+            contentType: "application/json",
+            dataType: "json",
+            data: JSON.stringify(param),
+            success: function (data) {
+                $('.node-list').html(data['pageContent']);
+                $('.nodeAddr').each(function () {
+                    populateIdenticon({
+                        "passedData": $(this).val()
+                    }, $(this).parent().parent().find('.identicon-container'), $(this).parent().parent().find('.labelNodeBookmark').html(), 128);
+                });
+            }
+        });
+        
+        $('#fromAddrIdenticon').attr('src', $('#wallet-identicon').attr('src'));
+        $('#fromAddr').val($('#wallet-address').html());
+        
+    });
+</script>
+

@@ -99,7 +99,11 @@ uuidv4 = () => {
         var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
     });
-}
+};
+
+aimNode = (el) => {
+    $('#selectedAddress').val(el.attr('data-short-addr'));
+};
 
 populateIdenticon = (param, selector, id_identicon, pref_width) => {
     $.ajax({
@@ -116,6 +120,7 @@ populateIdenticon = (param, selector, id_identicon, pref_width) => {
             if (pref_width !== null) {
                 width = pref_width;
             }
+            console.log(selector);
             $(selector).html('<img width="'+width+'" id="'+id_identicon+'" src="data:image/png;base64, ' + dataRes['identiconUrlBase64']+'"/>');
         }
     });

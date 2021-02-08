@@ -197,12 +197,14 @@ public class ProjectHelper {
         http.setDoOutput(true);
         http.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
-        String data = key + "=" + param;
+        if (!TkmTextUtils.isNullOrBlank(key) && !TkmTextUtils.isNullOrBlank(param)) {
+            String data = key + "=" + param;
 
-        byte[] out = data.getBytes(StandardCharsets.UTF_8);
+            byte[] out = data.getBytes(StandardCharsets.UTF_8);
 
-        OutputStream stream = http.getOutputStream();
-        stream.write(out);
+            OutputStream stream = http.getOutputStream();
+            stream.write(out);
+        }
 
         int status = http.getResponseCode();
 
@@ -353,7 +355,7 @@ public class ProjectHelper {
 
         return true;
     }
-    
+
     public static Path getCurrentWalletpath(String wname) {
         String currentWalletName = wname + DefaultInitParameters.WALLET_EXTENSION;
         Path currentWalletPath = Paths.get(FileHelper.getDefaultWalletDirectoryPath().toString(), currentWalletName);

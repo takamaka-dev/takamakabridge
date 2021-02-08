@@ -69,6 +69,7 @@ import java.nio.file.Paths;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchProviderException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -121,6 +122,18 @@ public class JavaEE8Resource {
                 .ok("ping")
                 .build();
     }
+    
+    public static final String getPageContent(URL url) throws IOException {
+        String result = "";
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(url.openStream()));
+
+        String inputLine;
+        while ((inputLine = in.readLine()) != null) {
+            result += inputLine;
+        }
+        return result;
+    }
 
     @POST
     @Path("getPage")
@@ -128,14 +141,7 @@ public class JavaEE8Resource {
     @Produces(MediaType.APPLICATION_JSON)
     public static final Response getPage(PageBean pb) throws FileNotFoundException, IOException, InterruptedException {
         String result = "";
-        URL oracle = new URL(pb.getContextRoot() + "/templates/" + pb.getPageId() + ".html");
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader(oracle.openStream()));
-
-        String inputLine;
-        while ((inputLine = in.readLine()) != null) {
-            result += inputLine;
-        }
+        result = getPageContent(new URL(pb.getContextRoot() + "/templates/" + pb.getPageId()+ ".html"));
         pb.setPageContent(result);
         return Response.status(Response.Status.OK).entity(pb).build();
     }
@@ -169,12 +175,67 @@ public class JavaEE8Resource {
     }
 
     @POST
+    @Path("getAssignOverflowList")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public static final Response getAssignOverflowList(ParamBean pb) throws ProtocolException, IOException, FileNotFoundException, InterruptedException {
+        List<NodeBean> l = new ArrayList<NodeBean>();
+        boolean htmlMode = !TkmTextUtils.isNullOrBlank(pb.getData()) && pb.getData().equals("html");
+        String template = "";
+
+        if (pb == null || TkmTextUtils.isNullOrBlank(pb.getEndpoint())) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(l.toArray(NodeBean[]::new)).build();
+        }
+
+        String response = ProjectHelper.doPost(pb.getEndpoint(), "", "");
+        JSONArray jaResponseOverflows = ProjectHelper.getJsonArrayObject(response);
+        if (jaResponseOverflows == null) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(l.toArray(NodeBean[]::new)).build();
+        }
+        
+        String baseTemplate = "";
+        String htmlResult = "";
+        if (htmlMode) {
+            baseTemplate = getPageContent(new URL(pb.getContextRoot() + "/templates/nodeComponent.html"));
+        }
+
+        for (Object o : jaResponseOverflows) {
+            if (o instanceof JSONObject) {
+                NodeBean nb = new NodeBean();
+                nb.setAddress((String) ((JSONObject) o).get("address"));
+                nb.setShortAddress((String) ((JSONObject) o).get("shortAddress"));
+                nb.setAlias((String) ((JSONObject) o).get("alias"));
+                nb.setType((String) ((JSONObject) o).get("type"));
+                nb.setLinkedNodes(null);
+                l.add(nb);
+                if (htmlMode) {
+                    String baseTemplateCopy = baseTemplate;
+                    baseTemplateCopy = baseTemplateCopy.replace("{NODE_NAME}", nb.getAlias());
+                    baseTemplateCopy = baseTemplateCopy.replace("{NODE_ADDR}", nb.getAddress());
+                    baseTemplateCopy = baseTemplateCopy.replace("{NODE_NAME_REF}", nb.getAlias());
+                    baseTemplateCopy = baseTemplateCopy.replace("{NODE_SHORT_ADDR}", nb.getShortAddress());
+                    System.out.println(baseTemplateCopy);
+                    htmlResult += baseTemplateCopy;
+                }
+            }
+        }
+
+        if (htmlMode) {
+            PageBean pageBeanResult = new PageBean();
+            pageBeanResult.setPageContent(htmlResult);
+            return Response.status(Response.Status.OK).entity(pageBeanResult).build();
+        }
+        
+        return Response.status(Response.Status.OK).entity(l.toArray(NodeBean[]::new)).build();
+    }
+
+    @POST
     @Path("getWalletCrc")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public static final Response getWalletCrc(SignedResponseBean srb) {        
+    public static final Response getWalletCrc(SignedResponseBean srb) {
         String walletAddress = !TkmTextUtils.isNullOrBlank(srb.getPassedData()) ? srb.getPassedData() : srb.getWalletAddress();
-        
+
         if (TkmTextUtils.isNullOrBlank(walletAddress) || (walletAddress.length() != 44 && walletAddress.length() != 19840)) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
@@ -423,7 +484,7 @@ public class JavaEE8Resource {
             }
             fpb.add(meta, metadata.get(meta), false, selected);
         });
-        
+
         return fpb;
     }
 

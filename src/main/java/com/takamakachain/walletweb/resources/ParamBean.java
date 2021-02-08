@@ -13,6 +13,15 @@ public class ParamBean {
 
     private String endpoint;
     private String data;
+    private String contextRoot;
+
+    public String getContextRoot() {
+        return contextRoot;
+    }
+
+    public void setContextRoot(String contextRoot) {
+        this.contextRoot = contextRoot;
+    }
 
     public String getData() {
         return data;
