@@ -104,6 +104,10 @@ and open the template in the editor.
 
             <div class="row">
                 <div class="col-md-8 text-left">
+                    <select class="form-control env-select-balance-stake">
+                        <option value="https://dev.takamaka.io/api/V2/nodeapi/assignoverflow" selected="selected">MAIN NETWORK</option>
+                        <option value="https://dev.takamaka.io/api/V2/testapi/assignoverflow">TEST</option>
+                    </select>
                 </div>
 
                 <div class="col-md-4 text-right">
@@ -149,9 +153,10 @@ and open the template in the editor.
 </div>
 
 <script>
-    $(document).ready(function () {
+    
+    refreshNodes = () => {
         let param = {};
-        param['endpoint'] = "https://dev.takamaka.io/api/V2/nodeapi/assignoverflow";
+        param['endpoint'] = $('.env-select-balance-stake').val();
         param['contextRoot'] = window.webappname;
         param['data'] = 'html';
         $.ajax({
@@ -171,8 +176,17 @@ and open the template in the editor.
                     }, $(this).parent().parent().find('.identicon-container'), $(this).parent().parent().find('.labelNodeBookmark').html(), 128);
                 });
             }
-        });
+        })
+    };
+    
+    $(document).ready(function () {
         
+        
+        refreshNodes();
+        $('.env-select-balance-stake').on('change', function() {
+            refreshNodes();
+        });
+
         $('.form-control').on('change', function () {
             resetFieldsError($(this));
         });
