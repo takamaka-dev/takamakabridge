@@ -13,6 +13,6 @@ import org.glassfish.jersey.server.ResourceConfig;
 public class JAXRSConfiguration extends ResourceConfig {
 
     public JAXRSConfiguration() {
-        packages("com.takamakachain.walletweb").register(MultiPartFeature.class);
+        packages("com.takamakachain.walletweb").register(MultiPartFeature.class);        
     }
 }

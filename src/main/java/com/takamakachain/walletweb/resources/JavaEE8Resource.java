@@ -30,6 +30,7 @@ import com.h2tcoin.takamakachain.wallet.InstanceWalletKeystoreInterface;
 import com.h2tcoin.takamakachain.wallet.TkmWallet;
 import com.h2tcoin.takamakachain.wallet.TransactionBox;
 import com.h2tcoin.takamakachain.wallet.WalletHelper;
+import com.takamakachain.walletweb.resources.support.ContextListener;
 import static com.takamakachain.walletweb.resources.support.CryptoHelper.decryptPasswordHEX;
 import static com.takamakachain.walletweb.resources.support.CryptoHelper.encryptPasswordHEX;
 import com.takamakachain.walletweb.resources.support.ProjectHelper;
@@ -77,6 +78,8 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
+import javax.servlet.ServletContext;
+import javax.ws.rs.core.Context;
 import org.apache.commons.io.FileUtils;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
@@ -122,7 +125,8 @@ public class JavaEE8Resource {
                 .ok("ping")
                 .build();
     }
-    
+
+    /*
     public static final String getPageContent(URL url) throws IOException {
         String result = "";
         BufferedReader in = new BufferedReader(
@@ -133,6 +137,11 @@ public class JavaEE8Resource {
             result += inputLine;
         }
         return result;
+    }*/
+    public static final String getPageContent(String path) throws IOException {
+        ServletContext context = ContextListener.context;
+        InputStream is = context.getResourceAsStream(path);
+        return new String(is.readAllBytes());
     }
 
     @POST
@@ -140,9 +149,11 @@ public class JavaEE8Resource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public static final Response getPage(PageBean pb) throws FileNotFoundException, IOException, InterruptedException {
-        String result = "";
-        result = getPageContent(new URL(pb.getContextRoot() + "/templates/" + pb.getPageId()+ ".html"));
-        pb.setPageContent(result);
+//        ServletContext context = ContextListener.context;
+//        InputStream is = context.getResourceAsStream(("/templates/" + pb.getPageId() + ".html"));
+//        String page = new String(is.readAllBytes());
+
+        pb.setPageContent(getPageContent("/templates/" + pb.getPageId() + ".html"));
         return Response.status(Response.Status.OK).entity(pb).build();
     }
 
@@ -192,11 +203,14 @@ public class JavaEE8Resource {
         if (jaResponseOverflows == null) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(l.toArray(NodeBean[]::new)).build();
         }
-        
+
         String baseTemplate = "";
         String htmlResult = "";
         if (htmlMode) {
-            baseTemplate = getPageContent(new URL(pb.getContextRoot() + "/templates/nodeComponent.html"));
+//            ServletContext context = ContextListener.context;
+//            InputStream is = context.getResourceAsStream(("/templates/nodeComponent.html"));
+//            baseTemplate = new String(is.readAllBytes());
+            baseTemplate = getPageContent("/templates/nodeComponent.html");
         }
 
         for (Object o : jaResponseOverflows) {
@@ -225,7 +239,7 @@ public class JavaEE8Resource {
             pageBeanResult.setPageContent(htmlResult);
             return Response.status(Response.Status.OK).entity(pageBeanResult).build();
         }
-        
+
         return Response.status(Response.Status.OK).entity(l.toArray(NodeBean[]::new)).build();
     }
 
