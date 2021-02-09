@@ -8,8 +8,16 @@ and open the template in the editor.
     Author     : isacco.borsani@h2tcoin.com
 */
 
+
+@font-face {
+    font-family: Montserrat;
+    src: url(fonts/Montserrat-Regular.ttf);
+}
+
+
 body {
-    background-color: rgb(235 235 235 / 0%)
+    background-color: rgb(235 235 235 / 0%);
+    font-family: 'Montserrat'
 }
 
 @media screen and (max-width: 768px) {
@@ -342,7 +350,7 @@ ul.list-style-none, ol.list-style-none {
 }
 
 .btn-open-user-menu:hover {
-    background-color: #5e87ab !important;
+    background-color: #b5b5b5 !important;
     border-color: #5e87ab !important;
 }
 
@@ -398,7 +406,7 @@ span.error {
 .menu-wallet-user {
     z-index: 999;
     width: 300px;
-    background-color: #295b8dba;
+    background-color: #b5b5b5ba;
     position: absolute;
     left: -290px;
     backdrop-filter: blur(5px) saturate(125%);
@@ -427,7 +435,7 @@ span.error {
 }
 
 .menu-wallet-user label, .menu-wallet-user p {
-    color: white;
+    color: #404040
 }
 
 .menu-wallet-bar ul {
@@ -529,7 +537,7 @@ span.error {
     top: 0;
     right: -28px;
     color: white;
-    background-color: #5e87ab;
+    background-color: #b5b5b5;
     border: 0px;
     font-size: 25px;
     height: 70px;

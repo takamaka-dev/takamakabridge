@@ -156,7 +156,7 @@ populateUserMenu = dataInputUserWallet => {
     $('#wallet-address').html(dataInputUserWallet['walletAddress']);
     $('#wallet-key').html(dataInputUserWallet['walletKey']);
     $('#secret-words').val(dataInputUserWallet['words']);
-    populateIdenticon(dataInputUserWallet, '.identicon-container', 'wallet-identicon');
+    populateIdenticon(dataInputUserWallet, '.identicon-container', 'wallet-identicon', '150');
     populateCrc(dataInputUserWallet, '#wallet-crc');
     getAddressBalance(dataInputUserWallet['walletAddress'], null);
 };
