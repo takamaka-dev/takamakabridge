@@ -125,19 +125,7 @@ public class JavaEE8Resource {
                 .ok("ping")
                 .build();
     }
-
-    /*
-    public static final String getPageContent(URL url) throws IOException {
-        String result = "";
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader(url.openStream()));
-
-        String inputLine;
-        while ((inputLine = in.readLine()) != null) {
-            result += inputLine;
-        }
-        return result;
-    }*/
+    
     public static final String getPageContent(String path) throws IOException {
         ServletContext context = ContextListener.context;
         InputStream is = context.getResourceAsStream(path);
@@ -149,10 +137,6 @@ public class JavaEE8Resource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public static final Response getPage(PageBean pb) throws FileNotFoundException, IOException, InterruptedException {
-//        ServletContext context = ContextListener.context;
-//        InputStream is = context.getResourceAsStream(("/templates/" + pb.getPageId() + ".html"));
-//        String page = new String(is.readAllBytes());
-
         pb.setPageContent(getPageContent("/templates/" + pb.getPageId() + ".html"));
         return Response.status(Response.Status.OK).entity(pb).build();
     }
@@ -168,7 +152,6 @@ public class JavaEE8Resource {
         }
 
         String balanceOfEndpoint = pb.getEndpoint();
-        /*"https://dev.takamaka.io/api/V2/nodeapi/balanceof/";*/
         String jsonResponseBalanceBean = null;
         jsonResponseBalanceBean = ProjectHelper.doPost(balanceOfEndpoint, "address", pb.getData());
 
@@ -207,9 +190,6 @@ public class JavaEE8Resource {
         String baseTemplate = "";
         String htmlResult = "";
         if (htmlMode) {
-//            ServletContext context = ContextListener.context;
-//            InputStream is = context.getResourceAsStream(("/templates/nodeComponent.html"));
-//            baseTemplate = new String(is.readAllBytes());
             baseTemplate = getPageContent("/templates/nodeComponent.html");
         }
 
@@ -615,7 +595,6 @@ public class JavaEE8Resource {
                     }
                 } else {
                     System.out.println("password with " + ENC_SEP + " ... continue");
-                    //return Response.status(500).entity(signedResponse).build();
                 }
             } else {
                 System.out.println("Decode Error");
@@ -658,15 +637,12 @@ public class JavaEE8Resource {
         try {
             switch (wb.getWalletCypher()) {
                 case "BCQTESLA_PS_1":
-                    //SWTracker.i().setIwk(new InstanceWalletKeyStoreBCQTESLAPSSC1Round1(srb.getWallet().getWalletName(), srb.getWallet().getWalletPassword()));
                     iwk = new InstanceWalletKeyStoreBCQTESLAPSSC1Round1(wb.getWalletName(), plainPass);
                     break;
                 case "BCQTESLA_PS_1_R2":
-                    //SWTracker.i().setIwk(new InstanceWalletKeyStoreBCQTESLAPSSC1Round2(srb.getWallet().getWalletName(), plainPass));
                     iwk = new InstanceWalletKeyStoreBCQTESLAPSSC1Round2(wb.getWalletName(), plainPass);
                     break;
                 case "Ed25519BC":
-                    //SWTracker.i().setIwk(new InstanceWalletKeyStoreBCED25519(srb.getWallet().getWalletName(), plainPass));
                     iwk = new InstanceWalletKeyStoreBCED25519(wb.getWalletName(), plainPass);
                     break;
                 default:
@@ -728,7 +704,6 @@ public class JavaEE8Resource {
             InvalidAlgorithmParameterException,
             NoSuchPaddingException {
         SignedResponseBean signedResponse = new SignedResponseBean();
-        //isEncriptedPasswordWithAES256§fc1c35134a497afb7a28da9297b7810e
         if (srb == null) {
             System.out.println("Empty request");
             return Response.status(400).entity(signedResponse).build();

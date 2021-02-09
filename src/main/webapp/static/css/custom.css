@@ -16,6 +16,9 @@ body {
     #ONDE, #ONDE2, #ONDE3 {
         display: none
     }
+    .nodeAddr {
+        margin-top: 5px
+    }
 }
 
 .singleStakeNode {
@@ -61,6 +64,10 @@ body {
         );
     right: 15px;
     left: 0;
+}
+
+.labelNodeBookmark {
+    word-break: break-word;
 }
 
 .nopadding {
@@ -500,6 +507,7 @@ span.error {
     animation: slide-out 0.5s forwards;
     -webkit-animation: slide-out 0.5s forwards;
 }
+
 .mt20 {
     margin-top: 20px
 }
