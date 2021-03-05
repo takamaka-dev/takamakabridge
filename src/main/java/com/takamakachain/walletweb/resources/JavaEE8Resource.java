@@ -20,6 +20,7 @@ import com.h2tcoin.takamakachain.utils.FileHelper;
 import com.h2tcoin.takamakachain.utils.Log;
 import com.h2tcoin.takamakachain.utils.simpleWallet.SWTracker;
 import com.h2tcoin.takamakachain.utils.simpleWallet.panels.support.ApiBalanceBean;
+import com.h2tcoin.takamakachain.utils.simpleWallet.panels.support.ComboItemSettingsBookmarkUrl;
 import com.h2tcoin.takamakachain.utils.simpleWallet.panels.support.identicon.IdentiColorHelper;
 import com.h2tcoin.takamakachain.utils.threadSafeUtils.TkmSignUtils;
 import com.h2tcoin.takamakachain.utils.threadSafeUtils.TkmTextUtils;
@@ -58,6 +59,7 @@ import javax.ws.rs.core.Response;
 import static com.takamakachain.walletweb.resources.support.CryptoHelper.getWebSessionSecret;
 import static com.takamakachain.walletweb.resources.support.ProjectHelper.ENC_LABEL;
 import static com.takamakachain.walletweb.resources.support.ProjectHelper.ENC_SEP;
+import static com.takamakachain.walletweb.resources.support.ProjectHelper.getTagList;
 import com.takamakachain.walletweb.resources.support.TransactionsHelper;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -74,6 +76,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentSkipListMap;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
@@ -125,7 +128,7 @@ public class JavaEE8Resource {
                 .ok("ping")
                 .build();
     }
-    
+
     public static final String getPageContent(String path) throws IOException {
         ServletContext context = ContextListener.context;
         InputStream is = context.getResourceAsStream(path);
@@ -803,5 +806,86 @@ public class JavaEE8Resource {
     public static final String ping(@PathParam("name") String name) {
         return "Hello " + name;
     }
+
+    @POST
+    @Path("fasttag")
+    //@Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public static final Response fasttagPOST(){
+        return getTagList("fasttag");
+    }
+
+    @GET
+    @Path("fasttag")
+    //@Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public static final Response fasttagGET(){
+        return getTagList("fasttag");
+    }
+    
+    @POST
+    @Path("bookmarks")
+    //@Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public static final Response bookmarksPOST(){
+        return getTagList("bookmarks");
+    }
+
+    @GET
+    @Path("bookmarks")
+    //@Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public static final Response bookmarksGET(){
+        return getTagList("bookmarks");
+    }
+    
+    @POST
+    @Path("transactions")
+    //@Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public static final Response transactionsPOST(){
+        return getTagList("transactions");
+    }
+
+    @GET
+    @Path("transactions")
+    //@Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public static final Response transactionsGET(){
+        return getTagList("transactions");
+    }
+    
+    @POST
+    @Path("api")
+    //@Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public static final Response apiPOST(){
+        return getTagList("api");
+    }
+
+    @GET
+    @Path("api")
+    //@Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public static final Response apiGET(){
+        return getTagList("api");
+    }
+    
+    @POST
+    @Path("short")
+    //@Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public static final Response shortPOST(){
+        return getTagList("short");
+    }
+
+    @GET
+    @Path("short")
+    //@Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public static final Response fshortGET(){
+        return getTagList("fasttag");
+    }
+
 
 }

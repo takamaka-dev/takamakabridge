@@ -13,6 +13,7 @@ import com.h2tcoin.takamakachain.saturn.SatUtils;
 import com.h2tcoin.takamakachain.saturn.exceptions.SaturnException;
 import com.h2tcoin.takamakachain.utils.FileHelper;
 import com.h2tcoin.takamakachain.utils.simpleWallet.SWTracker;
+import com.h2tcoin.takamakachain.utils.simpleWallet.panels.support.ComboItemSettingsBookmarkUrl;
 import com.h2tcoin.takamakachain.utils.threadSafeUtils.TkmSignUtils;
 import com.h2tcoin.takamakachain.utils.threadSafeUtils.TkmTextUtils;
 import java.io.FileNotFoundException;
@@ -39,6 +40,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentSkipListMap;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -360,6 +364,34 @@ public class ProjectHelper {
         String currentWalletName = wname + DefaultInitParameters.WALLET_EXTENSION;
         Path currentWalletPath = Paths.get(FileHelper.getDefaultWalletDirectoryPath().toString(), currentWalletName);
         return currentWalletPath;
+    }
+    
+    /**
+     * supported arguments: fasttag, bookmarks, transactions, api, short
+     *
+     * @param req
+     * @return
+     */
+    public static final Response getTagList(String req) {
+        switch (req) {
+            case "fasttag":
+                ConcurrentSkipListMap<String, ComboItemSettingsBookmarkUrl> fastTag = SWTracker.i().getFastTag();
+                return Response.status(200).entity(fastTag).type(MediaType.APPLICATION_JSON).build();
+            case "bookmarks":
+                ConcurrentSkipListMap<String, ComboItemSettingsBookmarkUrl> book = SWTracker.i().getBookmarks();
+                return Response.status(200).entity(book).type(MediaType.APPLICATION_JSON).build();
+            case "transactions":
+                ConcurrentSkipListMap<String, ComboItemSettingsBookmarkUrl> trans = SWTracker.i().getSendTransactionUrl();
+                return Response.status(200).entity(trans).type(MediaType.APPLICATION_JSON).build();
+            case "api":
+                ConcurrentSkipListMap<String, ComboItemSettingsBookmarkUrl> api = SWTracker.i().getApiUrl();
+                return Response.status(200).entity(api).type(MediaType.APPLICATION_JSON).build();
+            case "short":
+                ConcurrentSkipListMap<String, ComboItemSettingsBookmarkUrl> urlshort = SWTracker.i().getBookmarksUrlShortener();
+                return Response.status(200).entity(urlshort).type(MediaType.APPLICATION_JSON).build();
+            default:
+                return Response.status(404).entity("not found " + req).type(MediaType.APPLICATION_JSON).build();
+        }
     }
 
 }
