@@ -156,7 +156,7 @@ and open the template in the editor.
 <script>
 
     $(document).ready(function () {
-
+        $('.dropdown-toggle').prop('disabled', true);
         $.ajax({
             headers: {
                 'Content-Type': "application/json"
@@ -215,6 +215,7 @@ and open the template in the editor.
                 data: JSON.stringify(window.signedResponseBean['request']),
                 success: function (dataRes) {
                     console.log(dataRes);
+                    $('.dropdown-toggle').prop('disabled', false);
                     $('.collapse-section').trigger('click');
                     $('#trxCost').html('<b>CPU: ' + dataRes['feeBean']['cpu'] / Math.pow(10, 9) + ' MEM: ' + dataRes['feeBean']['memory'] / Math.pow(10, 9) + ' DISK: ' + dataRes['feeBean']['disk'] / Math.pow(10, 9) + '</b>');
                     $('#trxJson').val(dataRes['trxJson']);

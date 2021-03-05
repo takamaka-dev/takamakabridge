@@ -160,6 +160,7 @@ and open the template in the editor.
     
 
     $(document).ready(function () {
+        $('.dropdown-toggle').prop('disabled', true);
         deleteTag = el => {
             el.remove();
             delete window.tags[el.attr('data-value-key')];
@@ -250,6 +251,7 @@ and open the template in the editor.
                 contentType: "application/json",
                 data: JSON.stringify(window.signedResponseBean['request']),
                 success: function (dataRes) {
+                    $('.dropdown-toggle').prop('disabled', false);
                     $('.collapse-section').trigger('click');
                     $('#trxCost').html('<b>CPU: ' + dataRes['feeBean']['cpu'] / Math.pow(10, 9) + ' MEM: ' + dataRes['feeBean']['memory'] / Math.pow(10, 9) + ' DISK: ' + dataRes['feeBean']['disk'] / Math.pow(10, 9) + '</b>');
                     $('#trxJson').val(dataRes['trxJson']);
