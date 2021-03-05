@@ -105,8 +105,7 @@ and open the template in the editor.
             <div class="row">
                 <div class="col-md-8 text-left">
                     <select class="form-control env-select-balance-stake">
-                        <option value="https://dev.takamaka.io/api/V2/nodeapi/assignoverflow" selected="selected">MAIN NETWORK</option>
-                        <option value="https://dev.takamaka.io/api/V2/testapi/assignoverflow">TEST</option>
+
                     </select>
                 </div>
 
@@ -153,7 +152,7 @@ and open the template in the editor.
 </div>
 
 <script>
-    
+
     refreshNodes = () => {
         let param = {};
         param['endpoint'] = $('.env-select-balance-stake').val();
@@ -178,12 +177,33 @@ and open the template in the editor.
             }
         })
     };
-    
+
     $(document).ready(function () {
+        $.ajax({
+            headers: {
+                'Content-Type': "application/json"
+            },
+            type: 'POST',
+            url: window.webappname + '/resources/javaee8/api_config',
+            contentType: "application/json",
+            dataType: "json",
+            success: function (dataRes) {
+                let first = true;
+                $.each(dataRes, function (index, value) {
+                    if (first) {
+                        $('.env-select-balance-stake').append('<option selected="selected" value="' + value['createUrl'] + 'assignoverflow">' + index.split('-')[0] + '</option>');
+                        first = !first;
+                    } else {
+                        $('.env-select-balance-stake').append('<option value="' + value['createUrl'] + 'assignoverflow">' + index.split('-')[0] + '</option>');
+                    }
+
+                });
+                refreshNodes();
+            }
+        });
+
         
-        
-        refreshNodes();
-        $('.env-select-balance-stake').on('change', function() {
+        $('.env-select-balance-stake').on('change', function () {
             refreshNodes();
         });
 

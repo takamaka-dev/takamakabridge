@@ -43,8 +43,8 @@
                 <div class="row">
                     <div class="col">
                         <select class="form-control env-select-balance">
-                            <option value="https://dev.takamaka.io/api/V2/nodeapi/balanceof/">MAIN NETWORK</option>
-                            <option value="https://dev.takamaka.io/api/V2/testapi/balanceof/">TEST</option>
+                            <!--                            <option value="https://dev.takamaka.io/api/V2/nodeapi/balanceof/">MAIN NETWORK</option>
+                                                        <option value="https://dev.takamaka.io/api/V2/testapi/balanceof/">TEST</option>-->
                         </select>
                     </div>
                 </div>
@@ -165,6 +165,29 @@
             }
 
             goToPage(null, 'test_signed_request');
+
+            $.ajax({
+                headers: {
+                    'Content-Type': "application/json"
+                },
+                type: 'POST',
+                url: window.webappname + '/resources/javaee8/api_config',
+                contentType: "application/json",
+                dataType: "json",
+                success: function (dataRes) {
+                    let first = true;
+                    $.each(dataRes, function (index, value) {
+                        if (first) {
+                            $('.env-select-balance').append('<option selected="selected" value="'+value['createUrl']+'balanceof/">'+index.split('-')[0]+'</option>');
+                            first = !first;
+                        } else {
+                            $('.env-select-balance').append('<option value="'+value['createUrl']+'balanceof/">'+index.split('-')[0]+'</option>');
+                        }
+                        
+                    });
+                    getAddressBalance($('#wallet-address').html(), null);
+                }
+            });
 
             $('.env-select-balance').on('change', function () {
                 getAddressBalance($('#wallet-address').html(), null);

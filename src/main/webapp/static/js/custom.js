@@ -13,6 +13,11 @@ resetFieldsError = el => {
 
 }
 
+submitTrx = (el, formId) => {
+    window.signedResponseBean['request']['env'] = el.attr('data-env');
+    $('#' + formId).submit();
+}
+
 highlightError = (el, msg, isComplexStructure) => {
     el.addClass('is-invalid');
     console.log(el.parent().find('span.error'));
@@ -108,8 +113,8 @@ uuidv4 = () => {
 aimNode = (el) => {
     $('#selectedAddress').val(el.attr('data-addr'));
     populateIdenticon({
-            "passedData": el.attr('data-addr')
-        }, '.identicon-selected', el.attr('data-short-addr'), 128);
+        "passedData": el.attr('data-addr')
+    }, '.identicon-selected', el.attr('data-short-addr'), 128);
 };
 
 populateIdenticon = (param, selector, id_identicon, pref_width) => {
@@ -128,7 +133,7 @@ populateIdenticon = (param, selector, id_identicon, pref_width) => {
                 width = pref_width;
             }
             console.log(selector);
-            $(selector).html('<img width="'+width+'" id="'+id_identicon+'" src="data:image/png;base64, ' + dataRes['identiconUrlBase64']+'"/>');
+            $(selector).html('<img width="' + width + '" id="' + id_identicon + '" src="data:image/png;base64, ' + dataRes['identiconUrlBase64'] + '"/>');
         }
     });
 }

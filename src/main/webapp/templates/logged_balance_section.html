@@ -76,8 +76,7 @@ and open the template in the editor.
                             Submit to
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <a class="dropdown-item submit" data-env="https://dev.takamaka.io/api/V2/nodeapi/balanceof/" href="#">Production Net</a>
-                            <a class="dropdown-item submit" data-env="https://dev.takamaka.io/api/V2/testapi/balanceof/" href="#">Test net</a>
+                            
                         </div>
                     </div>
                 </div>
@@ -93,20 +92,39 @@ and open the template in the editor.
 
 <script>
     $(document).ready(function () {
-        $('.submit').on('click', function () {
-            getBalances($(this).attr('data-env'));
+        
+        $.ajax({
+            headers: {
+                'Content-Type': "application/json"
+            },
+            type: 'POST',
+            url: window.webappname + '/resources/javaee8/api_config',
+            contentType: "application/json",
+            dataType: "json",
+            success: function (dataRes) {
+                $.each(dataRes, function (index, value) {
+                    $('.dropdown-menu').append('<a class="dropdown-item submit" onclick="getBalancesEvent($(this));" data-env="' + value['createUrl'] + '" href="#">' + index.split('-')[0] + '</a>');
+                });
+            }
         });
 
         $('.address-field').on('change', function () {
             getBalances($('.env-select-balance').val());
         });
     });
+    
+    getBalancesEvent = el => {
+        getBalances(el.attr('data-env')+'balanceof/');
+    };
 
     getBalances = (env) => {
         if ($('.address-field').val().toString().length === 44) {
             $('.wallet-cypher-value').html('ED25519');
         } else if ($('.address-field').val().toString().length === 19840) {
             $('.wallet-cypher-value').html('QTESLA');
+        } else {
+            $('.wallet-cypher-value').html('UNKNOWN');
+            return false;
         }
         window.signedResponseBean['passedData'] = $('.address-field').val();
         populateIdenticon(window.signedResponseBean, '.wallet-container', 'wallet-balance-identicon', 250);

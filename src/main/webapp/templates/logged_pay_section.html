@@ -48,7 +48,7 @@ and open the template in the editor.
                 </label>
                 <div class="row">
                     <div class="col">
-                        <input type="number" name="tkgVal" data-label-ref="labelTkgVal" id="tkgVal" class="form-control check-form-field not-empty"/>
+                        <input type="number" name="tkgVal" data-label-ref="labelTkgVal" id="tkgVal" class="form-control"/>
                     </div>
                 </div>
             </div>
@@ -59,7 +59,7 @@ and open the template in the editor.
                 </label>
                 <div class="row">
                     <div class="col">
-                        <input type="number" name="tkrVal" data-label-ref="labelTkrVal" id="tkrVal" class="form-control check-form-field not-empty"/>
+                        <input type="number" name="tkrVal" data-label-ref="labelTkrVal" id="tkrVal" class="form-control"/>
                     </div>
                 </div>
             </div>
@@ -132,9 +132,7 @@ and open the template in the editor.
                             <button class="btn btn-primary dropdown-toggle font-weight-bold" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Submit to
                             </button>
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <a class="dropdown-item submit" data-env="prod" href="#">Production Net</a>
-                                <a class="dropdown-item submit" data-env="test" href="#">Test net</a>
+                            <div class="dropdown-menu dropdown-menu-submit-trx" aria-labelledby="dropdownMenuButton">                                
                             </div>
                         </div>
                     </div>
@@ -157,9 +155,22 @@ and open the template in the editor.
 
 <script>
 
-
-
     $(document).ready(function () {
+
+        $.ajax({
+            headers: {
+                'Content-Type': "application/json"
+            },
+            type: 'POST',
+            url: window.webappname + '/resources/javaee8/transactions_config',
+            contentType: "application/json",
+            success: function (dataRes) {
+                $.each(dataRes, function (index, value) {
+                    $('.dropdown-menu-submit-trx').append('<a class="dropdown-item submit" onclick="submitTrx($(this), \'new-pay-form\');" data-env="' + value['createUrl'] + '" href="#">' + index.split('-')[0] + '</a>');
+
+                });
+            }
+        });
 
         $('.form-control').on('change', function () {
             resetFieldsError($(this));
@@ -170,6 +181,14 @@ and open the template in the editor.
             e.preventDefault();
             if (!checkFields(true)) {
                 return false;
+            }
+
+            if ($('#tkgVal').val() === '' && $('#tkrVal').val() === '') {
+                $.alert({
+                    title: 'Warning',
+                    type: 'orange',
+                    content: 'You have to specify an amount!'
+                });
             }
 
             window.signedResponseBean['request']['itb'] = {};
@@ -205,10 +224,7 @@ and open the template in the editor.
             });
         });
 
-        $('.submit').on('click', function () {
-            window.signedResponseBean['request']['env'] = $(this).attr('data-env');
-            $('#new-pay-form').submit();
-        });
+
 
         $('#new-pay-form').submit(function (e) {
             e.preventDefault();

@@ -808,80 +808,70 @@ public class JavaEE8Resource {
     }
 
     @POST
-    @Path("fasttag")
-    //@Consumes(MediaType.APPLICATION_JSON)
+    @Path("fasttag_config")
     @Produces(MediaType.APPLICATION_JSON)
     public static final Response fasttagPOST(){
         return getTagList("fasttag");
     }
 
     @GET
-    @Path("fasttag")
-    //@Consumes(MediaType.APPLICATION_JSON)
+    @Path("fasttag_config")
     @Produces(MediaType.APPLICATION_JSON)
     public static final Response fasttagGET(){
         return getTagList("fasttag");
     }
     
     @POST
-    @Path("bookmarks")
-    //@Consumes(MediaType.APPLICATION_JSON)
+    @Path("bookmarks_config")
     @Produces(MediaType.APPLICATION_JSON)
     public static final Response bookmarksPOST(){
         return getTagList("bookmarks");
     }
 
     @GET
-    @Path("bookmarks")
-    //@Consumes(MediaType.APPLICATION_JSON)
+    @Path("bookmarks_config")
     @Produces(MediaType.APPLICATION_JSON)
     public static final Response bookmarksGET(){
         return getTagList("bookmarks");
     }
     
     @POST
-    @Path("transactions")
-    //@Consumes(MediaType.APPLICATION_JSON)
+    @Path("transactions_config")
     @Produces(MediaType.APPLICATION_JSON)
     public static final Response transactionsPOST(){
         return getTagList("transactions");
     }
 
     @GET
-    @Path("transactions")
-    //@Consumes(MediaType.APPLICATION_JSON)
+    @Path("transactions_config")
     @Produces(MediaType.APPLICATION_JSON)
     public static final Response transactionsGET(){
         return getTagList("transactions");
     }
     
     @POST
-    @Path("api")
-    //@Consumes(MediaType.APPLICATION_JSON)
+    @Path("api_config")
     @Produces(MediaType.APPLICATION_JSON)
     public static final Response apiPOST(){
         return getTagList("api");
     }
 
     @GET
-    @Path("api")
-    //@Consumes(MediaType.APPLICATION_JSON)
+    @Path("api_config")
     @Produces(MediaType.APPLICATION_JSON)
     public static final Response apiGET(){
         return getTagList("api");
     }
     
     @POST
-    @Path("short")
-    //@Consumes(MediaType.APPLICATION_JSON)
+    @Path("short_config")
     @Produces(MediaType.APPLICATION_JSON)
     public static final Response shortPOST(){
         return getTagList("short");
     }
 
     @GET
-    @Path("short")
-    //@Consumes(MediaType.APPLICATION_JSON)
+    @Path("short_config")
     @Produces(MediaType.APPLICATION_JSON)
     public static final Response fshortGET(){
         return getTagList("fasttag");

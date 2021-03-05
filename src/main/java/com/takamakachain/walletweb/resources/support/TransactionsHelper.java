@@ -170,10 +170,7 @@ public class TransactionsHelper {
 
             case SEND_TRX:
                 String hexBody = TkmSignUtils.fromStringToHexString(srb.getTrxJson());
-                String transactionEndpoint = "https://dev.takamaka.io/api/V2/testapi/transaction/";
-                if (srb.getEnv().equals("prod")) {
-                    transactionEndpoint = "https://dev.takamaka.io/api/V2/nodeapi/transaction/";
-                }
+                String transactionEndpoint = srb.getEnv();
                 System.out.println(transactionEndpoint);
                 String r = ProjectHelper.doPost(transactionEndpoint, "tx", hexBody);
                 System.out.println(r);

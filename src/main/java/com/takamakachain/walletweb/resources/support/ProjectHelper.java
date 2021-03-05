@@ -382,6 +382,7 @@ public class ProjectHelper {
                 return Response.status(200).entity(book).type(MediaType.APPLICATION_JSON).build();
             case "transactions":
                 ConcurrentSkipListMap<String, ComboItemSettingsBookmarkUrl> trans = SWTracker.i().getSendTransactionUrl();
+                System.out.println("asdasd");
                 return Response.status(200).entity(trans).type(MediaType.APPLICATION_JSON).build();
             case "api":
                 ConcurrentSkipListMap<String, ComboItemSettingsBookmarkUrl> api = SWTracker.i().getApiUrl();
