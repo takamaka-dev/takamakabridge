@@ -117,10 +117,7 @@ and open the template in the editor.
                             <button class="btn btn-primary dropdown-toggle font-weight-bold" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Submit to
                             </button>
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <a class="dropdown-item submit" data-env="prod" href="#">Production Net</a>
-                                <a class="dropdown-item submit" data-env="test" href="#">Test net</a>
-                            </div>
+                            <div class="dropdown-menu dropdown-menu-submit-trx" aria-labelledby="dropdownMenuButton"></div>
                         </div>
                     </div>
                 </div>
@@ -180,6 +177,22 @@ and open the template in the editor.
 
     $(document).ready(function () {
         $('.dropdown-toggle').prop('disabled', true);
+        
+        $.ajax({
+            headers: {
+                'Content-Type': "application/json"
+            },
+            type: 'POST',
+            url: window.webappname + '/resources/javaee8/transactions_config',
+            contentType: "application/json",
+            success: function (dataRes) {
+                $.each(dataRes, function (index, value) {
+                    $('.dropdown-menu-submit-trx').append('<a class="dropdown-item submit" onclick="submitTrx($(this), \'new-stake-form\');" data-env="' + value['createUrl'] + '" href="#">' + index.split('-')[0] + '</a>');
+
+                });
+            }
+        });
+        
         $.ajax({
             headers: {
                 'Content-Type': "application/json"
