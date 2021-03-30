@@ -17,6 +17,7 @@ import com.h2tcoin.takamakachain.transactions.InternalTransactionBean;
 import com.h2tcoin.takamakachain.transactions.TransactionBean;
 import com.h2tcoin.takamakachain.transactions.fee.FeeBean;
 import com.h2tcoin.takamakachain.transactions.fee.TransactionFeeCalculator;
+import com.h2tcoin.takamakachain.utils.FileHelper;
 import com.h2tcoin.takamakachain.utils.networking.RequestPaymentBean;
 import com.takamakachain.walletweb.resources.FilePropertiesBean;
 import com.h2tcoin.takamakachain.utils.threadSafeUtils.TkmSignUtils;
@@ -25,7 +26,6 @@ import com.h2tcoin.takamakachain.wallet.InstanceWalletKeystoreInterface;
 import com.h2tcoin.takamakachain.wallet.TkmWallet;
 import com.h2tcoin.takamakachain.wallet.TransactionBox;
 import com.h2tcoin.takamakachain.wallet.WalletHelper;
-import com.hazelcast.internal.json.JsonObject;
 import com.takamakachain.walletweb.resources.ReceiveTokenBalanceRequestBean;
 import com.takamakachain.walletweb.resources.SignedRequestBean;
 import com.takamakachain.walletweb.resources.SignedResponseBean;
@@ -36,6 +36,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.ProtocolException;
+import java.nio.file.Paths;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchProviderException;
@@ -43,6 +44,7 @@ import java.util.Base64;
 import java.util.Date;
 import javax.crypto.NoSuchPaddingException;
 import javax.imageio.ImageIO;
+import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
@@ -56,7 +58,7 @@ public class TransactionsHelper {
             SignedResponseBean signedResponse,
             InternalTransactionBean itb,
             InstanceWalletKeystoreInterface iwk,
-            int addressNumber) throws TransactionCanNotBeCreatedException {
+            int addressNumber) throws TransactionCanNotBeCreatedException, IOException {
         if (null != itb) {
 
             if (TkmTextUtils.isNullOrBlank(itb.getFrom())) {
@@ -77,6 +79,11 @@ public class TransactionsHelper {
 
             String txJson = TkmTextUtils.toJson(genericTRA);
             TransactionBox tbox = TkmWallet.verifyTransactionIntegrity(txJson);
+            
+            if (!logTransactions(tbox)) {
+                return false;
+            }
+            
             FeeBean feeBean = TransactionFeeCalculator.getFeeBean(tbox);
 
             signedResponse.setFeeBean(feeBean);
@@ -183,6 +190,15 @@ public class TransactionsHelper {
         return true;
     }
 
+    public static final boolean logTransactions(TransactionBox tbox) throws IOException {
+        String hexTransactionHash = ProjectHelper.convertToHex(tbox.getItb().getTransactionHash());
+        if (!FileHelper.writeStringToFile(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "pending"), hexTransactionHash, "", false)) {
+            return false;
+        }
+
+        return FileHelper.writeStringToFile(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "transactions"), hexTransactionHash, tbox.getTransactionJson(), false);
+    }
+    
     public static final String generateMessageText(String[] tags, FilePropertiesBean fpb) throws IOException, TkmDataException {
         String messageText = null;
         return messageText;

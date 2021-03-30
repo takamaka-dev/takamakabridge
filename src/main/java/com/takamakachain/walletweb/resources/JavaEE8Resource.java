@@ -302,17 +302,10 @@ public class JavaEE8Resource {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
-        String hexTransactionHash = ProjectHelper.convertToHex(tbox.getItb().getTransactionHash());
-
         JSONObject finalResponse = new JSONObject();
 
         finalResponse.append("transactionHash", itb.getTransactionHash());
-        if (!FileHelper.writeStringToFile(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "pending"), hexTransactionHash, "", false)) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).
-                    entity(finalResponse.toString()).build();
-        }
-
-        if (!FileHelper.writeStringToFile(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "transactions"), hexTransactionHash, tbox.getTransactionJson(), false)) {
+        if (!TransactionsHelper.logTransactions(tbox)) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).
                     entity(finalResponse.toString()).build();
         }
