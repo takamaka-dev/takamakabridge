@@ -193,6 +193,26 @@ public class TransactionsHelper {
     public static final boolean logTransactions(TransactionBox tbox) throws IOException {
         String hexTransactionHash = ProjectHelper.convertToHex(tbox.getItb().getTransactionHash());
         System.out.println("Log with hash " + hexTransactionHash);
+            
+        if (!FileHelper.fileExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm"))) {
+            FileHelper.createDir(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm"));
+        }
+        
+        if (!FileHelper.fileExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "pending"))) {
+            FileHelper.createDir(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "pending"));
+        }
+        
+        if (!FileHelper.fileExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "succeeded"))) {
+            FileHelper.createDir(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "succeeded"));
+        }
+        
+        if (!FileHelper.fileExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "failed"))) {
+            FileHelper.createDir(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "failed"));
+        }
+        
+        if (!FileHelper.fileExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "transactions"))) {
+            FileHelper.createDir(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "transactions"));
+        }
         
         if (!FileHelper.writeStringToFile(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "pending"), hexTransactionHash, "", false)) {
             return false;
