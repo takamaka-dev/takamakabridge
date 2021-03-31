@@ -192,7 +192,6 @@ public class TransactionsHelper {
 
     public static final boolean logTransactions(TransactionBox tbox) throws IOException {
         String hexTransactionHash = ProjectHelper.convertToHex(tbox.getItb().getTransactionHash());
-        System.out.println("Log with hash " + hexTransactionHash);
             
         if (!FileHelper.fileExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm"))) {
             FileHelper.createDir(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm"));
