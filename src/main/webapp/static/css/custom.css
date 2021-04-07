@@ -74,6 +74,62 @@ body {
     left: 0;
 }
 
+.white {
+    color: white !important
+}
+
+.messages-list {
+    list-style: none;
+    margin-top: 35px;
+}
+
+.messages-list li {
+    padding: 13px;
+    background: #cccccc2e;
+    /* text-align: center; */
+    margin: 15px;
+    box-shadow: 0px 1px 2px 1px #bcbcbc;
+}
+
+.messages-list li button {
+    float: left;
+    margin-right: 10px
+}
+
+
+
+.messages-list li div.address {
+    background: #295b8d;
+    color: white;
+    padding: 5px;
+    border-radius: 100px;
+    font-weight: 600;
+    width: 480px;
+    display: inline-block;
+    text-align: center;
+}
+
+.messages-list li span.amount {
+    float: right;
+    margin-left: 14px;
+}
+
+.messages-list li span.message-content {
+    float: right;
+}
+
+.approved-messages-list, .rejected-messages-list  {
+    margin-top: 0 !important
+}
+
+.approved-messages-list li, .rejected-messages-list li{
+
+}
+
+.approved-messages-list li span, .rejected-messages-list li span{
+
+}
+
 .labelNodeBookmark {
     word-break: break-word;
 }

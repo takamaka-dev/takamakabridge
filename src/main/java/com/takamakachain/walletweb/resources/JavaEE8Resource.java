@@ -20,7 +20,6 @@ import com.h2tcoin.takamakachain.utils.FileHelper;
 import com.h2tcoin.takamakachain.utils.Log;
 import com.h2tcoin.takamakachain.utils.simpleWallet.SWTracker;
 import com.h2tcoin.takamakachain.utils.simpleWallet.panels.support.ApiBalanceBean;
-import com.h2tcoin.takamakachain.utils.simpleWallet.panels.support.ComboItemSettingsBookmarkUrl;
 import com.h2tcoin.takamakachain.utils.simpleWallet.panels.support.identicon.IdentiColorHelper;
 import com.h2tcoin.takamakachain.utils.threadSafeUtils.TkmSignUtils;
 import com.h2tcoin.takamakachain.utils.threadSafeUtils.TkmTextUtils;
@@ -61,13 +60,10 @@ import static com.takamakachain.walletweb.resources.support.ProjectHelper.ENC_LA
 import static com.takamakachain.walletweb.resources.support.ProjectHelper.ENC_SEP;
 import static com.takamakachain.walletweb.resources.support.ProjectHelper.getTagList;
 import com.takamakachain.walletweb.resources.support.TransactionsHelper;
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.nio.file.Paths;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -76,13 +72,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ConcurrentSkipListMap;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.servlet.ServletContext;
-import javax.ws.rs.core.Context;
 import org.apache.commons.io.FileUtils;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
@@ -740,7 +734,7 @@ public class JavaEE8Resource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(signedResponse).build();
         }
     }
-
+    
     @POST
     @Path("createWallet")
     @Consumes(MediaType.APPLICATION_JSON)

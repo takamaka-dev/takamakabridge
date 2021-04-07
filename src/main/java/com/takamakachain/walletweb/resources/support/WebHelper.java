@@ -18,6 +18,7 @@ public class WebHelper {
          */
         GET_ADDRESS,
         RECOVER_WALLET,
+        CREATE_CAMPAIGN,
         PAY,
         BLOB,
         STAKE,

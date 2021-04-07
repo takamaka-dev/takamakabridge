@@ -79,11 +79,11 @@ public class TransactionsHelper {
 
             String txJson = TkmTextUtils.toJson(genericTRA);
             TransactionBox tbox = TkmWallet.verifyTransactionIntegrity(txJson);
-            
+
             if (!logTransactions(tbox)) {
                 return false;
             }
-            
+
             FeeBean feeBean = TransactionFeeCalculator.getFeeBean(tbox);
 
             signedResponse.setFeeBean(feeBean);
@@ -128,6 +128,30 @@ public class TransactionsHelper {
                     signedResponse.setWords(words);
                 }
                 break;
+            case CREATE_CAMPAIGN:
+                String walletAddress = iwk.getPublicKeyAtIndexURL64(srb.getWallet().getAddressNumber());
+
+                if (!FileHelper.directoryExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns"))) {
+                    FileHelper.createDir(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns"));
+                }
+
+                if (!FileHelper.directoryExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", walletAddress))) {
+                    FileHelper.createDir(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", walletAddress));
+                }
+
+                if (!FileHelper.directoryExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", walletAddress, "new_messages"))) {
+                    FileHelper.createDir(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", walletAddress, "new_messages"));
+                }
+
+                if (!FileHelper.directoryExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", walletAddress, "approved"))) {
+                    FileHelper.createDir(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", walletAddress, "approved"));
+                }
+
+                if (!FileHelper.directoryExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", walletAddress, "rejected"))) {
+                    FileHelper.createDir(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", walletAddress, "rejected"));
+                }
+
+                break;
             case PAY:
                 itb = srb.getItb();
                 itb.setNotBefore(new Date((new Date()).getTime() + 60000L * 5));
@@ -167,7 +191,7 @@ public class TransactionsHelper {
                     System.out.println("Failed");
                     return false;
                 }
-                
+
                 break;
 
             case RECEIVE_TOKENS:
@@ -192,34 +216,34 @@ public class TransactionsHelper {
 
     public static final boolean logTransactions(TransactionBox tbox) throws IOException {
         String hexTransactionHash = ProjectHelper.convertToHex(tbox.getItb().getTransactionHash());
-            
+
         if (!FileHelper.fileExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm"))) {
             FileHelper.createDir(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm"));
         }
-        
+
         if (!FileHelper.fileExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "pending"))) {
             FileHelper.createDir(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "pending"));
         }
-        
+
         if (!FileHelper.fileExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "succeeded"))) {
             FileHelper.createDir(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "succeeded"));
         }
-        
+
         if (!FileHelper.fileExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "failed"))) {
             FileHelper.createDir(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "failed"));
         }
-        
+
         if (!FileHelper.fileExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "transactions"))) {
             FileHelper.createDir(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "transactions"));
         }
-        
+
         if (!FileHelper.writeStringToFile(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "pending"), hexTransactionHash, "", false)) {
             return false;
         }
 
         return FileHelper.writeStringToFile(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "transactions"), hexTransactionHash, tbox.getTransactionJson(), false);
     }
-    
+
     public static final String generateMessageText(String[] tags, FilePropertiesBean fpb) throws IOException, TkmDataException {
         String messageText = null;
         return messageText;
