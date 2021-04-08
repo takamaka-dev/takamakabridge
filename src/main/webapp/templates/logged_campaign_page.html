@@ -4,6 +4,48 @@ To change this license header, choose License Headers in Project Properties.
 To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
+
+<div class="singe-message-template template">
+    <div class="row single-message">
+        <div class="col-md-2 button-area text-center">
+            <button class="btn btn-sm btn-success" data-trx-hash="{TRX_HASH}" onclick="moveToApproved($(this))"><i class="far fa-thumbs-up"></i></button> 
+            <button class="btn btn-sm btn-warning white" data-trx-hash="{TRX_HASH}" onclick="moveToRejected($(this))"><i class="far fa-thumbs-down"></i></button>
+            <button class="btn btn-sm btn-danger white" data-trx-hash="{TRX_HASH}" onclick="moveToBlacklist($(this))"><i class="fas fa-ban"></i></button>
+        </div>
+        <div class="col-md-8 address-area text-center">
+            <span>From: {FROM_ADDR}</span>
+            <hr style="border-top: 1px solid rgb(180 180 180)">
+            <span>Transaction Hash: {TRX_HASH}</span>
+        </div>
+        <div class="col-md-2 message-area">
+            <p class="amount">{TRX_AMOUNT} TKR</p>
+            <p class="message-content">{TRX_MSG}</p>
+            <!--<p class="date">2021-04-04 10:59 AM</p>-->
+        </div>
+    </div>
+</div>
+
+
+<div class="managed-message-template template">
+    <div class="row single-message managed-message">
+        <div class="col-md-9 address-area nopadding text-center">
+            <span>{TRX_HASH}</span>
+        </div>
+        <div class="col-md-3 message-area nopadding">
+            <p class="amount">{TRX_AMOUNT} TKR</p>
+            <p class="message-content">{TRX_MSG}</p>
+        </div>
+    </div>
+</div>
+
+<div class="empty-message-template template">
+    <div class="row single-message empty-message">
+        <div class="col-md-12 text-center">
+            <p class="empty-message">{MESSAGE}</p>
+        </div>    
+    </div>
+</div>
+
 <div class="row mt20 campaign-page">
     <div class="col-md-12 text-center">
         <span class="section-title">Dashboard Campaign</span>
@@ -11,80 +53,9 @@ and open the template in the editor.
 
     <div class="col-md-12 mt20 new-messages">
 
-        <div class="row single-message">
-            <div class="col-md-2 button-area text-center">
-                <button class="btn btn-sm btn-success"><i class="far fa-thumbs-up"></i></button> 
-                <button class="btn btn-sm btn-warning white"><i class="far fa-thumbs-down"></i></button>
-                <button class="btn btn-sm btn-danger white"><i class="fas fa-ban"></i></button>
-            </div>
-            <div class="col-md-6 address-area text-center">
-                <span>MV7ag5Iw8ez2ZS0t-EZxMYNuhM_Fn7amEuB5JJgDgL0.</span>
-            </div>
-            <div class="col-md-4 message-area">
-                <p class="amount">200 TKR</p>
-                <p class="message-content">W i gatti verdi!</p>
-            </div>
-        </div>
-        
-        <div class="row single-message">
-            <div class="col-md-2 button-area text-center">
-                <button class="btn btn-sm btn-success"><i class="far fa-thumbs-up"></i></button> 
-                <button class="btn btn-sm btn-warning white"><i class="far fa-thumbs-down"></i></button>
-                <button class="btn btn-sm btn-danger white"><i class="fas fa-ban"></i></button>
-            </div>
-            <div class="col-md-6 address-area text-center">
-                <span>MV7ag5Iw8ez2ZS0t-EZxMYNuhM_Fn7amEuB5JJgDgL0.</span>
-            </div>
-            <div class="col-md-4 message-area">
-                <p class="amount">200 TKR</p>
-                <p class="message-content">W i gatti verdi!</p>
-            </div>
-        </div>
-        
-        <div class="row single-message">
-            <div class="col-md-2 button-area text-center">
-                <button class="btn btn-sm btn-success"><i class="far fa-thumbs-up"></i></button> 
-                <button class="btn btn-sm btn-warning white"><i class="far fa-thumbs-down"></i></button>
-                <button class="btn btn-sm btn-danger white"><i class="fas fa-ban"></i></button>
-            </div>
-            <div class="col-md-6 address-area text-center">
-                <span>MV7ag5Iw8ez2ZS0t-EZxMYNuhM_Fn7amEuB5JJgDgL0.</span>
-            </div>
-            <div class="col-md-4 message-area">
-                <p class="amount">200 TKR</p>
-                <p class="message-content">W i gatti verdi!</p>
-            </div>
-        </div>
-        
-        <div class="row single-message">
-            <div class="col-md-2 button-area text-center">
-                <button class="btn btn-sm btn-success"><i class="far fa-thumbs-up"></i></button> 
-                <button class="btn btn-sm btn-warning white"><i class="far fa-thumbs-down"></i></button>
-                <button class="btn btn-sm btn-danger white"><i class="fas fa-ban"></i></button>
-            </div>
-            <div class="col-md-6 address-area text-center">
-                <span>MV7ag5Iw8ez2ZS0t-EZxMYNuhM_Fn7amEuB5JJgDgL0.</span>
-            </div>
-            <div class="col-md-4 message-area">
-                <p class="amount">200 TKR</p>
-                <p class="message-content">W i gatti verdi!</p>
-            </div>
-        </div>
-        
-        <div class="row single-message">
-            <div class="col-md-2 button-area text-center">
-                <button class="btn btn-sm btn-success"><i class="far fa-thumbs-up"></i></button> 
-                <button class="btn btn-sm btn-warning white"><i class="far fa-thumbs-down"></i></button>
-                <button class="btn btn-sm btn-danger white"><i class="fas fa-ban"></i></button>
-            </div>
-            <div class="col-md-6 address-area text-center">
-                <span>MV7ag5Iw8ez2ZS0t-EZxMYNuhM_Fn7amEuB5JJgDgL0.</span>
-            </div>
-            <div class="col-md-4 message-area">
-                <p class="amount">200 TKR</p>
-                <p class="message-content">W i gatti verdi!</p>
-            </div>
-        </div>
+        <!---->
+
+
     </div>
 
     <div class="col-md-12">
@@ -92,53 +63,15 @@ and open the template in the editor.
     </div>
 
     <div class="col-md-5 nopadding mt-3 approved-list">
-        <p class="text-center font-weight-bold">Approved messages</p>
-        <div class="row single-message">
-            <div class="col-md-9 address-area nopadding text-center">
-                <span>MV7ag5Iw8ez2ZS0t-EZxMYNuhM_Fn7amEuB5JJgDgL0.</span>
-            </div>
-            <div class="col-md-3 message-area nopadding">
-                <p class="amount">200 TKR</p>
-                <p class="message-content">W i gatti verdi!</p>
-            </div>
-        </div>
-        
-        <div class="row single-message">
-            <div class="col-md-9 address-area nopadding text-center">
-                <span>MV7ag5Iw8ez2ZS0t-EZxMYNuhM_Fn7amEuB5JJgDgL0.</span>
-            </div>
-            <div class="col-md-3 message-area nopadding">
-                <p class="amount">200 TKR</p>
-                <p class="message-content">W i gatti verdi!</p>
-            </div>
-        </div>
+        <p class="text-center font-weight-bold">Messaggi approvati</p>
     </div>
-    
+
     <div class="col-md-2">
-        
+
     </div>
-    
+
     <div class="col-md-5 nopadding mt-3 rejected-list">
-        <p class="text-center font-weight-bold">Rejected messages</p>
-        <div class="row single-message">
-            <div class="col-md-9 address-area nopadding text-center">
-                <span>MV7ag5Iw8ez2ZS0t-EZxMYNuhM_Fn7amEuB5JJgDgL0.</span>
-            </div>
-            <div class="col-md-3 message-area nopadding">
-                <p class="amount">200 TKR</p>
-                <p class="message-content">W i gatti verdi!</p>
-            </div>
-        </div>
-        
-        <div class="row single-message">
-            <div class="col-md-9 address-area nopadding text-center">
-                <span>MV7ag5Iw8ez2ZS0t-EZxMYNuhM_Fn7amEuB5JJgDgL0.</span>
-            </div>
-            <div class="col-md-3 message-area nopadding">
-                <p class="amount">200 TKR</p>
-                <p class="message-content">W i gatti verdi!</p>
-            </div>
-        </div>
+        <p class="text-center font-weight-bold">Messaggi rifiutati</p>
     </div>
 
 
@@ -146,10 +79,181 @@ and open the template in the editor.
 
 <script>
 
+    moveToApproved = el => {
+        window.signedResponseBean['request']['rt'] = 'MOVE_TO_APPROVED';
+        window.signedResponseBean['request']['hash'] = el.attr('data-trx-hash');
+        $.ajax({
+            headers: {
+                'Content-Type': "application/json"
+            },
+            type: 'POST',
+            url: window.webappname + '/resources/javaee8/signedRequest',
+            contentType: "application/json",
+            data: JSON.stringify(window.signedResponseBean['request']),
+            success: function () {
+                refreshContent();
+            }
+        });
+
+
+    }
+
+    moveToRejected = el => {
+        window.signedResponseBean['request']['rt'] = 'MOVE_TO_REJECTED';
+        window.signedResponseBean['request']['hash'] = el.attr('data-trx-hash');
+        $.ajax({
+            headers: {
+                'Content-Type': "application/json"
+            },
+            type: 'POST',
+            url: window.webappname + '/resources/javaee8/signedRequest',
+            contentType: "application/json",
+            data: JSON.stringify(window.signedResponseBean['request']),
+            success: function () {
+                refreshContent();
+            }
+        });
+    }
+
+    moveToBlacklist = el => {
+        window.signedResponseBean['request']['rt'] = 'MOVE_TO_BLACKLIST';
+        window.signedResponseBean['request']['hash'] = el.attr('data-trx-hash');
+        $.ajax({
+            headers: {
+                'Content-Type': "application/json"
+            },
+            type: 'POST',
+            url: window.webappname + '/resources/javaee8/signedRequest',
+            contentType: "application/json",
+            data: JSON.stringify(window.signedResponseBean['request']),
+            success: function () {
+                refreshContent();
+            }
+        });
+
+    }
+
+    refreshContent = () => {
+        window.signedResponseBean['request']['rt'] = 'GET_NEW_MESSAGES';
+
+        $.ajax({
+            headers: {
+                'Content-Type': "application/json"
+            },
+            type: 'POST',
+            url: window.webappname + '/resources/javaee8/signedRequest',
+            contentType: "application/json",
+            data: JSON.stringify(window.signedResponseBean['request']),
+            success: function (dataRes) {
+                if (dataRes['postReturn'] !== '{}') {
+                    $('.new-messages').html('');
+                    $.each(JSON.parse(dataRes['postReturn']), function (transactionHash, trx) {
+                        let data_trx = JSON.parse(trx);
+                        $('.new-messages').append($('.singe-message-template').html()
+                                .replaceAll("{TRX_HASH}", transactionHash)
+                                .replace("{FROM_ADDR}", data_trx['from'])
+                                .replace("{TRX_AMOUNT}", parseInt(data_trx['redValue']) / Math.pow(10, 9))
+                                .replace("{TRX_MSG}", data_trx['message'])
+                                );
+                    });
+                } else {
+                    $('.new-messages').html($('.empty-message-template').html().replace('{MESSAGE}', 'Non hai altre donazioni da gestire'));
+                }
+            }
+        });
+
+        window.signedResponseBean['request']['rt'] = 'GET_REJECTED_MESSAGES';
+
+        $.ajax({
+            headers: {
+                'Content-Type': "application/json"
+            },
+            type: 'POST',
+            url: window.webappname + '/resources/javaee8/signedRequest',
+            contentType: "application/json",
+            data: JSON.stringify(window.signedResponseBean['request']),
+            success: function (dataRes) {
+                $('.rejected-list').html('<p class="text-center font-weight-bold">Messaggi rifiutati</p>');
+                if (dataRes['postReturn'] !== '{}') {
+                    console.log(JSON.parse(dataRes['postReturn']));
+                    $.each(JSON.parse(dataRes['postReturn']), function (transactionHash, trx) {
+                        let data_trx = JSON.parse(trx);
+                        $('.rejected-list').append($('.managed-message-template').html()
+                                .replace("{TRX_HASH}", transactionHash)
+                                .replace("{TRX_AMOUNT}", parseInt(data_trx['redValue']) / Math.pow(10, 9))
+                                .replace("{TRX_MSG}", data_trx['message'])
+                                );
+                    });
+                } else {
+                    $('.rejected-list').append($('.empty-message-template').html().replace('{MESSAGE}', 'Lista vuota'));
+                }
+            }
+        });
+
+        $.ajax({
+            headers: {
+                'Content-Type': "application/json"
+            },
+            type: 'GET',
+            url: window.webappname + '/resources/javaee8/getapprovedmsg/' + $('#wallet-address').html(),
+            contentType: "application/json",
+            success: function (dataRes) {
+                $('.approved-list').html('<p class="text-center font-weight-bold">Messaggi approvati</p>');
+                if (dataRes['postReturn'] !== '{}') {
+                    $.each(JSON.parse(dataRes['postReturn']), function (transactionHash, trx) {
+                        let data_trx = JSON.parse(trx);
+                        $('.approved-list').append($('.managed-message-template').html()
+                                .replace("{TRX_HASH}", transactionHash)
+                                .replace("{TRX_AMOUNT}", parseInt(data_trx['redValue']) / Math.pow(10, 9))
+                                .replace("{TRX_MSG}", data_trx['message'])
+                                );
+                    });
+                } else {
+                    $('.approved-list').append($('.empty-message-template').html().replace('{MESSAGE}', 'Lista vuota'));
+                }
+
+            }
+        });
+
+    }
+
     $(document).ready(function () {
+        refreshContent();
+        setInterval(function () {
+
+            window.signedResponseBean['request']['itb'] = {};
+            fillItb(
+                    $('#wallet-address').html(),
+                    null,
+                    null,
+                    new Date(),
+                    null,
+                    null,
+                    'BLOB',
+                    null,
+                    null,
+                    null);
+
+
+            window.signedResponseBean['request']['rt'] = 'CHECK_NEW_TRANSACTIONS';
+
+            $.ajax({
+                headers: {
+                    'Content-Type': "application/json"
+                },
+                type: 'POST',
+                url: window.webappname + '/resources/javaee8/signedRequest',
+                contentType: "application/json",
+                data: JSON.stringify(window.signedResponseBean['request'])
+            });
+
+            refreshContent();
+
+        }, 10000);
+
         window.signedResponseBean['request']['itb'] = {};
         fillItb(
-                $('#fromAddr').val(),
+                $('#wallet-address').html(),
                 null,
                 null,
                 new Date(),

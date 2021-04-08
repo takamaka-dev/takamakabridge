@@ -17,6 +17,15 @@ public class SignedRequestBean implements Serializable {
 
     private WalletBean wallet;
     private InternalTransactionBean itb;
+    private String hash;
+
+    public String getHash() {
+        return hash;
+    }
+
+    public void setHash(String hash) {
+        this.hash = hash;
+    }
     private WebHelper.RequestType rt;
     private String uuid;
     private String trxJson;

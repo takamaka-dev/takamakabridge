@@ -724,9 +724,6 @@ public class JavaEE8Resource {
                 Logger.getLogger(JavaEE8Resource.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-            System.out.println(srb.getWallet().getWalletName());
-            System.out.println(srb.getWallet().getWalletPassword());
-
             return Response.status(Response.Status.OK).entity(signedResponse).build();
         } catch (UnlockWalletException ex) {
             return Response.status(Response.Status.UNAUTHORIZED).entity(signedResponse).build();
@@ -734,7 +731,7 @@ public class JavaEE8Resource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(signedResponse).build();
         }
     }
-    
+
     @POST
     @Path("createWallet")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -789,6 +786,30 @@ public class JavaEE8Resource {
     }
 
     @GET
+    @Path("getapprovedmsg/{address}")
+    public static final Response getApprovedMessages(@PathParam("address") String address) {
+        SignedResponseBean signedResponse = new SignedResponseBean();
+        ArrayList fileList = FileHelper.getFileList(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", address, "approved"), null);
+        HashMap hm = new HashMap<String, String>();
+        fileList.forEach(e -> {
+            try {
+                hm.put(e.toString(), new JSONObject(FileHelper.readStringFromFile(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", address, "approved", e.toString()))).toString());
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(TransactionsHelper.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        signedResponse.setPostReturn(new JSONObject(hm).toString());
+        return Response.status(Response.Status.OK).entity(signedResponse).build();
+    }
+    
+    @GET
+    @Path("getqrcampaign/{address}")
+    public static final String getQrCampaign(@PathParam("address") String address) throws FileNotFoundException {
+        String base64 = FileHelper.readStringFromFile(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", address, "qrforcampaign"));
+        return base64;
+    }
+
+    @GET
     @Path("testy/{name}")
     public static final String ping(@PathParam("name") String name) {
         return "Hello " + name;
@@ -797,72 +818,71 @@ public class JavaEE8Resource {
     @POST
     @Path("fasttag_config")
     @Produces(MediaType.APPLICATION_JSON)
-    public static final Response fasttagPOST(){
+    public static final Response fasttagPOST() {
         return getTagList("fasttag");
     }
 
     @GET
     @Path("fasttag_config")
     @Produces(MediaType.APPLICATION_JSON)
-    public static final Response fasttagGET(){
+    public static final Response fasttagGET() {
         return getTagList("fasttag");
     }
-    
+
     @POST
     @Path("bookmarks_config")
     @Produces(MediaType.APPLICATION_JSON)
-    public static final Response bookmarksPOST(){
+    public static final Response bookmarksPOST() {
         return getTagList("bookmarks");
     }
 
     @GET
     @Path("bookmarks_config")
     @Produces(MediaType.APPLICATION_JSON)
-    public static final Response bookmarksGET(){
+    public static final Response bookmarksGET() {
         return getTagList("bookmarks");
     }
-    
+
     @POST
     @Path("transactions_config")
     @Produces(MediaType.APPLICATION_JSON)
-    public static final Response transactionsPOST(){
+    public static final Response transactionsPOST() {
         return getTagList("transactions");
     }
 
     @GET
     @Path("transactions_config")
     @Produces(MediaType.APPLICATION_JSON)
-    public static final Response transactionsGET(){
+    public static final Response transactionsGET() {
         return getTagList("transactions");
     }
-    
+
     @POST
     @Path("api_config")
     @Produces(MediaType.APPLICATION_JSON)
-    public static final Response apiPOST(){
+    public static final Response apiPOST() {
         return getTagList("api");
     }
 
     @GET
     @Path("api_config")
     @Produces(MediaType.APPLICATION_JSON)
-    public static final Response apiGET(){
+    public static final Response apiGET() {
         return getTagList("api");
     }
-    
+
     @POST
     @Path("short_config")
     @Produces(MediaType.APPLICATION_JSON)
-    public static final Response shortPOST(){
+    public static final Response shortPOST() {
         return getTagList("short");
     }
 
     @GET
     @Path("short_config")
     @Produces(MediaType.APPLICATION_JSON)
-    public static final Response fshortGET(){
+    public static final Response fshortGET() {
         return getTagList("fasttag");
     }
-
 
 }

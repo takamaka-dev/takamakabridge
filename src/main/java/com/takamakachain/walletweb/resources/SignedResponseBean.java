@@ -23,6 +23,15 @@ public class SignedResponseBean implements Serializable {
     private String trxJson;
     private String endpoint;
     private String words;
+    private String postReturn;
+
+    public String getPostReturn() {
+        return postReturn;
+    }
+
+    public void setPostReturn(String postReturn) {
+        this.postReturn = postReturn;
+    }
     private String base64QrCodeReceiveBalance;
 
     public String getBase64QrCodeReceiveBalance() {

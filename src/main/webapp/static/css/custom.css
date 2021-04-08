@@ -78,10 +78,24 @@ body {
     color: white !important
 }
 
+.campaign-page .new-messages .date{
+    font-weight: 600
+}
+
+.campaign-page .empty-message {
+    color: #808080;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
 .campaign-page .new-messages {
     max-height: 400px;
     overflow-y: auto;
     padding: 25px;
+}
+
+.template {
+    display: none;
 }
 
 .campaign-page .single-message {
