@@ -46,6 +46,7 @@ import java.security.NoSuchProviderException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -166,6 +167,7 @@ public class TransactionsHelper {
                         Logger.getLogger(TransactionsHelper.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 });
+                
                 signedResponse.setPostReturn(new JSONObject(hm).toString());
                 break;
             case GET_REJECTED_MESSAGES:
