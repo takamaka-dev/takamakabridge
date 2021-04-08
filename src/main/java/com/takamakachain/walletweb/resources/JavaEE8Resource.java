@@ -728,6 +728,7 @@ public class JavaEE8Resource {
         } catch (UnlockWalletException ex) {
             return Response.status(Response.Status.UNAUTHORIZED).entity(signedResponse).build();
         } catch (WalletException ex) {
+            ex.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(signedResponse).build();
         }
     }
