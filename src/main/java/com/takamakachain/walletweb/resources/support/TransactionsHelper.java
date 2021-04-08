@@ -159,6 +159,7 @@ public class TransactionsHelper {
             case GET_NEW_MESSAGES:
                 walletAddress = iwk.getPublicKeyAtIndexURL64(srb.getWallet().getAddressNumber());
                 fileList = FileHelper.getFileList(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", walletAddress, "new_messages"), null);
+                //fileList.sort(Comparator.naturalOrder());
                 hm = new HashMap<String, String>();
                 fileList.forEach(e -> {
                     try {
