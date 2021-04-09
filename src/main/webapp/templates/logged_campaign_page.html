@@ -49,6 +49,7 @@ and open the template in the editor.
 <div class="row mt20 campaign-page">
     <div class="col-md-12 text-center">
         <span class="section-title">Dashboard Campaign</span>
+        <div id="time" data-time="10"></div>
     </div>
 
     <div class="col-md-12 mt20 new-messages">
@@ -227,6 +228,19 @@ and open the template in the editor.
 
     $(document).ready(function () {
         refreshContent();
+
+
+        setInterval(function() {
+            let time = $('#time').attr('data-time') - 1;
+            if (parseInt(time) === 0) {
+                $('#time').attr('data-time', 10);
+            } else {
+                $('#time').attr('data-time', time);
+            }
+            $('#time').html('Next update in: ' + time);
+            
+        }, 1000);
+        
         setInterval(function () {
 
             window.signedResponseBean['request']['itb'] = {};

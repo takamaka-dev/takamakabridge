@@ -817,7 +817,8 @@ public class JavaEE8Resource {
                 Map.Entry me2 = (Map.Entry) iterator2.next();
                 finalOrderedResult.add(me2.getValue().toString());
             }
-
+            
+            count++;
         }
 
         signedResponse.setPostReturn(new JSONArray(finalOrderedResult).toString());
