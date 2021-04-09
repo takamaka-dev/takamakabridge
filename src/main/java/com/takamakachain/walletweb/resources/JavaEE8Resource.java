@@ -797,6 +797,9 @@ public class JavaEE8Resource {
     @Path("campaign_view/getapprovedmsg/{address}/{lastXmessages}")
     public static final Response getApprovedMessages(@PathParam("address") String address, @PathParam("lastXmessages") String lastXmessages) {
         SignedResponseBean signedResponse = new SignedResponseBean();
+        if (!FileHelper.directoryExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", address))) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
         ArrayList fileList = FileHelper.getFileList(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", address, "approved"), null);
         HashMap hm = new HashMap<String, String>();
         fileList.forEach(e -> {
@@ -828,6 +831,10 @@ public class JavaEE8Resource {
     @GET
     @Path("campaign_view/getqr/{address}/{value}/{message}")
     public static final String getQrCampaign(@PathParam("address") String address, @PathParam("value") String value, @PathParam("message") String message) throws FileNotFoundException {
+        if (!FileHelper.directoryExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", address))) {
+            return "";
+        }
+        
         ReceiveTokenBalanceRequestBean rtbr = new ReceiveTokenBalanceRequestBean();
         rtbr.setqAddr(address);
         rtbr.setqColor("RED");
