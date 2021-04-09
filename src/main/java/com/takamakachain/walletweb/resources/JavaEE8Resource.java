@@ -60,6 +60,8 @@ import static com.takamakachain.walletweb.resources.support.ProjectHelper.ENC_LA
 import static com.takamakachain.walletweb.resources.support.ProjectHelper.ENC_SEP;
 import static com.takamakachain.walletweb.resources.support.ProjectHelper.getTagList;
 import com.takamakachain.walletweb.resources.support.TransactionsHelper;
+import static com.takamakachain.walletweb.resources.support.TransactionsHelper.createQRString;
+import static com.takamakachain.walletweb.resources.support.TransactionsHelper.getQR;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -70,8 +72,13 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchProviderException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
@@ -787,8 +794,8 @@ public class JavaEE8Resource {
     }
 
     @GET
-    @Path("getapprovedmsg/{address}")
-    public static final Response getApprovedMessages(@PathParam("address") String address) {
+    @Path("campaign_view/getapprovedmsg/{address}/{lastXmessages}")
+    public static final Response getApprovedMessages(@PathParam("address") String address, @PathParam("lastXmessages") String lastXmessages) {
         SignedResponseBean signedResponse = new SignedResponseBean();
         ArrayList fileList = FileHelper.getFileList(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", address, "approved"), null);
         HashMap hm = new HashMap<String, String>();
@@ -799,15 +806,33 @@ public class JavaEE8Resource {
                 Logger.getLogger(TransactionsHelper.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
-        signedResponse.setPostReturn(new JSONObject(hm).toString());
+        Map<String, String> orderedMap = new TreeMap<String, String>(Collections.reverseOrder());
+        orderedMap.putAll(hm);
+        Set set2 = orderedMap.entrySet();
+        Iterator iterator2 = set2.iterator();
+        ArrayList<String> finalOrderedResult = new ArrayList<String>();
+        int count = 0;
+        while (iterator2.hasNext()) {
+            if (count < Integer.parseInt(lastXmessages) || Integer.parseInt(lastXmessages) == 0) {
+                Map.Entry me2 = (Map.Entry) iterator2.next();
+                finalOrderedResult.add(me2.getValue().toString());
+            }
+
+        }
+
+        signedResponse.setPostReturn(new JSONArray(finalOrderedResult).toString());
         return Response.status(Response.Status.OK).entity(signedResponse).build();
     }
-    
+
     @GET
-    @Path("getqrcampaign/{address}")
-    public static final String getQrCampaign(@PathParam("address") String address) throws FileNotFoundException {
-        String base64 = FileHelper.readStringFromFile(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", address, "qrforcampaign"));
-        return base64;
+    @Path("campaign_view/getqr/{address}/{value}/{message}")
+    public static final String getQrCampaign(@PathParam("address") String address, @PathParam("value") String value, @PathParam("message") String message) throws FileNotFoundException {
+        ReceiveTokenBalanceRequestBean rtbr = new ReceiveTokenBalanceRequestBean();
+        rtbr.setqAddr(address);
+        rtbr.setqColor("RED");
+        rtbr.setqValue(value);
+        rtbr.setqMessage(message);
+        return getQR(createQRString(rtbr));
     }
 
     @GET

@@ -8,9 +8,9 @@ and open the template in the editor.
 <div class="singe-message-template template">
     <div class="row single-message">
         <div class="col-md-2 button-area text-center">
-            <button class="btn btn-sm btn-success" data-trx-hash="{TRX_HASH}" onclick="moveToApproved($(this))"><i class="far fa-thumbs-up"></i></button> 
-            <button class="btn btn-sm btn-warning white" data-trx-hash="{TRX_HASH}" onclick="moveToRejected($(this))"><i class="far fa-thumbs-down"></i></button>
-            <button class="btn btn-sm btn-danger white" data-trx-hash="{TRX_HASH}" onclick="moveToBlacklist($(this))"><i class="fas fa-ban"></i></button>
+            <button class="btn btn-sm btn-success" data-trx-hash="{TRX_HASH}" data-trx-not-before="{TRX_NOT_BEFORE}" onclick="moveToApproved($(this))"><i class="far fa-thumbs-up"></i></button> 
+            <button class="btn btn-sm btn-warning white" data-trx-hash="{TRX_HASH}" data-trx-not-before="{TRX_NOT_BEFORE}" onclick="moveToRejected($(this))"><i class="far fa-thumbs-down"></i></button>
+            <button class="btn btn-sm btn-danger white" data-trx-hash="{TRX_HASH}" data-trx-not-before="{TRX_NOT_BEFORE}" onclick="moveToBlacklist($(this))"><i class="fas fa-ban"></i></button>
         </div>
         <div class="col-md-8 address-area text-center">
             <span>From: {FROM_ADDR}</span>
@@ -20,7 +20,7 @@ and open the template in the editor.
         <div class="col-md-2 message-area">
             <p class="amount">{TRX_AMOUNT} TKR</p>
             <p class="message-content">{TRX_MSG}</p>
-            <!--<p class="date">2021-04-04 10:59 AM</p>-->
+            <p class="date">{DATE}</p>
         </div>
     </div>
 </div>
@@ -82,6 +82,7 @@ and open the template in the editor.
     moveToApproved = el => {
         window.signedResponseBean['request']['rt'] = 'MOVE_TO_APPROVED';
         window.signedResponseBean['request']['hash'] = el.attr('data-trx-hash');
+        window.signedResponseBean['request']['notBefore'] = el.attr('data-trx-not-before')
         $.ajax({
             headers: {
                 'Content-Type': "application/json"
@@ -101,6 +102,7 @@ and open the template in the editor.
     moveToRejected = el => {
         window.signedResponseBean['request']['rt'] = 'MOVE_TO_REJECTED';
         window.signedResponseBean['request']['hash'] = el.attr('data-trx-hash');
+        window.signedResponseBean['request']['notBefore'] = el.attr('data-trx-not-before')
         $.ajax({
             headers: {
                 'Content-Type': "application/json"
@@ -118,6 +120,7 @@ and open the template in the editor.
     moveToBlacklist = el => {
         window.signedResponseBean['request']['rt'] = 'MOVE_TO_BLACKLIST';
         window.signedResponseBean['request']['hash'] = el.attr('data-trx-hash');
+        window.signedResponseBean['request']['notBefore'] = el.attr('data-trx-not-before')
         $.ajax({
             headers: {
                 'Content-Type': "application/json"
@@ -145,15 +148,18 @@ and open the template in the editor.
             contentType: "application/json",
             data: JSON.stringify(window.signedResponseBean['request']),
             success: function (dataRes) {
-                if (dataRes['postReturn'] !== '{}') {
+                let newMessagesList = JSON.parse(dataRes['postReturn']);
+                if (newMessagesList.length > 0) {
                     $('.new-messages').html('');
-                    $.each(JSON.parse(dataRes['postReturn']), function (transactionHash, trx) {
+                    $.each(newMessagesList, function (transactionHash, trx) {
                         let data_trx = JSON.parse(trx);
                         $('.new-messages').append($('.singe-message-template').html()
-                                .replaceAll("{TRX_HASH}", transactionHash)
+                                .replaceAll("{TRX_HASH}", data_trx['transactionHash'])
+                                .replaceAll("{TRX_NOT_BEFORE}", data_trx['notBefore'])
                                 .replace("{FROM_ADDR}", data_trx['from'])
                                 .replace("{TRX_AMOUNT}", parseInt(data_trx['redValue']) / Math.pow(10, 9))
-                                .replace("{TRX_MSG}", data_trx['message'])
+                                .replace("{TRX_MSG}", data_trx['message'] === null ? 'N/A' : data_trx['message'])
+                                .replace("{DATE}", new Date(data_trx['notBefore']).toISOString())
                                 );
                     });
                 } else {
@@ -173,13 +179,14 @@ and open the template in the editor.
             contentType: "application/json",
             data: JSON.stringify(window.signedResponseBean['request']),
             success: function (dataRes) {
+                let rejectedList = JSON.parse(dataRes['postReturn']);
                 $('.rejected-list').html('<p class="text-center font-weight-bold">Messaggi rifiutati</p>');
-                if (dataRes['postReturn'] !== '{}') {
+                if (rejectedList.length > 0) {
                     console.log(JSON.parse(dataRes['postReturn']));
-                    $.each(JSON.parse(dataRes['postReturn']), function (transactionHash, trx) {
+                    $.each(rejectedList, function (transactionHash, trx) {
                         let data_trx = JSON.parse(trx);
                         $('.rejected-list').append($('.managed-message-template').html()
-                                .replace("{TRX_HASH}", transactionHash)
+                                .replace("{TRX_HASH}", data_trx['transactionHash'])
                                 .replace("{TRX_AMOUNT}", parseInt(data_trx['redValue']) / Math.pow(10, 9))
                                 .replace("{TRX_MSG}", data_trx['message'])
                                 );
@@ -195,15 +202,16 @@ and open the template in the editor.
                 'Content-Type': "application/json"
             },
             type: 'GET',
-            url: window.webappname + '/resources/javaee8/getapprovedmsg/' + $('#wallet-address').html(),
+            url: window.webappname + '/resources/javaee8/campaign_view/getapprovedmsg/' + $('#wallet-address').html() + '/0',
             contentType: "application/json",
             success: function (dataRes) {
+                let approvedList = JSON.parse(dataRes['postReturn']);
                 $('.approved-list').html('<p class="text-center font-weight-bold">Messaggi approvati</p>');
-                if (dataRes['postReturn'] !== '{}') {
-                    $.each(JSON.parse(dataRes['postReturn']), function (transactionHash, trx) {
+                if (approvedList.length > 0) {
+                    $.each(approvedList, function (transactionHash, trx) {
                         let data_trx = JSON.parse(trx);
                         $('.approved-list').append($('.managed-message-template').html()
-                                .replace("{TRX_HASH}", transactionHash)
+                                .replace("{TRX_HASH}", data_trx['transactionHash'])
                                 .replace("{TRX_AMOUNT}", parseInt(data_trx['redValue']) / Math.pow(10, 9))
                                 .replace("{TRX_MSG}", data_trx['message'])
                                 );
@@ -276,7 +284,7 @@ and open the template in the editor.
             contentType: "application/json",
             data: JSON.stringify(window.signedResponseBean['request']),
             success: function (dataRes) {
-                alert('Campaign created succesfully!');
+                console.log('Campaign created succesfully!');
             }
         });
     });

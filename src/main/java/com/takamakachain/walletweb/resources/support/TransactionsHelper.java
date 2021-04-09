@@ -46,10 +46,15 @@ import java.security.NoSuchProviderException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.NoSuchPaddingException;
@@ -125,8 +130,12 @@ public class TransactionsHelper {
         InternalTransactionBean itb = null;
         String words;
         String walletAddress;
-        ArrayList fileList, bannedListFile;
+        ArrayList fileList, bannedListFile, finalOrderedResult;
         HashMap hm;
+        Map<String, String> orderedMap;
+        Set set2;
+        Iterator iterator2;
+        String filename;
         switch (srb.getRt()) {
             case GET_ADDRESS:
                 signedResponse.setWalletAddress(iwk.getPublicKeyAtIndexURL64(srb.getWallet().getAddressNumber()));
@@ -144,32 +153,45 @@ public class TransactionsHelper {
                 break;
             case MOVE_TO_APPROVED:
                 walletAddress = iwk.getPublicKeyAtIndexURL64(srb.getWallet().getAddressNumber());
-                FileHelper.rename(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", walletAddress, "new_messages", srb.getHash()), Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", walletAddress, "approved", srb.getHash()), Boolean.TRUE);
+                filename = srb.getNotBefore() + "_" + TkmSignUtils.fromStringToHexString(srb.getHash());
+                FileHelper.rename(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", walletAddress, "new_messages", filename), Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", walletAddress, "approved", filename), Boolean.TRUE);
                 break;
             case MOVE_TO_REJECTED:
                 walletAddress = iwk.getPublicKeyAtIndexURL64(srb.getWallet().getAddressNumber());
-                FileHelper.rename(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", walletAddress, "new_messages", srb.getHash()), Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", walletAddress, "rejected", srb.getHash()), Boolean.TRUE);
-
+                filename = srb.getNotBefore() + "_" + TkmSignUtils.fromStringToHexString(srb.getHash());
+                FileHelper.rename(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", walletAddress, "new_messages", filename), Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", walletAddress, "rejected", filename), Boolean.TRUE);
                 break;
             case MOVE_TO_BLACKLIST:
                 walletAddress = iwk.getPublicKeyAtIndexURL64(srb.getWallet().getAddressNumber());
-                FileHelper.rename(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", walletAddress, "new_messages", srb.getHash()), Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", walletAddress, "banned", srb.getHash()), Boolean.TRUE);
+                filename = srb.getNotBefore() + "_" + TkmSignUtils.fromStringToHexString(srb.getHash());
+                FileHelper.rename(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", walletAddress, "new_messages", filename), Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", walletAddress, "banned", filename), Boolean.TRUE);
 
                 break;
             case GET_NEW_MESSAGES:
                 walletAddress = iwk.getPublicKeyAtIndexURL64(srb.getWallet().getAddressNumber());
                 fileList = FileHelper.getFileList(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", walletAddress, "new_messages"), null);
-                //fileList.sort(Comparator.naturalOrder());
+                fileList.sort(Comparator.reverseOrder());
                 hm = new HashMap<String, String>();
                 fileList.forEach(e -> {
+                    //System.out.println(e);
                     try {
                         hm.put(e.toString(), new JSONObject(FileHelper.readStringFromFile(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", walletAddress, "new_messages", e.toString()))).toString());
                     } catch (FileNotFoundException ex) {
                         Logger.getLogger(TransactionsHelper.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 });
-                
-                signedResponse.setPostReturn(new JSONObject(hm).toString());
+
+                orderedMap = new TreeMap<String, String>(Collections.reverseOrder());
+                orderedMap.putAll(hm);
+                set2 = orderedMap.entrySet();
+                iterator2 = set2.iterator();
+                finalOrderedResult = new ArrayList<String>();
+                while (iterator2.hasNext()) {
+                    Map.Entry me2 = (Map.Entry) iterator2.next();
+                    finalOrderedResult.add(me2.getValue().toString());
+                }
+
+                signedResponse.setPostReturn(new JSONArray(finalOrderedResult).toString());
                 break;
             case GET_REJECTED_MESSAGES:
                 walletAddress = iwk.getPublicKeyAtIndexURL64(srb.getWallet().getAddressNumber());
@@ -182,7 +204,17 @@ public class TransactionsHelper {
                         Logger.getLogger(TransactionsHelper.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 });
-                signedResponse.setPostReturn(new JSONObject(hm).toString());
+                orderedMap = new TreeMap<String, String>(Collections.reverseOrder());
+                orderedMap.putAll(hm);
+                set2 = orderedMap.entrySet();
+                iterator2 = set2.iterator();
+                finalOrderedResult = new ArrayList<String>();
+                while (iterator2.hasNext()) {
+                    Map.Entry me2 = (Map.Entry) iterator2.next();
+                    finalOrderedResult.add(me2.getValue().toString());
+                }
+
+                signedResponse.setPostReturn(new JSONArray(finalOrderedResult).toString());
                 break;
             case CHECK_NEW_TRANSACTIONS:
                 walletAddress = iwk.getPublicKeyAtIndexURL64(srb.getWallet().getAddressNumber());
@@ -218,7 +250,13 @@ public class TransactionsHelper {
                                 && ((JSONObject) o).get("validity").toString().equals("true")
                                 && !bannedFromList.contains(((JSONObject) o).get("transactionHash").toString())
                                 && !hashesList.contains(((JSONObject) o).get("transactionHash").toString())) {
-                            if (!FileHelper.writeStringToFile(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", walletAddress, "new_messages"), ((JSONObject) o).get("transactionHash").toString(), o.toString(), true)) {
+                            filename = ((JSONObject) o).get("notBefore").toString() + "_" + TkmSignUtils.fromStringToHexString(((JSONObject) o).get("transactionHash").toString());
+
+                            if (!FileHelper.writeStringToFile(
+                                    Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", walletAddress, "new_messages"),
+                                    filename,
+                                    o.toString(),
+                                    true)) {
                                 return false;
                             }
                         }

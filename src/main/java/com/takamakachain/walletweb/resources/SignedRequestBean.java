@@ -18,7 +18,15 @@ public class SignedRequestBean implements Serializable {
     private WalletBean wallet;
     private InternalTransactionBean itb;
     private String hash;
+    private String notBefore;
 
+    public String getNotBefore() {
+        return notBefore;
+    }
+
+    public void setNotBefore(String notBefore) {
+        this.notBefore = notBefore;
+    }
     public String getHash() {
         return hash;
     }
