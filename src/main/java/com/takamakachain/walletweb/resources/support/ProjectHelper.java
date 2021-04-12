@@ -16,6 +16,8 @@ import com.h2tcoin.takamakachain.utils.simpleWallet.SWTracker;
 import com.h2tcoin.takamakachain.utils.simpleWallet.panels.support.ComboItemSettingsBookmarkUrl;
 import com.h2tcoin.takamakachain.utils.threadSafeUtils.TkmSignUtils;
 import com.h2tcoin.takamakachain.utils.threadSafeUtils.TkmTextUtils;
+import static com.takamakachain.walletweb.resources.support.InitParameters.ENABLE_CAMPAIGN_SUPPORT;
+import static com.takamakachain.walletweb.resources.support.InternalParameters.getWalletWebConfigFileName;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -30,8 +32,11 @@ import java.security.cert.CertificateException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Writer;
+import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -41,8 +46,16 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonReader;
+import javax.json.JsonWriter;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.apache.commons.io.output.StringBuilderWriter;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -55,6 +68,7 @@ public class ProjectHelper {
 
     public static final String ENC_LABEL = "isEncriptedPasswordWithAES256";
     public static final String ENC_SEP = "§";
+    private static ConcurrentSkipListMap<String, String> startupParameters;
 
     public static final void initProject(String rootFolder) throws IOException, SaturnException, ClassNotFoundException, URISyntaxException, HashEncodeException, HashAlgorithmNotFoundException, HashProviderNotFoundException {
 //        Package[] definedPackages = Thread.currentThread().getContextClassLoader().getDefinedPackages();
@@ -67,9 +81,18 @@ public class ProjectHelper {
 //            System.out.println("PKG: " + p.getName());
 //        });
         FileHelper.initProjectFiles();
+
         SatUtils.loadConfig(rootFolder);
         //System.out.println("N:" + incompleteClasspathError.toString());
         System.out.println("Current Application Folder Dir: " + FileHelper.getDefaultApplicationDirectoryPath().toString());
+        try {
+            //load application specific config
+            reloadParameters();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println("ERROR LOADING CONFIGURATION FILE");
+        }
+
         //load salt
         System.out.println("init salt file ");
         getSalt("wallet_name");
@@ -77,6 +100,45 @@ public class ProjectHelper {
         getPassword("wallet_name");
 //        IvParameterSpec ivps = getIVParameterSpec("wallet_name");
 //        SecretKey sk = getSecretKey("wallet_name");
+    }
+
+    public static final void reloadParameters() throws Exception {
+        Path confPath = Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), getWalletWebConfigFileName());
+        if (FileHelper.fileExists(confPath)) {
+            String conf = FileHelper.readStringFromFile(confPath);
+            System.out.println("conf: " + conf);
+            //try to load conf file
+            
+            JsonReader jsonReader = getJsonReader(conf);
+            JsonObject jsonObj = jsonReader.readObject();
+            if (jsonObj.containsKey("ENABLE_CAMPAIGN_SUPPORT")) {
+                InitParameters.ENABLE_CAMPAIGN_SUPPORT = jsonObj.getBoolean("ENABLE_CAMPAIGN_SUPPORT");
+            } else {
+                System.out.println("Missing parameter " + "ENABLE_CAMPAIGN_SUPPORT" + " using default");
+            }
+            System.out.println("LOOOOOOOOL: " + ENABLE_CAMPAIGN_SUPPORT);
+        } else {
+            JsonObjectBuilder jsonWriter = getJsonWriter();
+            JsonObjectBuilder jw = jsonWriter.add("ENABLE_CAMPAIGN_SUPPORT", false);
+            StringBuilderWriter w = new StringBuilderWriter();
+            JsonWriter writer = Json.createWriter(w);
+            writer.write(jw.build());
+            w.flush();
+            //jsonWriter.addAll(Json.getJ)
+            FileHelper.writeStringToFile(FileHelper.getDefaultApplicationDirectoryPath(), getWalletWebConfigFileName(), w.toString(), true);
+        }
+
+//        JsonReader jsonReader = ProjectHelper.getJsonReader(jsonParameters);
+        //        jsonReader.
+    }
+
+    public static final JsonObjectBuilder getJsonWriter() {
+        JsonObjectBuilder jObBuilder = Json.createObjectBuilder();
+        return jObBuilder;
+    }
+
+    public static final JsonReader getJsonReader(String in) {
+        return Json.createReader(new InputStreamReader(new ByteArrayInputStream(in.getBytes())));
     }
 
     public static final boolean saltFileExists() {
@@ -365,7 +427,7 @@ public class ProjectHelper {
         Path currentWalletPath = Paths.get(FileHelper.getDefaultWalletDirectoryPath().toString(), currentWalletName);
         return currentWalletPath;
     }
-    
+
     /**
      * supported arguments: fasttag, bookmarks, transactions, api, short
      *

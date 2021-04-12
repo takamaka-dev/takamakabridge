@@ -10,7 +10,6 @@ import com.h2tcoin.takamakachain.utils.FileHelper;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-
 /**
  *
  * @author giovanni.antino@h2tcoin.com
@@ -22,6 +21,11 @@ public class InternalParameters {
     private static final String internalWebWalletPasswordFileName = "sessions.pass";
     private static final String internalWebWalletIVFileName = "sessions.iv";
     private static final String internalWebWalletSecretKeyFileName = "sessions.pkcs12";
+    private static final String walletWebConfigFileName = "WalletWebServerviceConfig.json";
+
+    public static String getWalletWebConfigFileName() {
+        return walletWebConfigFileName;
+    }
 
     public static String getInternalWebWalletPasswordFileName() {
         return internalWebWalletPasswordFileName;
@@ -38,11 +42,11 @@ public class InternalParameters {
     public static final Path getInternalWebWalletSaltFilePath() {
         return Paths.get(getInternalWebWalletSettingsFolderPath().toString(), internalWebWalletSaltFileName);
     }
-    
+
     public static final Path getInternalWebWalletIvParameterSpecFilePath() {
         return Paths.get(getInternalWebWalletSettingsFolderPath().toString(), internalWebWalletIVFileName);
     }
-    
+
     public static final Path getInternalWebWalletSecretKeyFilePath() {
         return Paths.get(getInternalWebWalletSettingsFolderPath().toString(), internalWebWalletSecretKeyFileName);
     }
@@ -62,7 +66,5 @@ public class InternalParameters {
     public static String getInternalWebWalletSecretKeyFileName() {
         return internalWebWalletSecretKeyFileName;
     }
-    
-    
 
 }
