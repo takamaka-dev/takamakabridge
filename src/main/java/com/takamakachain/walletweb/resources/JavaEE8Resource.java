@@ -56,6 +56,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import static com.takamakachain.walletweb.resources.support.CryptoHelper.getWebSessionSecret;
+import com.takamakachain.walletweb.resources.support.InitParameters;
 import static com.takamakachain.walletweb.resources.support.ProjectHelper.ENC_LABEL;
 import static com.takamakachain.walletweb.resources.support.ProjectHelper.ENC_SEP;
 import static com.takamakachain.walletweb.resources.support.ProjectHelper.getTagList;
@@ -796,7 +797,13 @@ public class JavaEE8Resource {
     @GET
     @Path("campaign_view/getapprovedmsg/{address}/{lastXmessages}")
     public static final Response getApprovedMessages(@PathParam("address") String address, @PathParam("lastXmessages") String lastXmessages) {
+
+        if (!InitParameters.ENABLE_CAMPAIGN_SUPPORT) {
+            return Response.status(Response.Status.PRECONDITION_FAILED).build();
+        }
+
         SignedResponseBean signedResponse = new SignedResponseBean();
+
         if (!FileHelper.directoryExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", address))) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
@@ -820,7 +827,7 @@ public class JavaEE8Resource {
                 Map.Entry me2 = (Map.Entry) iterator2.next();
                 finalOrderedResult.add(me2.getValue().toString());
             }
-            
+
             count++;
         }
 
@@ -831,10 +838,14 @@ public class JavaEE8Resource {
     @GET
     @Path("campaign_view/getqr/{address}/{value}/{message}")
     public static final String getQrCampaign(@PathParam("address") String address, @PathParam("value") String value, @PathParam("message") String message) throws FileNotFoundException {
-        if (!FileHelper.directoryExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", address))) {
-            return "";
+        if (!InitParameters.ENABLE_CAMPAIGN_SUPPORT) {
+            return getQR("This function is disabled");
         }
         
+        if (!FileHelper.directoryExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", address))) {
+            return getQR("Campaign not found");
+        }
+
         ReceiveTokenBalanceRequestBean rtbr = new ReceiveTokenBalanceRequestBean();
         rtbr.setqAddr(address);
         rtbr.setqColor("RED");
