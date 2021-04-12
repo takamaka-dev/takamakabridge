@@ -119,7 +119,7 @@ public class ProjectHelper {
             System.out.println("LOOOOOOOOL: " + ENABLE_CAMPAIGN_SUPPORT);
         } else {
             JsonObjectBuilder jsonWriter = getJsonWriter();
-            JsonObjectBuilder jw = jsonWriter.add("ENABLE_CAMPAIGN_SUPPORT", false);
+            JsonObjectBuilder jw = jsonWriter.add("ENABLE_CAMPAIGN_SUPPORT", ENABLE_CAMPAIGN_SUPPORT);
             StringBuilderWriter w = new StringBuilderWriter();
             JsonWriter writer = Json.createWriter(w);
             writer.write(jw.build());
