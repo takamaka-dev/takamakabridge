@@ -248,7 +248,7 @@ public class TransactionsHelper {
                         if (((JSONObject) o).get("transactionType").toString().equals("PAY")
                                 && ((JSONObject) o).get("to").toString().equals(walletAddress)
                                 && ((JSONObject) o).get("validity").toString().equals("true")
-                                && !bannedFromList.contains(((JSONObject) o).get("transactionHash").toString())
+                                && !bannedFromList.contains(((JSONObject) o).get("from").toString())
                                 && !hashesList.contains(((JSONObject) o).get("transactionHash").toString())) {
                             filename = ((JSONObject) o).get("notBefore").toString() + "_" + TkmSignUtils.fromStringToHexString(((JSONObject) o).get("transactionHash").toString());
 
