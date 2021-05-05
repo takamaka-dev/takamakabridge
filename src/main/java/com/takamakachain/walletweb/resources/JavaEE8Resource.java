@@ -18,6 +18,7 @@ import com.h2tcoin.takamakachain.transactions.TransactionBean;
 import com.h2tcoin.takamakachain.utils.F;
 import com.h2tcoin.takamakachain.utils.FileHelper;
 import com.h2tcoin.takamakachain.utils.Log;
+import com.h2tcoin.takamakachain.utils.Post;
 import com.h2tcoin.takamakachain.utils.simpleWallet.SWTracker;
 import com.h2tcoin.takamakachain.utils.simpleWallet.panels.support.ApiBalanceBean;
 import com.h2tcoin.takamakachain.utils.simpleWallet.panels.support.identicon.IdentiColorHelper;
@@ -343,7 +344,13 @@ public class JavaEE8Resource {
             Date d = tbox.getItb().getNotBefore();
             long time = d.getTime();
 
-            String response = ProjectHelper.doPost(endpoint, "address", TkmSignUtils.fromHexToString(fileName));
+            //String response = ProjectHelper.doPost(endpoint, "transactionhash", TkmSignUtils.fromHexToString(fileName));
+            
+            Map<String, String> params = new HashMap<String, String>();
+            params.put("field", "transactionhash");
+            params.put("data", TkmSignUtils.fromHexToString(fileName));
+            
+            String response = Post.Post(endpoint, params);
             JSONArray jsonObjectResponse = ProjectHelper.getJsonArrayObject(response);
 
             if ((time + twoMinsMillis) > new Date().getTime()) {
