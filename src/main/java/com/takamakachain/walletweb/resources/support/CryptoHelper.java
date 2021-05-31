@@ -8,11 +8,8 @@ package com.takamakachain.walletweb.resources.support;
 import com.h2tcoin.takamakachain.exceptions.threadSafeUtils.HashAlgorithmNotFoundException;
 import com.h2tcoin.takamakachain.exceptions.threadSafeUtils.HashEncodeException;
 import com.h2tcoin.takamakachain.exceptions.threadSafeUtils.HashProviderNotFoundException;
-import com.h2tcoin.takamakachain.saturn.SatUtils;
-import com.h2tcoin.takamakachain.saturn.exceptions.SaturnException;
 import com.h2tcoin.takamakachain.utils.FileHelper;
 import com.h2tcoin.takamakachain.utils.threadSafeUtils.TkmSignUtils;
-import com.h2tcoin.takamakachain.utils.threadSafeUtils.TkmTextUtils;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -38,7 +35,6 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import org.apache.commons.lang3.RandomStringUtils;
-import sun.security.rsa.RSAUtil;
 
 /**
  *
