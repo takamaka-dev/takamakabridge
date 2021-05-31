@@ -169,7 +169,8 @@ public class TransactionsHelper {
                 break;
             case GET_NEW_MESSAGES:
                 walletAddress = iwk.getPublicKeyAtIndexURL64(srb.getWallet().getAddressNumber());
-                fileList = FileHelper.getFileList(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", walletAddress, "new_messages"), null);
+                
+                fileList = FileHelper.getWalletListInFolder(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", walletAddress, "new_messages"), null);
                 fileList.sort(Comparator.reverseOrder());
                 hm = new HashMap<String, String>();
                 fileList.forEach(e -> {
@@ -195,7 +196,7 @@ public class TransactionsHelper {
                 break;
             case GET_REJECTED_MESSAGES:
                 walletAddress = iwk.getPublicKeyAtIndexURL64(srb.getWallet().getAddressNumber());
-                fileList = FileHelper.getFileList(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", walletAddress, "rejected"), null);
+                fileList = FileHelper.getWalletListInFolder(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", walletAddress, "rejected"), null);
                 hm = new HashMap<String, String>();
                 fileList.forEach(e -> {
                     try {
@@ -230,7 +231,7 @@ public class TransactionsHelper {
 
                 List<String> hashesList = new ArrayList<String>(Arrays.asList(readStringFromFile.split("\n")));
 
-                bannedListFile = FileHelper.getFileList(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", walletAddress, "banned"), null);
+                bannedListFile = FileHelper.getWalletListInFolder(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", walletAddress, "banned"), null);
 
                 ArrayList<String> bannedFromList = new ArrayList<String>();
                 bannedListFile.forEach(e -> {

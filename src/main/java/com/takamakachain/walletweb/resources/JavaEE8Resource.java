@@ -814,7 +814,7 @@ public class JavaEE8Resource {
         if (!FileHelper.directoryExists(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", address))) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
-        ArrayList fileList = FileHelper.getFileList(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", address, "approved"), null);
+        ArrayList fileList = FileHelper.getWalletListInFolder(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "campaigns", address, "approved"), null);
         HashMap hm = new HashMap<String, String>();
         fileList.forEach(e -> {
             try {
