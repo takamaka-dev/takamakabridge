@@ -117,7 +117,7 @@ public class JavaEE8Resource {
             ProjectHelper.initProject(System.getProperty("user.home"));
             internalKeystore = ProjectHelper.getInternalKeystore();
             webSessionSecret = getWebSessionSecret(internalKeystore);
-
+            
         } catch (IOException | SaturnException | ClassNotFoundException | URISyntaxException | HashEncodeException | HashAlgorithmNotFoundException | HashProviderNotFoundException | KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException ex) {
             Logger.getLogger(JavaEE8Resource.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -659,6 +659,13 @@ public class JavaEE8Resource {
                 try {
                     IvParameterSpec ivParameterSpec;
                     ivParameterSpec = ProjectHelper.getIVParameterSpec(wb.getWalletName());
+                    if (null == webSessionSecret) {
+                        F.y("WEB SESSION SECRET is NULL!!");
+                    }
+                    if (null == ivParameterSpec) {
+                        F.y("ivParameterSpec is NULL!!");
+                    }
+                    
                     String encryptPasswordHEX = encryptPasswordHEX(plainPass, ivParameterSpec, webSessionSecret);
                     signedResponse.getRequest().getWallet().setWalletPassword(ENC_LABEL + ENC_SEP + encryptPasswordHEX);
                 } catch (InvalidAlgorithmParameterException | InvalidKeyException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException ex) {
@@ -725,7 +732,7 @@ public class JavaEE8Resource {
             iwk = validateWalletCredentials(srb.getWallet(), signedResponse, srb.getRecoveryWords());
 
             if (iwk == null) {
-                return Response.status(401).entity(signedResponse).build();
+                return Response.status(403, "Null iw key").entity(signedResponse).build();
             }
 
             try {
