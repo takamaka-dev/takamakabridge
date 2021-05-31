@@ -8,6 +8,7 @@ package com.takamakachain.walletweb.resources.support;
 import com.h2tcoin.takamakachain.exceptions.threadSafeUtils.HashAlgorithmNotFoundException;
 import com.h2tcoin.takamakachain.exceptions.threadSafeUtils.HashEncodeException;
 import com.h2tcoin.takamakachain.exceptions.threadSafeUtils.HashProviderNotFoundException;
+import com.h2tcoin.takamakachain.utils.F;
 import com.h2tcoin.takamakachain.utils.FileHelper;
 import com.h2tcoin.takamakachain.utils.threadSafeUtils.TkmSignUtils;
 import java.io.FileInputStream;
@@ -108,6 +109,9 @@ public class CryptoHelper {
 
     public static final String encryptPasswordHEX(String plainText, IvParameterSpec iv, SecretKey sk) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        if (cipher == null) {
+            F.y("Cipher is NULL!!!");
+        }
         cipher.init(Cipher.ENCRYPT_MODE, sk, iv);
         byte[] encBytes = cipher.doFinal(plainText.getBytes());
         return TkmSignUtils.fromByteArrayToHexString(encBytes);
