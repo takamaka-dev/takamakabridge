@@ -169,7 +169,7 @@ public class ProjectHelper {
         }
         //create salt file
         if (!saltFileExists()) {
-
+            
             FileHelper.writeStringToFile(InternalParameters.getInternalWebWalletSettingsFolderPath(), InternalParameters.getInternalWebWalletSaltFileName(), CryptoHelper.getSaltString(), false);
         }
         salt = FileHelper.readStringFromFile(InternalParameters.getInternalWebWalletSaltFilePath());
