@@ -11,6 +11,7 @@ import com.h2tcoin.takamakachain.exceptions.threadSafeUtils.HashProviderNotFound
 import com.h2tcoin.takamakachain.main.defaults.DefaultInitParameters;
 import com.h2tcoin.takamakachain.saturn.SatUtils;
 import com.h2tcoin.takamakachain.saturn.exceptions.SaturnException;
+import com.h2tcoin.takamakachain.utils.F;
 import com.h2tcoin.takamakachain.utils.FileHelper;
 import com.h2tcoin.takamakachain.utils.simpleWallet.SWTracker;
 import com.h2tcoin.takamakachain.utils.simpleWallet.panels.support.ComboItemSettingsBookmarkUrl;
@@ -169,7 +170,7 @@ public class ProjectHelper {
         }
         //create salt file
         if (!saltFileExists()) {
-            
+            F.y("new salt");
             FileHelper.writeStringToFile(InternalParameters.getInternalWebWalletSettingsFolderPath(), InternalParameters.getInternalWebWalletSaltFileName(), CryptoHelper.getSaltString(), false);
         }
         salt = FileHelper.readStringFromFile(InternalParameters.getInternalWebWalletSaltFilePath());
