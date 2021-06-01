@@ -438,6 +438,7 @@ public class JavaEE8Resource {
         }
 
         cb.setEndTime(new Date().getTime());
+        cb.setSuccess(true);
         return Response.status(Response.Status.OK).entity(cb).build();
     }
 
