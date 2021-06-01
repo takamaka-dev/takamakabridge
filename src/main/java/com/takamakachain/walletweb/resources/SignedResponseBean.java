@@ -24,6 +24,15 @@ public class SignedResponseBean implements Serializable {
     private String endpoint;
     private String words;
     private String postReturn;
+    private boolean trxVerified;
+
+    public boolean isTrxVerified() {
+        return trxVerified;
+    }
+
+    public void setTrxVerified(boolean trxVerified) {
+        this.trxVerified = trxVerified;
+    }
 
     public String getPostReturn() {
         return postReturn;

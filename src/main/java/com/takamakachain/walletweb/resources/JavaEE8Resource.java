@@ -331,6 +331,7 @@ public class JavaEE8Resource {
         }
 
         for (String fileName : fileNameList) {
+            System.out.println(fileName);
             fileName = Paths.get(fileName).getFileName().toString();
             TransactionBox tbox = TkmWallet.verifyTransactionIntegrity(FileHelper.readStringFromFile(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "transactions", fileName)));
             if (!tbox.isValid()) {
@@ -340,7 +341,7 @@ public class JavaEE8Resource {
                 }
                 FileHelper.writeStringToFile(Paths.get(FileHelper.getDefaultApplicationDirectoryPath().toString(), "idm", "notvalid"), fileName, "", true);
             }
-
+                        
             Date d = tbox.getItb().getNotBefore();
             long time = d.getTime();
 
@@ -350,7 +351,12 @@ public class JavaEE8Resource {
             params.put("field", "transactionhash");
             params.put("data", TkmSignUtils.fromHexToString(fileName));
             
+            for (Map.Entry<String, String> entry : params.entrySet()) {
+                System.out.println(entry.getKey() + "/" + entry.getValue());
+            }
+            
             String response = Post.Post(endpoint, params);
+            System.out.println(response);
             JSONArray jsonObjectResponse = ProjectHelper.getJsonArrayObject(response);
 
             if ((time + twoMinsMillis) > new Date().getTime()) {

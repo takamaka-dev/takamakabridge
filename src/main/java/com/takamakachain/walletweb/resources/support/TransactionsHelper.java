@@ -358,10 +358,9 @@ public class TransactionsHelper {
                 System.out.println(transactionEndpoint);
                 String r = ProjectHelper.doPost(transactionEndpoint, "tx", hexBody);
                 System.out.println(r);
-                if (!r.contains("true")) {
-                    return false;
-                }
-                break;
+                JSONObject jsonTxResponse = new JSONObject(r);
+                signedResponse.setTrxVerified(jsonTxResponse.getBoolean("TxIsVerified"));
+                return jsonTxResponse.getBoolean("TxIsVerified");
             default:
         }
         return true;
