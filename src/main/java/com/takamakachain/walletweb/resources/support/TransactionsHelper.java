@@ -17,6 +17,7 @@ import com.h2tcoin.takamakachain.transactions.InternalTransactionBean;
 import com.h2tcoin.takamakachain.transactions.TransactionBean;
 import com.h2tcoin.takamakachain.transactions.fee.FeeBean;
 import com.h2tcoin.takamakachain.transactions.fee.TransactionFeeCalculator;
+import com.h2tcoin.takamakachain.utils.F;
 import com.h2tcoin.takamakachain.utils.FileHelper;
 import com.h2tcoin.takamakachain.utils.networking.RequestPaymentBean;
 import com.takamakachain.walletweb.resources.FilePropertiesBean;
@@ -33,10 +34,20 @@ import com.takamakachain.walletweb.resources.SignedResponseBean;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 import java.net.ProtocolException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -54,6 +65,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -109,6 +121,50 @@ public class TransactionsHelper {
 
         }
         return false;
+    }
+    
+    public static String Post(String uri, Map<String, String> parameters) throws UnsupportedEncodingException, ProtocolException, IOException {
+        URL url = new URL(uri);
+        URLConnection con = url.openConnection();
+        try {
+            HttpURLConnection http = (HttpURLConnection) con;
+            http.setRequestMethod("POST"); // PUT is another valid option
+            http.setDoOutput(true);
+            http.setConnectTimeout(10 * 1000); //set timeout to 10 seconds
+            StringJoiner sj = new StringJoiner("&");
+            for (Map.Entry<String, String> entry : parameters.entrySet()) {
+                sj.add(URLEncoder.encode(entry.getKey(), "UTF-8") + "="
+                        + URLEncoder.encode(entry.getValue(), "UTF-8"));
+                F.b("Key: " + entry.getKey() + " - Value: " + entry.getValue());
+            }
+            byte[] out = sj.toString().getBytes(StandardCharsets.UTF_8);
+            int length = out.length;
+            F.b(sj.toString());
+
+            http.setFixedLengthStreamingMode(length);
+            http.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+            http.connect();
+            try (OutputStream os = http.getOutputStream()) {
+                os.write(out);
+            } catch(Exception e){
+                e.printStackTrace();
+                return "";
+            }
+            Reader in = new BufferedReader(new InputStreamReader(http.getInputStream(), "UTF-8"));
+
+            String ret = "";
+            for (int c; (c = in.read()) >= 0;) {
+                ret += (char) c;
+            }
+
+            return ret;
+        } catch (java.net.SocketTimeoutException e) {
+            e.printStackTrace();
+            return "";
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 
     public static final String prepareMessageBase64(String oldMessage) {
