@@ -16,7 +16,8 @@
     <listener>
         <listener-class>com.takamakachain.walletweb.resources.support.ContextListener</listener-class>
     </listener>
-<!--    <resource-ref>
+    
+    <!--    <resource-ref>
         <res-ref-name>trollo</res-ref-name>
         <res-type>javax.mail.Session</res-type>
         <res-auth>Container</res-auth>
