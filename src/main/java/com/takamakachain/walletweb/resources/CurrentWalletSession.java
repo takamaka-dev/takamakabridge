@@ -6,7 +6,7 @@
 package com.takamakachain.walletweb.resources;
 
 import com.h2tcoin.takamakachain.globalContext.KeyContexts;
-import io.takamaka.code.whitelisting.internal.database.java.math.BigInteger;
+import java.math.BigInteger;
 import javax.ejb.Stateless;
 
 /**
